@@ -3,8 +3,7 @@
     <div class="flex items-center justify-between h-16">
       
       <div class="flex items-center gap-1">
-        <!-- <img src="./public/ll.png" class="w-11 h-11 rounded-full" alt="logo"> -->
-         <img src="./public/logo.png" class="w-11 h-11 rounded-full bg-transparent" alt="logo">
+         <img src="./public/logo.png" class="w-11 h-11 rounded-full " alt="logo">
         <span class="text-xl font-bold text-gray-900">Barber's Point</span>
       </div>
 

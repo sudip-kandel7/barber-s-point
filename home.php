@@ -18,14 +18,20 @@
     </div>
     
     <div class="flex bg-white mt-9 mb-11 h-10 items-center border rounded-xl pl-3 px-2 gap-3 ">
-        <img src="./public/search-icon.png" class="w-7 h-7" alt="search icon">
-        <input type="search" class="h-full w-[499px] focus:outline-none" placeholder="Search for shops, locations...">
+        
+  <label for="search" class="cursor-pointer">
+    <img src="./public/search-icon.png" class="w-7 h-7" alt="search icon">
+  </label>
+        <input type="search" id="search" class="h-full w-[499px] focus:outline-none" placeholder="Search for shops, locations...">
         <div class="w-12 h-full flex items-center hover:bg-yellow-400 justify-center rounded-md border-gray-300 cursor-pointer">
             <img src="./public/voice.png" class="w-6 h-6" alt="voice search icon">
         </div>
         <button class="bg-black text-white text-[25px] text-sm py-[8px] px-[24px] rounded-md hover:bg-gray-800" >Search</button>
-
     </div>
+
+
+
+
 
 
 
