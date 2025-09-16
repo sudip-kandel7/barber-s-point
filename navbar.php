@@ -4,7 +4,7 @@
       
       <div class="flex items-center gap-1">
          <img src="./public/logo.png" class="w-11 h-11 rounded-full " alt="logo">
-        <span class="text-[22px] font-bold text-gray-900">Barber's Point</span>
+        <span class="text-[22px] font-semibold text-gray-800">Barber's Point</span>
       </div>
 
       <ul class="flex items-center max-[750px]:hidden max-[900px]:gap-10 gap-12 mt-1.5 font-light text-[17px]">
@@ -40,11 +40,63 @@
         </a>
       </div>
 
-<div class="min-[750px]:hidden flex flex-col gap-1 p-2 rounded-md hover:bg-yellow-400 cursor-pointer transition-all duration-300">
-  <hr class="w-6 h-[2px] bg-black rounded-full transition-all duration-300 transform">
-  <hr class="w-6 h-[2px] bg-black rounded-full transition-all duration-300 transform">
-  <hr class="w-6 h-[2px] bg-black rounded-full transition-all duration-300 transform">
+
+<!-- Hamburger button -->
+<div class="min-[750px]:hidden flex flex-col p-2 rounded-md hover:bg-yellow-400 cursor-pointer transition-all duration-300" id="hamburger">
+  <img src="./public/menu.png" class="w-4 h-4 hover:bg-yellow-400 img block "  alt="">
+  <img src="./public/close.png" class="w-4 h-4 hover:bg-yellow-400 img hidden"  alt="">
 </div>
+
+
+<!-- Mobile menu (hidden by default) -->
+<div class="hidden min-[750px]:hidden text-center bg-white w-60 p-4 shadow-md absolute top-16 right-4 rounded-md z-50" id="mobileMenu">
+
+  <ul class="flex flex-col gap-3">
+
+    <li>
+      <a href="#"
+         class="block text-lg font-medium py-2 text-gray-800 rounded-md shadow-md hover:shadow-lg hover:bg-yellow-50 hover:text-yellow-600 hover:scale-105 transition-all duration-300">
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="#"
+         class="block text-lg font-medium py-2 text-gray-800 rounded-md shadow-md hover:shadow-lg hover:bg-yellow-50 hover:text-yellow-600 hover:scale-105 transition-all duration-300">
+        About Us
+      </a>
+    </li>
+    <li>
+      <a href="#"
+         class="block text-lg font-medium py-2 text-gray-800 rounded-md shadow-md hover:shadow-lg hover:bg-yellow-50 hover:text-yellow-600 hover:scale-105 transition-all duration-300">
+        Contact
+      </a>
+    </li>
+
+
+<hr class="h-1 bg-gray-200 rounded-full shadow-md my-2">
+
+
+
+
+    <li>
+      <a href="./login.php"
+         class="flex items-center justify-center gap-2 text-lg font-medium py-2 rounded-md shadow-md bg-gray-50 hover:bg-blue-50 hover:scale-105 transition-all duration-300">
+        <img src="./public/enter.png" class="w-5 h-5 transition-transform duration-300 group-hover:rotate-12" alt="login icon">
+        <span>Login</span>
+      </a>
+    </li>
+
+    <li>
+      <a href="./register.php"
+         class="block text-lg font-medium py-2 rounded-md shadow-md bg-black text-white hover:opacity-90 hover:scale-105 transition-all duration-300">
+        Register
+      </a>
+    </li>
+  </ul>
+
+</div>
+
+
 
 
       
