@@ -3,7 +3,7 @@
     <div class=" mr-6 ml-5 2xl:m-0 flex items-center justify-between h-16">
       
       <div class="flex items-center gap-1">
-         <img src="./public/logo.png" class="w-11 h-11 rounded-full " alt="logo">
+         <img src="./public/images/logo.png" class="w-11 h-11 rounded-full " alt="logo">
         <span class="text-[22px] font-semibold text-gray-800">Barber's Point</span>
       </div>
 
@@ -43,8 +43,8 @@
 
 <!-- Hamburger button -->
 <div class="min-[750px]:hidden flex flex-col p-2 rounded-md hover:bg-yellow-400 cursor-pointer transition-all duration-300" id="hamburger">
-  <img src="./public/menu.png" class="w-4 h-4 hover:bg-yellow-400 img block "  alt="">
-  <img src="./public/close.png" class="w-4 h-4 hover:bg-yellow-400 img hidden"  alt="">
+  <img src="./public/images/menu.png" class="w-4 h-4 hover:bg-yellow-400 img block "  alt="">
+  <img src="./public/images/close.png" class="w-4 h-4 hover:bg-yellow-400 img hidden"  alt="">
 </div>
 
 
@@ -81,7 +81,7 @@
     <li>
       <a href="./login.php"
          class="flex items-center justify-center gap-2 text-lg font-medium py-2 rounded-md shadow-md bg-gray-50 hover:bg-blue-50 hover:scale-105 transition-all duration-300">
-        <img src="./public/enter.png" class="w-5 h-5 transition-transform duration-300 group-hover:rotate-12" alt="login icon">
+        <img src="./public/images/enter.png" class="w-5 h-5 transition-transform duration-300 group-hover:rotate-12" alt="login icon">
         <span>Login</span>
       </a>
     </li>
