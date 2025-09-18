@@ -1,13 +1,12 @@
 <section style="   
-  background: url('./public/images/hero-barber.jpg');   
-  background-size: cover;         
-  background-repeat: no-repeat;   
-  background-position: center; 
+  background:
+      linear-gradient(to right, rgba(255,255,255,0.8), rgba(255,255,255,0.8)),
+      url('./public/images/hero-barber.jpg') center/cover no-repeat;   
 " class="min-h-[70vh] w-full hero-section">
   
   <div class="flex justify-center items-start sm:items-center flex-col text-center min-h-[80vh] px-4 py-8">
     <div class="mb-6 sm:mb-8">
-      <h1 class="text-3xl sm:text-4xl md:text-6xl text-black  font-semibold leading-tight">Find Your Perfect</h1>
+      <h1 class="text-3xl sm:text-4xl md:text-6xl text-black font-semibold leading-tight">Find Your Perfect</h1>
       <h1 class="text-3xl sm:text-4xl md:text-6xl font-bold text-yellow-500 leading-tight">Barber Shop</h1>
       <p class="text-base sm:text-lg md:text-xl text-gray-500 font-light mt-3 max-w-2xl mx-auto">Discover professional barber shops near you.</p>
       <p class="text-base sm:text-lg md:text-xl  text-gray-500 font-light max-w-2xl mx-auto">Check wait times, & read reviews from real customers.</p>
