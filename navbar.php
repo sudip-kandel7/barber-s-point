@@ -30,7 +30,7 @@
       <div class="flex items-center gap-4 max-[750px]:hidden max-[900px]:gap-2">
         <a href="./login.php" 
            class="flex items-center gap-2  h-10 px-4 rounded-md text-black  hover:shadow hover:bg-yellow-500 transition-all duration-300  ">
-          <img src="./public/enter.png" class="w-4 h-4" alt="login icon">
+          <img src="./public/images/enter.png" class="w-3.5 h-3.w-3.5" alt="login icon">
           <span>Login</span>
         </a>
 
@@ -49,31 +49,32 @@
 
 
 <!-- Mobile menu (hidden by default) -->
-<div class="hidden min-[750px]:hidden text-center bg-white w-60 p-4 shadow-md absolute top-16 right-4 rounded-md z-50" id="mobileMenu">
+<div class="hidden min-[750px]:hidden text-center bg-[#fafafa] w-60 p-4 shadow-md absolute top-[67px] right-4 rounded-md z-50" id="mobileMenu">
 
   <ul class="flex flex-col gap-3">
 
     <li>
       <a href="#"
-         class="block text-lg font-medium py-2 text-gray-800 rounded-md shadow-md hover:shadow-lg hover:bg-yellow-50 hover:text-yellow-600 hover:scale-105 transition-all duration-300">
+         class="block text-lg font-medium py-2 bg-white text-gray-800 rounded-md shadow-md hover:shadow-lg hover:bg-yellow-400 hover:text-white hover:scale-105 transition-all duration-300">
         Home
       </a>
     </li>
     <li>
       <a href="#"
-         class="block text-lg font-medium py-2 text-gray-800 rounded-md shadow-md hover:shadow-lg hover:bg-yellow-50 hover:text-yellow-600 hover:scale-105 transition-all duration-300">
+         class="block text-lg font-medium py-2 bg-white text-gray-800 rounded-md shadow-md hover:shadow-lg hover:bg-yellow-400 hover:text-white hover:scale-105 transition-all duration-300">
         About Us
       </a>
     </li>
     <li>
       <a href="#"
-         class="block text-lg font-medium py-2 text-gray-800 rounded-md shadow-md hover:shadow-lg hover:bg-yellow-50 hover:text-yellow-600 hover:scale-105 transition-all duration-300">
+         class="block text-lg font-medium py-2 bg-white text-gray-800 rounded-md shadow-md hover:shadow-lg hover:bg-yellow-400 hover:text-white hover:scale-105 transition-all duration-300">
         Contact
       </a>
     </li>
 
 
-<hr class="h-1 bg-gray-200 rounded-full shadow-md my-2">
+   <hr class="h-1 bg-gray-400 rounded-full shadow-sm my-2">
+
 
 
 
@@ -81,7 +82,7 @@
     <li>
       <a href="./login.php"
          class="flex items-center justify-center gap-2 text-lg font-medium py-2 rounded-md shadow-md bg-gray-50 hover:bg-blue-50 hover:scale-105 transition-all duration-300">
-        <img src="./public/images/enter.png" class="w-5 h-5 transition-transform duration-300 group-hover:rotate-12" alt="login icon">
+        <img src="./public/images/enter.png" class="w-4 h-4 transition-transform duration-300 group-hover:rotate-12" alt="login icon">
         <span>Login</span>
       </a>
     </li>
