@@ -10,7 +10,6 @@ This is a web application to connect customers with barbers, manage queues, and 
 
 - XAMPP installed (for both Windows and Linux)
 - Git installed
-- Basic terminal/command line knowledge (optional but helpful)
 
 ---
 
