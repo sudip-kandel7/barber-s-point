@@ -1,6 +1,5 @@
 # Logs
 logs
-style.css
 *.log
 npm-debug.log*
 yarn-debug.log*

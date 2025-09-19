@@ -1,5 +1,5 @@
 
 
-<script src="./nav.js"></script>
+<script src="./script.js"></script>
 </body>
 </html>

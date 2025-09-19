@@ -1,7 +1,16 @@
 input::-webkit-search-cancel-button {
   -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}
 
-  width: 24px;
+input::-moz-search-clear {
+  display: none;
+}
+
+
+#cross{
+   width: 24px;
   height: 24px;
   background-color: #fde047;
   border-radius: 50%;
@@ -13,26 +22,11 @@ input::-webkit-search-cancel-button {
   background-position: center;
 }
 
-input::-webkit-search-cancel-button:hover {
-  background-color: #fef08a;
+#cross:hover{
   transform: scale(1.1);
 }
 
-/* fire fox */
 
-input::-moz-search-clear {
-  width: 24px;
-  height: 24px;
-  background-color: #fde047;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-input::-moz-search-clear:hover {
-  background-color: #fef08a;
-  transform: scale(1.1);
-}
 
 /* smoke in image of home  */
 

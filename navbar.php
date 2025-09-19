@@ -1,13 +1,13 @@
 <nav class="bg-white/95 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50  ">
   <div class="max-w-7xl mx-auto">
-    <div class=" mr-6 ml-5 2xl:m-0 flex items-center justify-between h-16">
+    <div class=" mr-6 ml-5 2xl:m-0 flex items-center justify-between h-12">
       
       <div class="flex items-center gap-1">
          <img src="./public/images/logo.png" class="w-11 h-11 rounded-full " alt="logo">
-        <span class="text-[22px] font-semibold text-gray-800">Barber's Point</span>
+        <span class="text-[19px] font-semibold text-gray-800">Barber's Point</span>
       </div>
 
-      <ul class="flex items-center max-[750px]:hidden max-[900px]:gap-10 gap-12 mt-1.5 font-light text-[17px]">
+      <ul class="flex items-center max-[750px]:hidden max-[900px]:gap-10 gap-12 mt-1.5 font-light text-[14px]">
        
           <li class="flex flex-col items-center group cursor-pointer transition-colors duration-300 hover:text-yellow-400">
 
@@ -27,15 +27,15 @@
         </li>
       </ul>
 
-      <div class="flex items-center gap-4 max-[750px]:hidden max-[900px]:gap-2">
+      <div class="flex items-center font-light text-sm gap-4 max-[750px]:hidden max-[900px]:gap-2">
         <a href="./login.php" 
-           class="flex items-center gap-2  h-10 px-4 rounded-md text-black  hover:shadow hover:bg-yellow-500 transition-all duration-300  ">
-          <img src="./public/images/enter.png" class="w-3.5 h-3.w-3.5" alt="login icon">
+           class="flex items-center gap-2  h-9 px-3 rounded-md text-black  hover:shadow hover:bg-yellow-500 transition-all duration-300  ">
+          <img src="./public/images/enter.png" class="w-3 h-3.w-3" alt="login icon">
           <span>Login</span>
         </a>
 
         <a href="./register.php"
-           class="bg-black text-white h-10 py-2 px-4 flex items-center justify-center rounded-md text-[15px] shadow hover:bg-gray-800 hover:shadow-lg transition-all duration-300">
+           class="bg-black text-white h-9 py-2 px-3 flex items-center justify-center rounded-md text-[15px] shadow hover:bg-gray-800 hover:shadow-lg transition-all duration-300">
           Register
         </a>
       </div>
