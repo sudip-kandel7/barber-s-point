@@ -8,9 +8,8 @@ input::-moz-search-clear {
   display: none;
 }
 
-
-#cross{
-   width: 24px;
+#cross {
+  width: 24px;
   height: 24px;
   background-color: #fde047;
   border-radius: 50%;
@@ -22,11 +21,9 @@ input::-moz-search-clear {
   background-position: center;
 }
 
-#cross:hover{
+#cross:hover {
   transform: scale(1.1);
 }
-
-
 
 /* smoke in image of home  */
 
@@ -35,7 +32,7 @@ input::-moz-search-clear {
 }
 
 .hero-section::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -44,16 +41,10 @@ input::-moz-search-clear {
   z-index: 1;
 }
 
-
-
 .hero-section > * {
   position: relative;
   z-index: 2;
 }
-
-
-
-
 
 /* text shadow */
 
@@ -70,3 +61,5 @@ input::-moz-search-clear {
   transform: translateY(0) scale(1);
   transition: all 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 } */
+
+/* rounded for register  */
