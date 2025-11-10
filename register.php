@@ -25,24 +25,24 @@ if (isset($_POST['create'])) {
 
 
 <style>
-    body {
-        margin: 0;
-        padding: 0;
-    }
+body {
+    margin: 0;
+    padding: 0;
+}
 
-    section {
-        background: linear-gradient(to right, rgba(255, 255, 255, 0.77), rgba(255, 255, 255, 0.77)),
-            url('./public/images/bg.jpeg') center/cover no-repeat;
-        min-height: 100vh;
-        width: 100%;
-    }
+section {
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.77), rgba(255, 255, 255, 0.77)),
+        url('./public/images/bg.jpeg') center/cover no-repeat;
+    min-height: 100vh;
+    width: 100%;
+}
 </style>
 
 <section class="flex justify-center items-center">
     <div class="flex flex-col items-center">
         <img src="./public/images/logo.png" alt="" class="w-[80px] h-[80px]">
         <p class="text-3xl font-bold mb-2">Join Barber's Point</p>
-        <p>Create your account and discover the best barber shops in your area</p>
+        <p class="text-gray-500 text-xl">Create your account and discover the best barber shops in your area</p>
 
         <div class="rounded-lg bg-[#f3f3f3] flex flex-col items-center mt-5 px-6 py-4 shadow-md">
             <h3 class="text-2xl font-semibold">Create Account</h3>
@@ -155,7 +155,7 @@ if (isset($_POST['create'])) {
 
                 <div class="flex gap-2 justify-center m-3">
                     <p class="text-gray-500">Already have an account?</p>
-                    <a href="">
+                    <a href="./login">
                         <span class="text-yellow-500 hover:text-yellow-600 hover:underline">Sign in here</span>
                     </a>
                 </div>
@@ -165,12 +165,12 @@ if (isset($_POST['create'])) {
 
         </div>
 
-        <div class="flex gap-2 mt-4 items-center group cursor-pointer">
+        <a href="/barber-s-point" class="flex gap-2 mt-4 items-center group cursor-pointer">
             <img src="./public/images/left-arrow.png" class="w-4 h-4 group-hover:hidden" alt="arrow to home">
             <img src="./public/images/left-arrow-yellow.png" class="w-4 h-6 hidden group-hover:block"
                 alt="arrow to home">
             <p class="text-gray-500 group-hover:text-yellow-400">Back to Home</p>
-        </div>
+        </a>
 
     </div>
 </section>
