@@ -3,6 +3,9 @@
 
 <?php
 
+session_start();
+
+
 if (isset($_POST['create'])) {
     $type = $_POST['pType'];
     $firstN = $_POST['firstN'];
@@ -19,6 +22,9 @@ if (isset($_POST['create'])) {
         $services = $_POST['services'];
         $image = $_FILES['photos'];
     }
+
+    $_SESSION["name"] = $firstN;
+    // echo "Session variables are set.";
 }
 ?>
 
@@ -48,7 +54,7 @@ section {
             <h3 class="text-2xl font-semibold">Create Account</h3>
             <p>Fill in your information to get started</p>
 
-            <form action="" method="post" class="mt-5 flex flex-col gap-5">
+            <form action="" id="form" method="post" class="mt-5 flex flex-col gap-5">
                 <div>
                     <label for="pType" class="font-medium">I want to register as</label> <br>
                     <select id="select" name="pType" class="w-full mt-1.5 h-11 pl-2 pr-2 rounded-[9px] bg-white">
@@ -62,11 +68,13 @@ section {
                         <label for="firstN" class="font-medium">First Name</label> <br>
                         <input name="firstN" type="text" class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-80"
                             placeholder="Enter your first name">
+                        <p class="firstN text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
                     <div>
                         <label for="lastN" class="font-medium">Last Name</label> <br>
                         <input name="lastN" type="text" class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-80"
                             placeholder="Enter your last name">
+                        <p class="lastN text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
                 </div>
                 <div class="flex gap-7">
@@ -74,11 +82,13 @@ section {
                         <label for="email" class="font-medium">Email Address</label> <br>
                         <input name="email" type="text" class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-80"
                             placeholder="Enter your email">
+                        <p class="email text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
                     <div>
                         <label for="number" class="font-medium">Phone Number</label> <br>
                         <input name="number" type="text" class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-80"
                             placeholder="Enter your phone number">
+                        <p class="number text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
                 </div>
                 <div class="flex gap-7">
@@ -89,6 +99,7 @@ section {
                             placeholder="Create a password">
                         <img src="./public/images/visible.png" id="toggle1"
                             class="w-4 h-4 absolute top-11 left-[291px] cursor-pointer" alt="show password icon">
+                        <p class="password text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
                     <div class="relative">
                         <label for="cPassword" class="font-medium">Confirm Password</label> <br>
@@ -97,6 +108,7 @@ section {
                             placeholder="Confirm your password">
                         <img src="./public/images/visible.png" id="toggle2"
                             class="w-4 h-4 absolute top-11 left-[291px] cursor-pointer" alt="show password icon">
+                        <p class="cPassword text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
                 </div>
 

@@ -43,11 +43,10 @@
 
         </form>
 
-        <?php 
-          if (isset($_POST['barber'])) {
-           $searchTerm = $_POST['barber']; 
-          //  echo "You searched for: " . htmlspecialchars($searchTerm);
-          }
+        <?php
+        if (isset($_POST['barber'])) {
+            $searchTerm = $_POST['barber'];
+        }
         ?>
 
 
