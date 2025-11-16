@@ -31,17 +31,17 @@ if (isset($_POST['create'])) {
 
 
 <style>
-body {
-    margin: 0;
-    padding: 0;
-}
+    body {
+        margin: 0;
+        padding: 0;
+    }
 
-section {
-    background: linear-gradient(to right, rgba(255, 255, 255, 0.77), rgba(255, 255, 255, 0.77)),
-        url('./public/images/bg.jpeg') center/cover no-repeat;
-    min-height: 100vh;
-    width: 100%;
-}
+    section {
+        background: linear-gradient(to right, rgba(255, 255, 255, 0.77), rgba(255, 255, 255, 0.77)),
+            url('./public/images/bg.jpeg') center/cover no-repeat;
+        min-height: 100vh;
+        width: 100%;
+    }
 </style>
 
 <section class="flex justify-center items-center">
@@ -57,7 +57,8 @@ section {
             <form action="" id="form" method="post" class="mt-5 flex flex-col gap-5">
                 <div>
                     <label for="pType" class="font-medium">I want to register as</label> <br>
-                    <select id="select" name="pType" class="w-full mt-1.5 h-11 pl-2 pr-2 rounded-[9px] bg-white">
+                    <select id="select" name="pType" class="w-full mt-1.5 h-11 pl-2 pr-2 rounded-[9px] bg-white"
+                        required>
                         <option class="rounded-md hover:bg-yellow-200" value="customer">Customer</option>
                         <option value="barber">Barber Shop Owner</option>
                     </select>
@@ -67,11 +68,11 @@ section {
                     <div>
                         <label for="firstN" class="font-medium">First Name</label> <br>
                         <input name="firstN" type="text" class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-80"
-                            placeholder="Enter your first name">
+                            required placeholder="Enter your first name">
                         <p class="firstN text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
                     <div>
-                        <label for="lastN" class="font-medium">Last Name</label> <br>
+                        <label for="lastN" class="font-medium">Last Name (Optional)</label> <br>
                         <input name="lastN" type="text" class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-80"
                             placeholder="Enter your last name">
                         <p class="lastN text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
@@ -81,13 +82,13 @@ section {
                     <div>
                         <label for="email" class="font-medium">Email Address</label> <br>
                         <input name="email" type="text" class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-80"
-                            placeholder="Enter your email">
+                            required placeholder="Enter your email">
                         <p class="email text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
                     <div>
                         <label for="number" class="font-medium">Phone Number</label> <br>
                         <input name="number" type="text" class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-80"
-                            placeholder="Enter your phone number">
+                            required placeholder="Enter your phone number">
                         <p class="number text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
                 </div>
@@ -95,7 +96,7 @@ section {
                     <div class="relative">
                         <label for="password" class="font-medium">Password</label> <br>
                         <input name="password" id="pass1" type="password"
-                            class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-80"
+                            class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-80" required
                             placeholder="Create a password">
                         <img src="./public/images/visible.png" id="toggle1"
                             class="w-4 h-4 absolute top-11 left-[291px] cursor-pointer" alt="show password icon">
@@ -104,7 +105,7 @@ section {
                     <div class="relative">
                         <label for="cPassword" class="font-medium">Confirm Password</label> <br>
                         <input name="cPassword" id="pass2" type="password"
-                            class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-80"
+                            class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-80" required
                             placeholder="Confirm your password">
                         <img src="./public/images/visible.png" id="toggle2"
                             class="w-4 h-4 absolute top-11 left-[291px] cursor-pointer" alt="show password icon">
@@ -126,16 +127,17 @@ section {
                                 id="" placeholder="Enter your complete shop address"> <br>
                         </div>
                         <div>
-                            <label for="exp" class="font-medium">Experience & Qualifications</label> <br>
+                            <label for="exp" class="font-medium">Experience & Qualifications (Optional)</label> <br>
                             <textarea rows="4" cols="50" name="exp"
-                                class="mt-1.5 mb-3 w-full rounded-md text-md pl-2 pt-1.5 text-gray-500"
-                                id="">Describe your experience, certifications, and qualifications</textarea> <br>
+                                class="mt-1.5 mb-3 w-full rounded-md text-md pl-2 pt-1.5 text-gray-500" id=""
+                                placeholder="Describe your experience, certifications, and qualifications"></textarea>
+                            <br>
                         </div>
                         <div>
                             <label for="services" class="font-medium">Services Offered (Optional)</label> <br>
                             <textarea rows="4" cols="50" name="services"
-                                class="mt-1.5 mb-3 w-full rounded-md text-md pl-2 pt-1.5 text-gray-500"
-                                id="">List the services you offer  (e.g.,haircuts, beard trims)</textarea> <br>
+                                class="mt-1.5 mb-3 w-full rounded-md text-md pl-2 pt-1.5 text-gray-500" id=""
+                                placeholder="List the services you offer  (e.g.,haircuts, beard trims)"></textarea> <br>
                         </div>
 
                         <div>

@@ -31,13 +31,13 @@
       </ul>
 
       <div class="flex items-center font-light text-sm gap-4 max-[750px]:hidden max-[900px]:gap-2">
-        <a href="./login"
+        <a href="./login.php"
           class="flex items-center gap-2  h-9 px-3 rounded-md text-black  hover:shadow hover:bg-yellow-500 transition-all duration-300  ">
           <img src="./public/images/enter.png" class="w-3 h-3.w-3" alt="login icon">
           <span>Login</span>
         </a>
 
-        <a href="./register"
+        <a href="./register.php"
           class="bg-black text-white h-9 py-2 px-3 flex items-center justify-center rounded-md text-[15px] shadow hover:bg-gray-800 hover:shadow-lg transition-all duration-300">
           Register
         </a>
@@ -85,7 +85,7 @@
 
 
           <li>
-            <a href="./login"
+            <a href="./login.php"
               class="flex items-center justify-center gap-2 text-lg font-medium py-2 rounded-md shadow-md bg-gray-50 hover:bg-blue-50 hover:scale-105 transition-all duration-300">
               <img src="./public/images/enter.png"
                 class="w-4 h-4 transition-transform duration-300 group-hover:rotate-12"
@@ -95,7 +95,7 @@
           </li>
 
           <li>
-            <a href="./register"
+            <a href="./register.php"
               class="block text-lg font-medium py-2 rounded-md shadow-md bg-black text-white hover:opacity-90 hover:scale-105 transition-all duration-300">
               Register
             </a>

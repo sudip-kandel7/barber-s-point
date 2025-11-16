@@ -15,7 +15,7 @@
         </div>
 
 
-        <form method="POST"
+        <form method="GET"
             class="flex flex-wrap bg-white mt-4 mb-4 sm:mb-8 h-10 items-center border rounded-xl pl-3 px-2 gap-2 max-[500px]:gap-1 w-full max-w-2xl">
 
             <label for="search" class="cursor-pointer flex items-center">
