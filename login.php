@@ -38,29 +38,28 @@
 
         <p class="text-gray-500">Enter your credentials to access your account</p>
 
-        <form action="" id="login-form" method="post" class="w-[90%] flex flex-col mt-3">
+        <form action="" id="loginform" method="post" class="w-[90%] flex flex-col mt-3">
 
             <label for="type" class="font-medium">I am a</label>
-            <select name="type" class="w-full mt-1.5 h-11 pl-2 pr-2 rounded-[9px] bg-white" id="">
+            <select name="type" id="as" class="w-full mt-1.5 h-11 pl-2 pr-2 rounded-[9px] bg-white" id="">
                 <option value="customer">customer</option>
                 <option value="barber">Barber Shop</option>
             </select>
 
-            <label for="email" class="font-medium mt-5">Email Address</label>
-            <input name="email" type="text" class="w-full mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white" required
+            <label for="lemail" class="font-medium mt-5">Email Address</label>
+            <input name="lemail" type="text" class="w-full mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white" required
                 placeholder="Enter your email">
-            <p class="email"></p>
+            <p class="lemail text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
 
-            <div class="relative mt-5">
-                <label for="password" class="font-medium">Password</label> <br>
-                <input name="password" id="pass1" type="password"
-                    class="w-full mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white" required
-                    placeholder="Create a password">
-                <img src="./public/images/visible.png" id="toggle1"
-                    class="w-4 h-4 absolute top-11 right-[18px] cursor-pointer" alt="show password icon">
-                <p class="password"></p>
+            <div class=" relative mt-5">
+                <label for="lpassword" class="font-medium">Password</label> <br>
+                <input name="lpassword" type="password" class="w-full mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white"
+                    id="pass" required placeholder="Create a password">
+                <img src="./public/images/visible.png" class="w-4 h-4 absolute top-11 right-[18px] cursor-pointer"
+                    id="toggle" alt="show password icon">
+                <p class="lpassword text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
             </div>
-            <button type="submit" name="create"
+            <button type=" submit" name="create"
                 class="flex justify-center mt-5 items-center border bg-yellow-400 rounded-xl hover:bg-yellow-300 w-full gap-3 py-3 text-xl font-medium">
                 <img src="./public/images/enter.png" alt="create icon" class="w-5 h-5">
                 <p>Sign In</p>

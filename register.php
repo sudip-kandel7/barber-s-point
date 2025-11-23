@@ -7,6 +7,9 @@ session_start();
 
 
 if (isset($_POST['create'])) {
+
+    include 'db.php';
+
     $type = $_POST['pType'];
     $firstN = $_POST['firstN'];
     $lastN = $_POST['lastN'];
@@ -23,8 +26,17 @@ if (isset($_POST['create'])) {
         $image = $_FILES['photos'];
     }
 
-    $_SESSION["name"] = $firstN;
+
+
+    $_SESSION["email"] = $email;
+
+
+
+
     // echo "Session variables are set.";
+
+
+
 }
 ?>
 
@@ -48,67 +60,71 @@ if (isset($_POST['create'])) {
     <div class="flex flex-col items-center">
         <img src="./public/images/logo.png" alt="" class="w-[80px] h-[80px]">
         <p class="text-3xl font-bold mb-2">Join Barber's Point</p>
-        <p class="text-gray-500 text-xl">Create your account and discover the best barber shops in your area</p>
+        <p class="text-gray-500 text-xl text-wrap ">Create your account and discover the best barber shops in your area
+        </p>
 
-        <div class="rounded-lg bg-[#f3f3f3] flex flex-col items-center mt-5 px-6 py-4 shadow-md">
+        <div class="rounded-lg bg-[#f3f3f3] flex flex-col items-center mt-5 px-6 py-4 shadow-md mx-2 md:mx-0">
             <h3 class="text-2xl font-semibold">Create Account</h3>
             <p>Fill in your information to get started</p>
 
             <form action="" id="form" method="post" class="mt-5 flex flex-col gap-5">
-                <div>
+                <div class="px-3">
                     <label for="pType" class="font-medium">I want to register as</label> <br>
-                    <select id="select" name="pType" class="w-full mt-1.5 h-11 pl-2 pr-2 rounded-[9px] bg-white"
+                    <select id="select" name="pType"
+                        class="w-[526px] md:w-[663px] lg:w-[727px] mt-1.5 h-11 md:pl-2 pr-2 rounded-[9px] bg-white"
                         required>
-                        <option class="rounded-md hover:bg-yellow-200" value="customer">Customer</option>
+                        <option value="customer">Customer</option>
                         <option value="barber">Barber Shop Owner</option>
                     </select>
                 </div>
 
-                <div class="flex gap-7">
-                    <div>
+                <div class="flex flex-col min-[701px]:flex-row gap-5 md:gap-9 lg:gap-24 px-3">
+                    <div class="w-full min-[701px]:w-80">
                         <label for="firstN" class="font-medium">First Name</label> <br>
-                        <input name="firstN" type="text" class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-80"
+                        <input name="firstN" type="text" class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-full"
                             required placeholder="Enter your first name">
                         <p class="firstN text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
-                    <div>
+                    <div class="w-full min-[701px]:w-80">
                         <label for="lastN" class="font-medium">Last Name (Optional)</label> <br>
-                        <input name="lastN" type="text" class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-80"
+                        <input name="lastN" type="text" class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-full"
                             placeholder="Enter your last name">
                         <p class="lastN text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
                 </div>
-                <div class="flex gap-7">
-                    <div>
+
+                <div class="flex flex-col min-[701px]:flex-row gap-5 md:gap-9 lg:gap-24 px-3">
+                    <div class="w-full min-[701px]:w-80">
                         <label for="email" class="font-medium">Email Address</label> <br>
-                        <input name="email" type="text" class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-80"
+                        <input name="email" type="text" class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-full"
                             required placeholder="Enter your email">
                         <p class="email text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
-                    <div>
+                    <div class="w-full min-[701px]:w-80">
                         <label for="number" class="font-medium">Phone Number</label> <br>
-                        <input name="number" type="text" class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-80"
+                        <input name="number" type="text" class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-full"
                             required placeholder="Enter your phone number">
                         <p class="number text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
                 </div>
-                <div class="flex gap-7">
-                    <div class="relative">
+
+                <div class="flex flex-col min-[701px]:flex-row gap-5 md:gap-9 lg:gap-24 px-3 mb-1.5">
+                    <div class="relative w-full min-[701px]:w-80">
                         <label for="password" class="font-medium">Password</label> <br>
                         <input name="password" id="pass1" type="password"
-                            class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-80" required
+                            class="mt-1.5 pl-2 pr-10 text-md h-11 rounded-[9px] bg-white w-full" required
                             placeholder="Create a password">
                         <img src="./public/images/visible.png" id="toggle1"
-                            class="w-4 h-4 absolute top-11 left-[291px] cursor-pointer" alt="show password icon">
+                            class="w-4 h-4 absolute top-11 right-3 cursor-pointer" alt="show password icon">
                         <p class="password text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
-                    <div class="relative">
+                    <div class="relative w-full min-[701px]:w-80">
                         <label for="cPassword" class="font-medium">Confirm Password</label> <br>
                         <input name="cPassword" id="pass2" type="password"
-                            class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-80" required
+                            class="mt-1.5 pl-2 pr-10 text-md h-11 rounded-[9px] bg-white w-full" required
                             placeholder="Confirm your password">
                         <img src="./public/images/visible.png" id="toggle2"
-                            class="w-4 h-4 absolute top-11 left-[291px] cursor-pointer" alt="show password icon">
+                            class="w-4 h-4 absolute top-11 right-3 cursor-pointer" alt="show password icon">
                         <p class="cPassword text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
                 </div>
@@ -129,15 +145,131 @@ if (isset($_POST['create'])) {
                         <div>
                             <label for="exp" class="font-medium">Experience & Qualifications (Optional)</label> <br>
                             <textarea rows="4" cols="50" name="exp"
-                                class="mt-1.5 mb-3 w-full rounded-md text-md pl-2 pt-1.5 text-gray-500" id=""
+                                class="mt-1.5 mb-2 w-full rounded-md text-md pl-2 pt-1.5 text-gray-500" id=""
                                 placeholder="Describe your experience, certifications, and qualifications"></textarea>
                             <br>
                         </div>
+
+
                         <div>
-                            <label for="services" class="font-medium">Services Offered (Optional)</label> <br>
-                            <textarea rows="4" cols="50" name="services"
-                                class="mt-1.5 mb-3 w-full rounded-md text-md pl-2 pt-1.5 text-gray-500" id=""
-                                placeholder="List the services you offer  (e.g.,haircuts, beard trims)"></textarea> <br>
+                            <p class="font-medium mb-2">Services Offered</p>
+
+                            <p class="font-medium mb-1.5">Default Services</p>
+
+                            <div class="bg-white flex flex-col gap-2 p-3 rounded-md shadow-md">
+                                <div class="default-service flex items-center gap-5">
+                                    <div class="flex gap-3">
+                                        <input type="checkbox" name="haircut" class="flex-shrink-0">
+                                        <label for="haircut" class="w-24 flex-shrink-0">Hair Cut</label>
+                                    </div>
+                                    <div>
+                                        <input type="number" placeholder="Price (Rs.)" name="haircutp"
+                                            class="haircutp bg-gray-100 border-2 border-gray-400 rounded-md flex-1 text-md py-1 px-3">
+                                        <p class="haircutp text-red-600 text-sm  pl-2 mt-0.5"></p>
+                                    </div>
+                                    <div>
+                                        <input type="number" placeholder="Duration (min)" name="haircutd"
+                                            class="haircutd bg-gray-100 border-2 border-gray-400 rounded-md text-md py-1 px-3">
+                                        <p class="haircutd text-red-600 text-sm  pl-2 mt-0.5"></p>
+                                    </div>
+                                </div>
+
+                                <div class="default-service flex items-center gap-5">
+                                    <div class="flex gap-3">
+                                        <input type="checkbox" name="shaving" class="flex-shrink-0">
+                                        <label for="shaving" class="w-24 flex-shrink-0">Shaving</label>
+                                    </div>
+                                    <div>
+                                        <input type="number" placeholder="Price (Rs.)" name="shavingp"
+                                            class="shavingp bg-gray-100 border-2 border-gray-400 rounded-md flex-1 text-md py-1 px-3">
+                                        <p class="shavingp text-red-600 text-sm  pl-2 mt-0.5"></p>
+                                    </div>
+                                    <div>
+                                        <input type="number" placeholder="Duration (min)" name="shavingd"
+                                            class="shavingd bg-gray-100 border-2 border-gray-400 rounded-md text-md py-1 px-3">
+                                        <p class="shavingd text-red-600 text-sm  pl-2 mt-0.5"></p>
+                                    </div>
+                                </div>
+
+                                <div class="default-service flex items-center gap-5">
+                                    <div class="flex gap-3">
+                                        <input type="checkbox" name="haircolor" class="flex-shrink-0">
+                                        <label for="haircolor" class="w-24 flex-shrink-0">Hair Color</label>
+                                    </div>
+                                    <div>
+                                        <input type="number" placeholder="Price (Rs.)" name="haircolorp"
+                                            class="haircolorp bg-gray-100 border-2 border-gray-400 rounded-md flex-1 text-md py-1 px-3">
+                                        <p class="haircolorp text-red-600 text-sm  pl-2 mt-0.5"></p>
+                                    </div>
+                                    <div>
+                                        <input type="number" placeholder="Duration (min)" name="haircolord"
+                                            class="haircolord bg-gray-100 border-2 border-gray-400 rounded-md text-md py-1 px-3">
+                                        <p class="haircolord text-red-600 text-sm  pl-2 mt-0.5"></p>
+                                    </div>
+                                </div>
+
+                                <div class="default-service flex items-center gap-5">
+                                    <div class="flex gap-3">
+                                        <input type="checkbox" name="facials" class="flex-shrink-0">
+                                        <label for="facials" class="w-24 flex-shrink-0">Facials</label>
+                                    </div>
+                                    <div>
+                                        <input type="number" placeholder="Price (Rs.)" name="facialsp"
+                                            class="facialsp bg-gray-100 border-2 border-gray-400 rounded-md flex-1 text-md py-1 px-3">
+                                        <p class="facialsp text-red-600 text-sm  pl-2 mt-0.5"></p>
+                                    </div>
+                                    <div>
+                                        <input type="number" placeholder="Duration (min)" name="facialsd"
+                                            class="facialsd bg-gray-100 border-2 border-gray-400 rounded-md text-md py-1 px-3">
+                                        <p class="facialsd text-red-600 text-sm  pl-2 mt-0.5"></p>
+                                    </div>
+                                </div>
+
+                                <div class="default-service flex items-center gap-5">
+                                    <div class="flex gap-3">
+                                        <input type="checkbox" name="waxing" class="flex-shrink-0">
+                                        <label for="waxing" class="w-24 flex-shrink-0">Waxing</label>
+                                    </div>
+                                    <div>
+                                        <input type="number" placeholder="Price (Rs.)" name="waxingp"
+                                            class="waxingp bg-gray-100 border-2 border-gray-400 rounded-md flex-1 text-md py-1 px-3">
+                                        <p class="waxingp text-red-600 text-sm  pl-2 mt-0.5"></p>
+                                    </div>
+                                    <div>
+                                        <input type="number" placeholder="Duration (min)" name="waxingd"
+                                            class="waxingd bg-gray-100 border-2 border-gray-400 rounded-md text-md py-1 px-3">
+                                        <p class="waxingd text-red-600 text-sm  pl-2 mt-0.5"></p>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                            <p class="font-medium mt-2 mb-1.5">Custom Services</p>
+
+
+                            <div class="bg-white p-3 rounded-md shadow-md">
+                                <div class="grid grid-cols-2 gap-3">
+
+                                    <input type="text"
+                                        class="bg-gray-100 border-2 border-gray-400 rounded-md mb-1.5 text-md py-1 px-3"
+                                        id="customName" placeholder="Service Name">
+                                    <input type="number"
+                                        class="bg-gray-100 border-2 border-gray-400 rounded-md mb-1.5 text-md py-1 px-3"
+                                        id="customPrice" placeholder="Price (Rs.)">
+                                    <input type="number"
+                                        class="bg-gray-100 border-2 border-gray-400 rounded-md mb-1.5 text-md py-1 px-3"
+                                        id="customDuration" placeholder="Duration (min)">
+                                </div>
+                                <button type="button" name="" onclick="addCustomService()"
+                                    class="mt-3 mb-2 flex justify-center items-center border bg-yellow-500 rounded-xl hover:bg-yellow-400 w-full gap-3 py-2 text-xl font-medium">
+                                    <img src="./public/images/black-cross.png" alt="create icon" class="w-5 h-5">
+                                    <p>Add Custom Service</p>
+                                </button>
+                            </div>
+
+
+                            <div id="customList"></div>
                         </div>
 
                         <div>
@@ -154,7 +286,8 @@ if (isset($_POST['create'])) {
                     <input type="checkbox" name="terms" class="accent-yellow-300 w-5 h-5">
                     <label for="terms">
                         I agree to the <span
-                            class="text-yellow-500 hover:underline hover:cursor-pointer hover:text-yellow-600">Terms and
+                            class="text-yellow-500 hover:underline hover:cursor-pointer hover:text-yellow-600">Terms
+                            and
                             Conditions</span> and
                         <span class="text-yellow-500 hover:underline hover:cursor-pointer hover:text-yellow-600">Privacy
                             Policy</span>
