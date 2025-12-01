@@ -1,15 +1,14 @@
 <?php
-include "db.php";
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "trypoint";
 
-$name = $_POST['name'];
-$email = $_POST['email'];
-$pass = $_POST['password'];
 
-$sql = "INSERT INTO users (name, email, password)
-        VALUES ('$name', '$email', '$pass')";
+$conn = mysqli_connect($servername, $username, $password, $dbname);
 
-if (mysqli_query($conn, $sql)) {
-    echo "Registration successful";
-} else {
-    echo "Error: " . mysqli_error($conn);
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
 }
+
+echo "Connected successfully";

@@ -214,7 +214,19 @@ function addCustomService() {
   let duration = document.getElementById("customDuration").value.trim();
 
   if (name === "" || price === "" || duration === "") {
-    alert("Please fill all fields");
+    const el = document.getElementsByClassName("customErr")[0];
+
+    el.innerText = "Please Enter All Fields!";
+
+    el.classList.remove("opacity-0");
+    el.classList.add("opacity-100");
+
+    setTimeout(() => {
+      el.classList.remove("opacity-100");
+      el.classList.add("opacity-0");
+      el.innerText = "";
+    }, 2000);
+
     return;
   }
 
