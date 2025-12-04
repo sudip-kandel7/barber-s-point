@@ -122,15 +122,12 @@ if (form) {
       } else if (!/^\d{10}$/.test(value)) {
         if (/\D/.test(value)) {
           err.innerText = "Phone number must contain only digits.";
-          return;
         }
         if (!value.startsWith("98") && !value.startsWith("97")) {
           err.innerText = "Phone number must start with 98 or 97.";
-          return;
         }
         if (value.length != 10) {
           err.innerText = "Phone number must be exactly 10 digits.";
-          return;
         }
       } else {
         err.innerText = "";
@@ -138,7 +135,6 @@ if (form) {
     }
 
     if (name === "password") {
-      // If password field is empty
       if (value === "") {
         err.innerText = "";
         input.style.border = "";
@@ -149,6 +145,27 @@ if (form) {
         return;
       }
 
+      if (!/[A-Z]/.test(value)) {
+        err.innerText = "Password must contain at least one uppercase letter.";
+        input.style.border = "2px solid red";
+        return;
+      }
+      if (!/[a-z]/.test(value)) {
+        err.innerText = "Password must contain at least one lowercase letter.";
+        input.style.border = "2px solid red";
+        return;
+      }
+      if (!/[0-9]/.test(value)) {
+        err.innerText = "Password must contain at least one number.";
+        input.style.border = "2px solid red";
+        return;
+      }
+      if (!/[!@#$%^&?*]/.test(value)) {
+        err.innerText =
+          "Password must contain at least one symbol (!@#$%^&?*).";
+        input.style.border = "2px solid red";
+        return;
+      }
       if (value.length < 8) {
         err.innerText = "Password must be at least 8 characters long.";
         input.style.border = "2px solid red";
@@ -180,15 +197,15 @@ if (form) {
         return;
       }
 
-      if (pass1.value === "") {
-        if (value.length < 8) {
-          err.innerText = "Password must be at least 8 characters long.";
-          input.style.border = "2px solid red";
-        } else {
-          err.innerText = "";
-          input.style.border = "";
-        }
+      if (pass1.value === "" && value.length > 0) {
+        p1.innerText = "First create password!";
+        input.style.border = "2px solid red";
+        pass1.style.border = "2px solid red";
         return;
+      } else {
+        p1.innerText = "";
+        input.style.border = "";
+        pass1.style.border = "";
       }
 
       if (pass1.value !== value) {
@@ -203,8 +220,48 @@ if (form) {
         pass1.style.border = "";
       }
     }
+
+    if (name === "sname") {
+      pattern = /^[A-Za-z](?=.*[0-9]{0,4})[A-Za-z0-9]*$/;
+      if (value.length === 0) {
+        err.innerText = "";
+      } else if (!pattern.test(value)) {
+        err.innerText = "Must start with and only contain letters!";
+      } else if (value.length > 25) {
+        err.innerText = "Letters must be less than 25!";
+      } else {
+        err.innerText = "";
+      }
+    }
+
+    if (name == "address") {
+      pattern = /^[A-Za-z][A-Za-z0-9\-,]*$/;
+      if (value.length === 0) {
+        err.innerText = "";
+      } else if (!pattern.test(value)) {
+        err.innerText = "Must start with letters or only - and , are allowed!";
+      } else if (value.length > 25) {
+        err.innerText = "Letters must be less than 25!";
+      } else {
+        err.innerText = "";
+      }
+    }
   });
+  // stateBtn();
 }
+
+// photo validate
+
+document.getElementById("photos").addEventListener("change", function () {
+  const file = this.files[0];
+  const maxSize = 5 * 1024 * 1024;
+
+  if (file && file.size > maxSize) {
+    // document.getElementsByClassName("photoErr").innerText =
+    //   "Size must be less than 5MB.";
+    this.value = "";
+  }
+});
 
 // custom services in register form
 
@@ -212,28 +269,23 @@ function addCustomService() {
   let name = document.getElementById("customName").value.trim();
   let price = document.getElementById("customPrice").value.trim();
   let duration = document.getElementById("customDuration").value.trim();
+  const serviceNpattern = /^[A-Za-z]{2,}$/;
+
+  const el = document.getElementsByClassName("customErr")[0];
 
   if (name === "" || price === "" || duration === "") {
-    const el = document.getElementsByClassName("customErr")[0];
-
     el.innerText = "Please Enter All Fields!";
-
-    el.classList.remove("opacity-0");
-    el.classList.add("opacity-100");
-
-    setTimeout(() => {
-      el.classList.remove("opacity-100");
-      el.classList.add("opacity-0");
-      el.innerText = "";
-    }, 2000);
-
-    return;
-  }
-
-  let div = document.createElement("div");
-  div.className =
-    "services bg-gray-200 rounded-md py-1 px-3 mb-4 flex justify-between items-center";
-  div.innerHTML = `
+  } else if (price < 0 || duration < 0) {
+    el.innerText = "Must Not Enter Negative Value!";
+  } else if (name.length < 3) {
+    el.innerText = "Service name at least contain 2 leters!";
+  } else if (!serviceNpattern.test(name)) {
+    el.innerText = "Service name must contain only letters!";
+  } else {
+    let div = document.createElement("div");
+    div.className =
+      "services bg-gray-200 rounded-md py-1 px-3 mb-4 flex justify-between items-center";
+    div.innerHTML = `
     <div>
       <p>${name}</p>
       <ul class="flex gap-1 items-center text-sm text-gray-500">
@@ -252,16 +304,19 @@ function addCustomService() {
         
     `;
 
-  let customList = document.getElementById("customList");
+    let customList = document.getElementById("customList");
 
-  customList.className = "bg-white p-4 mt-4 rounded-md shadow-lg";
+    customList.className = "bg-white p-4 mt-4 rounded-md shadow-lg";
 
-  customList.appendChild(div);
+    customList.appendChild(div);
 
-  // Clear
-  document.getElementById("customName").value = "";
-  document.getElementById("customPrice").value = "";
-  document.getElementById("customDuration").value = "";
+    // Clear
+    document.getElementById("customName").value = "";
+    document.getElementById("customPrice").value = "";
+    document.getElementById("customDuration").value = "";
+  }
+
+  // stateBtn();
 }
 
 // remove custom service
@@ -278,8 +333,7 @@ function removeS(ele) {
     customList.className = "";
   }
 }
-
-// this is for error message if input of is empty even after checkbox is checked
+// this is for error msg of checkbox and other
 
 document.querySelectorAll(".default-service").forEach((service) => {
   const checkbox = service.querySelector("input[type='checkbox']");
@@ -297,12 +351,16 @@ document.querySelectorAll(".default-service").forEach((service) => {
     if (checkbox.checked) {
       if (priceInput.value.trim() === "") {
         priceError.textContent = "Enter price";
+      } else if (priceInput.value < 0) {
+        priceError.textContent = "Must be positive";
       } else {
         priceError.textContent = "";
       }
 
       if (durationInput.value.trim() === "") {
         durationError.textContent = "Enter duration";
+      } else if (durationInput.value < 0) {
+        durationError.textContent = "Must be positive";
       } else {
         durationError.textContent = "";
       }

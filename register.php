@@ -1,231 +1,133 @@
-<?php include 'header.php'; ?>
-
 <?php
 session_start();
 
 if (isset($_POST['create'])) {
-    include 'db.php';
+    $conn = new mysqli("localhost", "root", "", "trypoint");
     $type = $_POST['pType'];
     $firstN = $_POST['firstN'];
     $lastN = $_POST['lastN'];
     $email = $_POST['email'];
     $phone = $_POST['number'];
     $password = $_POST['password'];
-    $cpassword = $_POST['cPassword'];
 
+    if ($type === "barber") {
+        $sName = $_POST['sname'];
+        $sAddress = $_POST['address'];
+        $selectedServices = [];
 
-    // validating customer data before inserting in database 
+        if (!empty($_POST['defaultServices'])) {
 
-    // removing all spaces of var
+            foreach ($_POST['defaultServices'] as $serviceN) {
+                $price = $_POST['price'][$serviceN];
+                $duration = $_POST['duration'][$serviceN];
 
-    $type = trim($_POST['pType']);
-    $firstN = trim($_POST['firstN']);
-    $lastN = trim($_POST['lastN']);
-    $email = trim($_POST['email']);
-    $phone = trim($_POST['number']);
-    $password = $_POST['password'];
-    $cpassword = $_POST['cPassword'];
-
-    $errors = [];
-
-
-    if (!in_array($type, ['customer', 'barber'])) {
-        $errors[] = "Invalid user type selected.";
-    }
-
-    // Validating firstN for letters and min and max length
-    if (empty($firstN)) {
-        $errors[] = "First name is required.";
-    } elseif (preg_match('/[^a-zA-Z\s]/', $firstN)) {
-        $errors[] = "First name must contain only letters.";
-    } elseif (strlen(str_replace(' ', '', $firstN)) < 3) {
-        $errors[] = "First name must be at least 3 characters.";
-    } elseif (strlen(str_replace(' ', '', $firstN)) > 10) {
-        $errors[] = "First name must be 10 characters or less.";
-    }
-
-    // same for lastN
-
-    if (!empty($lastN)) {
-        if (preg_match('/[^a-zA-Z\s]/', $lastN)) {
-            $errors[] = "Last name must contain only letters.";
-        } elseif (strlen(str_replace(' ', '', $lastN)) < 3) {
-            $errors[] = "Last name must be at least 3 characters.";
-        } elseif (strlen(str_replace(' ', '', $lastN)) > 10) {
-            $errors[] = "Last name must be 10 characters or less.";
-        }
-    }
-
-    // validationg email for patterns and if already exists in database
-
-    if (empty($email)) {
-        $errors[] = "Email is required.";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = "Please enter a valid email address.";
-    } elseif (!preg_match('/^[a-zA-Z][a-zA-Z0-9._-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $email)) {
-        $errors[] = "Email must start with a letter.";
-    } else {
-
-        $result = mysqli_query($conn, "SELECT id FROM users WHERE email = '$email'");
-
-        if (mysqli_num_rows($result) > 0) {
-            $errors[] = "Email already exists. Please use a different email.";
-        }
-    }
-
-    // for phone 
-
-    if (empty($phone)) {
-        $errors[] = "Phone number is required.";
-    } elseif (!preg_match('/^\d{10}$/', $phone)) {
-        $errors[] = "Phone number must be exactly 10 digits.";
-    } elseif (!preg_match('/^(98|97)/', $phone)) {
-        $errors[] = "Phone number must start with 98 or 97.";
-    }
-
-    // pass and confirm pass
-
-    if (empty($password)) {
-        $errors[] = "Password is required.";
-    } elseif (strlen($password) < 8) {
-        $errors[] = "Password must be at least 8 characters long.";
-    }
-
-
-    if ($password !== $cpassword) {
-        $errors[] = "Password and Confirm Password do not match.";
-    }
-
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-    if (empty($errors)) {
-
-
-        $statm1 = "INSERT INTO users (type,firstN,lastN,email,phone,password) 
-           VALUES ('$type','$firstN','$lastN','$email','$phone','$hashedPassword')";
-
-
-        if (mysqli_query($conn, $statm1)) {
-            $uid = mysqli_insert_id($conn);
-
-
-            if ($type == "barber") {
-                $sName = $_POST['Sname'];
-                $sAddress = $_POST['address'];
-                $experiences = $_POST['exp'];
-                $image = $_FILES['photos'];
-
-                $imageN = $image['name'];
-                $tmpImage = $image['tmp_name'];
-                $imageSize = $image['size'];
-                $ext = pathinfo($imageN, PATHINFO_EXTENSION);
-
-                $allowed = ['jpg', 'jpeg', 'png'];
-
-                // allowed type checking
-                if (!in_array($ext, $allowed)) {
-                    $errors[] = "Only JPG, JPEG, PNG files are allowed.";
-                }
-
-                // max file size checking
-                if ($imageSize > 5 * 1024 * 1024) {
-                    $errors[] = "File size must be less than 5MB.";
-                };
-
-                $targetDir = "public/images/barber/";
-
-                $newN = $sName . "." . $ext;
-
-                $fullN = $targetDir . $newN;
-                if (move_uploaded_file($tmpImage, $fullN)) {
-                    echo "Image Moved to folder";
-                }
-
-
-
-
-                $selectedServices = [];
-
-                if (!empty($_POST['defaultServices'])) {
-
-                    foreach ($_POST['defaultServices'] as $serviceN) {
-                        $price = $_POST['price'][$serviceN];
-                        $duration = $_POST['duration'][$serviceN];
-
-                        if ($price <= 0) {
-                            $errors[] = "Price must be greater than 0 for service: $serviceN";
-                        }
-                        if ($duration <= 0) {
-                            $errors[] = "Duration must be greater than 0 for service: $serviceN";
-                        }
-
-                        $selectedServices[] = [
-                            "name" => $serviceN,
-                            "price" => $price,
-                            "duration" => $duration
-                        ];
-                    }
-                }
-
-                if (!empty($_POST['customSNames'])) {
-                    $names = $_POST['customSNames'];
-                    $prices = $_POST['customSPrices'];
-                    $durations = $_POST['customSDurations'];
-
-
-                    for ($i = 0; $i < count($names); $i++) {
-
-                        if ($prices[$i] <= 0) {
-                            $errors[] = "Price must be greater than 0 for service: $serviceN";
-                        }
-                        if ($durations[$i] <= 0) {
-                            $errors[] = "Duration must be greater than 0 for service: $serviceN";
-                        }
-
-                        $selectedServices[] = [
-                            "name" => $names[$i],
-                            "price" => $prices[$i],
-                            "duration" => $durations[$i]
-                        ];
-                    }
-                }
-
-                // validating shop info like shop name address ans services
-
-                if (empty($sName)) {
-                    $errors[] = "Shop name is required for barbers.";
-                } elseif (strlen($sName) < 3) {
-                    $errors[] = "Shop name must be at least 3 characters.";
-                }
-
-
-                if (empty($sAddress)) {
-                    $errors[] = "Shop address is required for barbers.";
-                } elseif (strlen($sAddress) < 10) {
-                    $errors[] = "Shop address must be at least 10 characters.";
-                }
-
-                // check if no services selected 
-
-                if (empty($selectedServices)) {
-                    $errors[] = "Please select or add at least one service.";
-                }
-
-                if (empty($errors)) {
-
-                    $statm2 = "INSERT INTO shop (sname,saddress,experience,photo,uid) 
-                    VALUES ('$sName','$sAddress','$experiences','$fullN',$uid)";
-                    if (mysqli_query($conn, $statm2)) {
-                        echo "Shop entered!";
-                    }
-                }
+                $selectedServices[] = [
+                    "name" => $serviceN,
+                    "price" => $price,
+                    "duration" => $duration
+                ];
             }
         }
+
+        if (!empty($_POST['customSNames'])) {
+            $names = $_POST['customSNames'];
+            $prices = $_POST['customSPrices'];
+            $durations = $_POST['customSDurations'];
+
+
+            for ($i = 0; $i < count($names); $i++) {
+
+                $selectedServices[] = [
+                    "name" => $names[$i],
+                    "price" => $prices[$i],
+                    "duration" => $durations[$i]
+                ];
+            }
+        }
+
+        $image = $_FILES['photos'];
+        $imageN = $image['name'];
+        $tmpImage = $image['tmp_name'];
+        $ext = pathinfo($imageN, PATHINFO_EXTENSION);
+
+        $targetDir = "public/images/barber/";
+
+        $uImageName = uniqid() . '_' . $sName . '.' . $ext;
+
+        $fullPath = $targetDir . $uImageName;
+
+        if (move_uploaded_file($tmpImage, $fullPath)) {
+            $stmt1 = "INSERT INTO users (type, firstN, lastN, email, phone, password) 
+                      VALUES ('$type', '$firstN', '$lastN', '$email', '$phone', '$password')";
+            if (mysqli_query($conn, $stmt1)) {
+                $uid = mysqli_insert_id($conn);
+
+
+                $stmt2 = "INSERT INTO shop (sname, saddress, photo, uid) 
+                          VALUES ('$sName', '$sAddress', '$fullPath', '$uid')";
+
+                if (mysqli_query($conn, $stmt2)) {
+                    $sid = mysqli_insert_id($conn);
+
+
+                    foreach ($selectedServices as $value) {
+                        $serviceName = $value['name'];
+                        $servicePrice = $value['price'];
+                        $serviceDuration = $value['duration'];
+
+                        $stmt3 = "INSERT INTO services (services_name, price, duration, sid) 
+                                  VALUES ('$serviceName', '$servicePrice', '$serviceDuration', '$sid')";
+
+                        mysqli_query($conn, $stmt3);
+                    }
+
+                    $_SESSION['email'] = $email;
+                    $_SESSION['type'] = $type;
+                    $_SESSION['uid'] = $uid;
+                    $_SESSION['sid'] = $sid;
+
+                    echo "Registered";
+
+
+                    // header("Location: index.php");
+                    // exit();
+                } else {
+                    echo "Error inserting shop: " . mysqli_error($conn);
+                }
+            } else {
+                echo "Error inserting user: " . mysqli_error($conn);
+            }
+        } else {
+            echo "Failed to upload image.";
+        }
     } else {
-        echo "some error";
+
+        $stmt = "INSERT INTO users (type, firstN, lastN, email, phone, password) 
+                 VALUES ('$type', '$firstN', '$lastN', '$email', '$phone', '$password')";
+
+        if (mysqli_query($conn, $stmt)) {
+
+            $uid = mysqli_insert_id($conn);
+
+            $_SESSION['email'] = $email;
+            $_SESSION['type'] = $type;
+            $_SESSION['uid'] = $uid;
+
+            echo "Registered";
+
+            // header("Location: index.php");
+            // exit();
+        } else {
+            echo "Error: " . mysqli_error($conn);
+        }
     }
 }
+
+
+
 ?>
+
+<?php include 'header.php'; ?>
 
 <style>
     body {
@@ -324,21 +226,17 @@ if (isset($_POST['create'])) {
                     <div class="flex flex-col gap-2">
                         <div>
                             <label for="sname" class="font-medium">Shop Name</label> <br>
-                            <input type="text" name="sname" class="mt-1.5 mb-3 w-full rounded-md text-md pl-2 h-11"
-                                placeholder="Enter your shop name"> <br>
+                            <input type="text" name="sname" class="mt-1.5 w-full rounded-md text-md pl-2 h-11"
+                                placeholder="Enter your shop name">
+                            <p class="sname text-red-600 text-sm pl-2 mt-0.5"></p>
                         </div>
                         <div>
                             <label for="address" class="font-medium">Shop Address</label> <br>
-                            <input type="text" name="address" class="mt-1.5 mb-3 w-full rounded-md text-md pl-2 h-11"
+                            <input type="text" name="address" class="mt-1.5 w-full rounded-md text-md pl-2 h-11"
                                 placeholder="Enter your complete shop address"> <br>
+                            <p class="address text-red-600 text-sm pl-2 mt-0.5"></p>
                         </div>
-                        <div>
-                            <label for="exp" class="font-medium">Experience & Qualifications (Optional)</label> <br>
-                            <textarea rows="4" name="exp"
-                                class="mt-1.5 mb-2 w-full rounded-md text-md pl-2 pt-1.5 text-gray-500"
-                                placeholder="Describe your experience, certifications, and qualifications"></textarea>
-                            <br>
-                        </div>
+
 
                         <div>
                             <p class="font-medium mb-2">Services Offered</p>
@@ -382,62 +280,62 @@ if (isset($_POST['create'])) {
                                         <p class="shavingd text-red-600 text-sm pl-2 mt-0.5"></p>
                                     </div>
                                 </div>
-                            </div>
 
 
-                            <div class="default-service flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
-                                <div class="flex gap-3 items-center">
-                                    <input type="checkbox" name="defaultServices[]" value="haircolor"
-                                        class="flex-shrink-0">
-                                    <label for="haircolor" class="w-24 flex-shrink-0">Hair Color</label>
+                                <div class="default-service flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
+                                    <div class="flex gap-3 items-center">
+                                        <input type="checkbox" name="defaultServices[]" value="haircolor"
+                                            class="flex-shrink-0">
+                                        <label for="haircolor" class="w-24 flex-shrink-0">Hair Color</label>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <input type="number" placeholder="Price (Rs.)" name="price[haircolor]"
+                                            class="haircolorp bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
+                                        <p class="haircolorp text-red-600 text-sm pl-2 mt-0.5"></p>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <input type="number" placeholder="Duration (min)" name="duration[haircolor]"
+                                            class="haircolord bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
+                                        <p class="haircol ord text-red-600 text-sm pl-2 mt-0.5"></p>
+                                    </div>
                                 </div>
-                                <div class="flex-1 min-w-0">
-                                    <input type="number" placeholder="Price (Rs.)" name="price[haircolor]"
-                                        class="haircolorp bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
-                                    <p class="haircolorp text-red-600 text-sm pl-2 mt-0.5"></p>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <input type="number" placeholder="Duration (min)" name="duration[haircolor]"
-                                        class="haircolord bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
-                                    <p class="haircol ord text-red-600 text-sm pl-2 mt-0.5"></p>
-                                </div>
-                            </div>
 
 
-                            <div class="default-service flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
-                                <div class="flex gap-3 items-center">
-                                    <input type="checkbox" name="defaultServices[]" value="facials"
-                                        class="flex-shrink-0">
-                                    <label for="facials" class="w-24 flex-shrink-0">Facials</label>
+                                <div class="default-service flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
+                                    <div class="flex gap-3 items-center">
+                                        <input type="checkbox" name="defaultServices[]" value="facials"
+                                            class="flex-shrink-0">
+                                        <label for="facials" class="w-24 flex-shrink-0">Facials</label>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <input type="number" placeholder="Price (Rs.)" name="price[facials]"
+                                            class="facialsp bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
+                                        <p class="facialsp text-red-600 text-sm pl-2 mt-0.5"></p>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <input type="number" placeholder="Duration (min)" name="duration[facials]"
+                                            class="facialsd bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
+                                        <p class="facialsd text-red-600 text-sm pl-2 mt-0.5"></p>
+                                    </div>
                                 </div>
-                                <div class="flex-1 min-w-0">
-                                    <input type="number" placeholder="Price (Rs.)" name="price[facials]"
-                                        class="facialsp bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
-                                    <p class="facialsp text-red-600 text-sm pl-2 mt-0.5"></p>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <input type="number" placeholder="Duration (min)" name="duration[facials]"
-                                        class="facialsd bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
-                                    <p class="facialsd text-red-600 text-sm pl-2 mt-0.5"></p>
-                                </div>
-                            </div>
 
 
-                            <div class="default-service flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
-                                <div class="flex gap-3 items-center">
-                                    <input type="checkbox" name="defaultServices[]" value="waxing"
-                                        class="flex-shrink-0">
-                                    <label for="waxing" class="w-24 flex-shrink-0">Waxing</label>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <input type="number" placeholder="Price (Rs.)" name="price[waxing]"
-                                        class="waxingp bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
-                                    <p class="waxingp text-red-600 text-sm pl-2 mt-0.5"></p>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <input type="number" placeholder="Duration (min)" name="duration[waxing]"
-                                        class="waxingd bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
-                                    <p class="waxingd text-red-600 text-sm pl-2 mt-0.5"></p>
+                                <div class="default-service flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
+                                    <div class="flex gap-3 items-center">
+                                        <input type="checkbox" name="defaultServices[]" value="waxing"
+                                            class="flex-shrink-0">
+                                        <label for="waxing" class="w-24 flex-shrink-0">Waxing</label>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <input type="number" placeholder="Price (Rs.)" name="price[waxing]"
+                                            class="waxingp bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
+                                        <p class="waxingp text-red-600 text-sm pl-2 mt-0.5"></p>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <input type="number" placeholder="Duration (min)" name="duration[waxing]"
+                                            class="waxingd bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
+                                        <p class="waxingd text-red-600 text-sm pl-2 mt-0.5"></p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -451,7 +349,7 @@ if (isset($_POST['create'])) {
                                     id="customName" placeholder="Service Name">
 
                                 <input type="number"
-                                    class="bg-gray-100 border-2 border-gray-400 rounded-md mb-1.5 text-md py-1 px-3"
+                                    class=" bg-gray-100 border-2 border-gray-400 rounded-md mb-1.5 text-md py-1 px-3"
                                     id="customPrice" placeholder="Price (Rs.)">
 
                                 <input type="number"
@@ -459,7 +357,7 @@ if (isset($_POST['create'])) {
                                     id="customDuration" placeholder="Duration (min)">
 
                             </div>
-                            <p class="customErr text-center opacity-0 transition-opacity duration-500 text-red-600
+                            <p class="customErr text-center text-red-600
                                     text-sm pl-2 mt-0.5">
                             </p>
                             <button type="button" onclick="addCustomService()"
@@ -473,47 +371,49 @@ if (isset($_POST['create'])) {
                     </div>
 
                     <div>
-                        <label for="photos" class="font-medium">Upload barber Shop Photos:</label> <br>
-                        <input type="file" name="photos" class="mt-1.5 mb-3 w-full rounded-md text-md pl-2 h-11"
-                            accept=".jpg,.jpeg,.png"> <br>
+                        <label for="photos" class="font-medium">Upload barber Shop Photo:</label> <br>
+                        <input type="file" name="photos" class="mt-1.5 w-full rounded-md text-md pl-2 h-11" id="photos"
+                            required accept=".jpg,.jpeg,.png">
+                        <p class="photoErr -mt-2 text-red-600 text-sm pl-2"></p>
                     </div>
                 </div>
-        </div>
 
-        <div class="flex items-start gap-2 px-3">
-            <input type="checkbox" name="terms" class="accent-yellow-300 w-5 h-5 mt-0.5 flex-shrink-0">
-            <label for="terms">
-                I agree to the <span
-                    class="text-yellow-500 hover:underline hover:cursor-pointer hover:text-yellow-600">Terms
-                    and Conditions</span> and
-                <span class="text-yellow-500 hover:underline hover:cursor-pointer hover:text-yellow-600">Privacy
-                    Policy</span>
-            </label>
-        </div>
-
-
-        <button type="submit" name="create"
-            class="flex justify-center items-center border bg-yellow-400 rounded-xl hover:bg-yellow-300 w-full gap-3 py-3 text-xl font-medium">
-            <img src="./public/images/create.png" alt="create icon" class="w-5 h-5">
-            <p>Create Account</p>
-        </button>
+                <div class="flex items-start gap-2 px-3">
+                    <input type="checkbox" name="terms" class="accent-yellow-300 w-5 h-5 mt-0.5 flex-shrink-0">
+                    <label for="terms">
+                        I agree to the <span
+                            class="text-yellow-500 hover:underline hover:cursor-pointer hover:text-yellow-600">Terms
+                            and Conditions</span> and
+                        <span class="text-yellow-500 hover:underline hover:cursor-pointer hover:text-yellow-600">Privacy
+                            Policy</span>
+                    </label>
+                </div>
 
 
-        <div class="flex flex-wrap gap-2 justify-center m-3">
-            <p class="text-gray-500">Already have an account?</p>
-            <a href="./login">
-                <span class="text-yellow-500 hover:text-yellow-600 hover:underline">Sign in here</span>
-            </a>
+                <button type="submit" name="create"
+                    class="flex justify-center items-center border bg-yellow-400 rounded-xl hover:bg-yellow-500 w-full gap-3 py-3 text-xl font-medium">
+                    <img src="./public/images/create.png" alt="create icon" class="w-5 h-5">
+                    <p>Create Account</p>
+                </button>
+
+
+                <div class="flex flex-wrap gap-2 justify-center m-1">
+                    <p class="text-gray-500">Already have an account?</p>
+                    <a href="./login">
+                        <span class="text-yellow-500 hover:text-yellow-600 hover:underline">Sign in here</span>
+                    </a>
+                </div>
         </div>
         </form>
+
+
+        <a href="/barber-s-point" class="flex gap-2 mt-4 items-center group cursor-pointer">
+            <img src="./public/images/left-arrow.png" class="w-4 h-4 group-hover:hidden" alt="arrow to home">
+            <img src="./public/images/left-arrow-yellow.png" class="w-4 h-6 hidden group-hover:block"
+                alt="arrow to home" id="photos">
+            <p class="text-gray-500 group-hover:text-yellow-400">Back to Home</p>
+        </a>
     </div>
-
-
-    <a href="/barber-s-point" class="flex gap-2 mt-4 items-center group cursor-pointer">
-        <img src="./public/images/left-arrow.png" class="w-4 h-4 group-hover:hidden" alt="arrow to home">
-        <img src="./public/images/left-arrow-yellow.png" class="w-4 h-6 hidden group-hover:block" alt="arrow to home">
-        <p class="text-gray-500 group-hover:text-yellow-400">Back to Home</p>
-    </a>
     </div>
 </section>
 
