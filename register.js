@@ -1,3 +1,5 @@
+// mine (not working)
+
 let password1 = document.getElementById("pass1");
 let toggle1 = document.getElementById("toggle1");
 
@@ -24,6 +26,32 @@ toggle2.addEventListener("click", () => {
   }
 });
 
+// error check before form submitting
+
+function checkErrors() {
+  const createBtn = document.querySelector('button[name="create"]');
+  const errorMessages = document.querySelectorAll("p.text-red-600");
+  let hasError = false;
+
+  errorMessages.forEach((p) => {
+    if (p.innerText.trim() !== "") {
+      hasError = true;
+    }
+  });
+
+  if (createBtn) {
+    createBtn.disabled = hasError;
+
+    if (hasError) {
+      createBtn.className =
+        "flex justify-center items-center border rounded-xl w-full gap-3 py-3 text-xl font-medium bg-gray-400 cursor-not-allowed opacity-60";
+    } else {
+      createBtn.className =
+        "flex justify-center items-center border bg-yellow-400 rounded-xl hover:bg-yellow-500 w-full gap-3 py-3 text-xl font-medium";
+    }
+  }
+}
+
 // div hide and show
 
 let select = document.getElementById("select");
@@ -49,8 +77,6 @@ select.addEventListener("change", () => {
     shopName.value = "";
     shopAddress.value = "";
     shopPhotos.value = "";
-    document.querySelector('textarea[name="exp"]').value = "";
-    document.querySelector('textarea[name="services"]').value = "";
   }
 });
 
@@ -80,6 +106,12 @@ if (form) {
 
     // validate shop info in registation form
 
+    if (name === "pType") {
+      if (value === "barber")
+        document.getElementsByClassName("photos").required = true;
+      else document.getElementsByClassName("photos").required = false;
+    }
+
     if (name === "firstN" || name === "lastN") {
       if (value === "") {
         err.innerText = "";
@@ -101,18 +133,6 @@ if (form) {
         } else {
           err.innerText = "";
         }
-      }
-    }
-
-    if (name === "email") {
-      if (value === "") {
-        err.innerText = "";
-      } else if (
-        !/^[a-zA-Z][a-zA-Z0-9._-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)
-      ) {
-        err.innerText = "Please enter a valid email address.";
-      } else {
-        err.innerText = "";
       }
     }
 
@@ -142,33 +162,39 @@ if (form) {
           p2.innerText = "";
           pass2.style.border = "";
         }
+        setTimeout(checkErrors, 100);
         return;
       }
 
       if (!/[A-Z]/.test(value)) {
         err.innerText = "Password must contain at least one uppercase letter.";
         input.style.border = "2px solid red";
+        setTimeout(checkErrors, 100);
         return;
       }
       if (!/[a-z]/.test(value)) {
         err.innerText = "Password must contain at least one lowercase letter.";
         input.style.border = "2px solid red";
+        setTimeout(checkErrors, 100);
         return;
       }
       if (!/[0-9]/.test(value)) {
         err.innerText = "Password must contain at least one number.";
         input.style.border = "2px solid red";
+        setTimeout(checkErrors, 100);
         return;
       }
       if (!/[!@#$%^&?*]/.test(value)) {
         err.innerText =
           "Password must contain at least one symbol (!@#$%^&?*).";
         input.style.border = "2px solid red";
+        setTimeout(checkErrors, 100);
         return;
       }
       if (value.length < 8) {
         err.innerText = "Password must be at least 8 characters long.";
         input.style.border = "2px solid red";
+        setTimeout(checkErrors, 100);
         return;
       }
 
@@ -194,6 +220,7 @@ if (form) {
       if (value === "") {
         err.innerText = "";
         input.style.border = "";
+        setTimeout(checkErrors, 100);
         return;
       }
 
@@ -201,6 +228,7 @@ if (form) {
         p1.innerText = "First create password!";
         input.style.border = "2px solid red";
         pass1.style.border = "2px solid red";
+        setTimeout(checkErrors, 100);
         return;
       } else {
         p1.innerText = "";
@@ -246,8 +274,60 @@ if (form) {
         err.innerText = "";
       }
     }
+    setTimeout(checkErrors, 100);
   });
-  // stateBtn();
+}
+
+// check if emal already exists
+const emailInput = document.querySelector('input[name="email"]');
+if (emailInput) {
+  emailInput.addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      this.blur();
+    }
+  });
+
+  emailInput.addEventListener("blur", function () {
+    const value = this.value.trim();
+    const err = document.querySelector("p.email");
+
+    if (value === "") {
+      err.innerText = "";
+      checkErrors();
+      return;
+    }
+
+    if (!/^[a-zA-Z][a-zA-Z0-9._-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
+      err.innerText = "Please enter a valid email address.";
+      checkErrors();
+      return;
+    }
+
+    const x = new XMLHttpRequest();
+    x.open("POST", "emailCheck.php", true);
+    x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    x.onload = function () {
+      if (this.status === 200) {
+        const response = this.responseText.trim();
+        console.log("Response:", response);
+
+        if (response === "exists") {
+          err.innerText = "Email already exists!";
+          emailInput.style.border = "2px solid red";
+          value = "";
+        }
+        if (response === "available") {
+          err.innerText = "";
+          emailInput.style.border = "";
+        }
+        checkErrors();
+      }
+    };
+
+    x.send("email=" + encodeURIComponent(value));
+  });
 }
 
 // photo validate
@@ -278,7 +358,7 @@ function addCustomService() {
   } else if (price < 0 || duration < 0) {
     el.innerText = "Must Not Enter Negative Value!";
   } else if (name.length < 3) {
-    el.innerText = "Service name at least contain 2 leters!";
+    el.innerText = "Service name at least contain 3 leters!";
   } else if (!serviceNpattern.test(name)) {
     el.innerText = "Service name must contain only letters!";
   } else {
@@ -301,7 +381,7 @@ function addCustomService() {
     </div>
     <img src="./public/images/remove.png" alt="Remove service"
     class="cursor-pointer w-4 h-4 hover:w-5 hover:h-5" onclick="removeS(this)" />
-        
+
     `;
 
     let customList = document.getElementById("customList");
@@ -314,9 +394,9 @@ function addCustomService() {
     document.getElementById("customName").value = "";
     document.getElementById("customPrice").value = "";
     document.getElementById("customDuration").value = "";
-  }
 
-  // stateBtn();
+    checkErrors();
+  }
 }
 
 // remove custom service
@@ -324,9 +404,7 @@ function addCustomService() {
 function removeS(ele) {
   let customList = document.getElementById("customList");
   // alert(customList.children.length);
-
   let toRemove = ele.parentElement;
-
   toRemove.remove();
 
   if (customList.children.length === 0) {
@@ -368,16 +446,13 @@ document.querySelectorAll(".default-service").forEach((service) => {
       priceError.textContent = "";
       durationError.textContent = "";
     }
+    checkErrors();
   }
 
-  checkbox.addEventListener("change", () => {
-    validateRow();
-  });
-
-  priceInput.addEventListener("input", () => {
-    validateRow();
-  });
-  durationInput.addEventListener("input", () => {
-    validateRow();
-  });
+  checkbox.addEventListener("change", validateRow);
+  priceInput.addEventListener("input", validateRow);
+  durationInput.addEventListener("input", validateRow);
 });
+
+// first time error check
+checkErrors();

@@ -1,4 +1,9 @@
 <?php
+
+require_once 'User.php';
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 session_start();
 
 if (isset($_POST['create'])) {
@@ -36,7 +41,6 @@ if (isset($_POST['create'])) {
 
 
             for ($i = 0; $i < count($names); $i++) {
-
                 $selectedServices[] = [
                     "name" => $names[$i],
                     "price" => $prices[$i],
@@ -57,14 +61,14 @@ if (isset($_POST['create'])) {
         $fullPath = $targetDir . $uImageName;
 
         if (move_uploaded_file($tmpImage, $fullPath)) {
-            $stmt1 = "INSERT INTO users (type, firstN, lastN, email, phone, password) 
-                      VALUES ('$type', '$firstN', '$lastN', '$email', '$phone', '$password')";
+            $stmt1 = "INSERT INTO users (type, firstN, lastN, email, phone, passwrd)
+            VALUES ('$type', '$firstN', '$lastN', '$email', '$phone', '$password')";
             if (mysqli_query($conn, $stmt1)) {
                 $uid = mysqli_insert_id($conn);
 
 
-                $stmt2 = "INSERT INTO shop (sname, saddress, photo, uid) 
-                          VALUES ('$sName', '$sAddress', '$fullPath', '$uid')";
+                $stmt2 = "INSERT INTO shop (sname, saddress, photo, uid)
+                VALUES ('$sName', '$sAddress', '$fullPath', '$uid')";
 
                 if (mysqli_query($conn, $stmt2)) {
                     $sid = mysqli_insert_id($conn);
@@ -75,20 +79,22 @@ if (isset($_POST['create'])) {
                         $servicePrice = $value['price'];
                         $serviceDuration = $value['duration'];
 
-                        $stmt3 = "INSERT INTO services (services_name, price, duration, sid) 
-                                  VALUES ('$serviceName', '$servicePrice', '$serviceDuration', '$sid')";
+                        $stmt3 = "INSERT INTO services (services_name, price, duration, sid)
+                        VALUES ('$serviceName', '$servicePrice', '$serviceDuration', '$sid')";
 
                         mysqli_query($conn, $stmt3);
                     }
 
-                    $_SESSION['email'] = $email;
-                    $_SESSION['type'] = $type;
-                    $_SESSION['uid'] = $uid;
-                    $_SESSION['sid'] = $sid;
+                    $user = new User($email, $type, $uid, $sid);
+                    $_SESSION['user'] = $user;
 
-                    echo "Registered";
+                    $cookieData = json_encode($user);
+                    setcookie("user", $cookieData, time() + 86400 * 30, "/");
 
 
+                    echo "<script>
+    window.location.href = '/barber-s-point'
+    </script>";
                     // header("Location: index.php");
                     // exit();
                 } else {
@@ -101,22 +107,21 @@ if (isset($_POST['create'])) {
             echo "Failed to upload image.";
         }
     } else {
-
-        $stmt = "INSERT INTO users (type, firstN, lastN, email, phone, password) 
-                 VALUES ('$type', '$firstN', '$lastN', '$email', '$phone', '$password')";
+        $stmt = "INSERT INTO users (type, firstN, lastN, email, phone, passwrd)
+    VALUES ('$type', '$firstN', '$lastN', '$email', '$phone', '$password')";
 
         if (mysqli_query($conn, $stmt)) {
 
             $uid = mysqli_insert_id($conn);
+            $user = new User($email, $type, $uid);
+            $_SESSION['user'] = $user;
 
-            $_SESSION['email'] = $email;
-            $_SESSION['type'] = $type;
-            $_SESSION['uid'] = $uid;
+            $cookieData = json_encode($user);
+            setcookie("user", $cookieData, time() + 86400 * 30, "/");
 
-            echo "Registered";
-
-            // header("Location: index.php");
-            // exit();
+            echo "<script>
+    window.location.href = '/barber-s-point'
+    </script>";
         } else {
             echo "Error: " . mysqli_error($conn);
         }
@@ -147,7 +152,8 @@ if (isset($_POST['create'])) {
     <div class="flex flex-col items-center w-full max-w-[800px]">
         <img src="./public/images/logo.png" alt="" class="w-[80px] h-[80px]">
         <p class="text-3xl font-bold mb-2 text-center px-2">Join Barber's Point</p>
-        <p class="text-gray-500 text-xl text-center px-4">Create your account and discover the best barber shops in your
+        <p class="text-gray-500 text-xl text-center px-4">Create your account and discover the best barber shops in
+            your
             area</p>
 
         <div class="rounded-lg bg-[#f3f3f3] flex flex-col items-center mt-5 px-3 md:px-6 py-4 shadow-md w-full">
@@ -373,7 +379,7 @@ if (isset($_POST['create'])) {
                     <div>
                         <label for="photos" class="font-medium">Upload barber Shop Photo:</label> <br>
                         <input type="file" name="photos" class="mt-1.5 w-full rounded-md text-md pl-2 h-11" id="photos"
-                            required accept=".jpg,.jpeg,.png">
+                            accept=".jpg,.jpeg,.png">
                         <p class="photoErr -mt-2 text-red-600 text-sm pl-2"></p>
                     </div>
                 </div>

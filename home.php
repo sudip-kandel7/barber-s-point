@@ -2,7 +2,7 @@
   background:
       linear-gradient(to right, rgba(255,255,255,0.8), rgba(255,255,255,0.8)),
       url('./public/images/hero-barber.jpg') center/cover no-repeat;   
-" class="min-h-[70vh] w-full hero-section">
+" class="min-h-[65vh] sm:h-[60vh] w-full hero-section">
 
     <div class="flex justify-center items-start sm:items-center flex-col text-center min-h-[80vh] px-4 py-8">
         <div class="mb-6 sm:mb-8">
