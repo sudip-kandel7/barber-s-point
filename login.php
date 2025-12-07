@@ -25,7 +25,6 @@ if (isset($_POST['login'])) {
             $sidResult = mysqli_fetch_assoc(mysqli_query($conn, "SELECT sid FROM shop WHERE uid = '$uid'"));
             $sid = $sidResult['sid'] ?? null;
 
-
             if ($type === "customer") {
                 $user = new User($email, $type, $uid);
                 $_SESSION['user'] = $user;

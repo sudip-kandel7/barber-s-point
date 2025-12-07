@@ -19,7 +19,7 @@ include 'sessionCheck.php';
                 <li
                     class="flex flex-col items-center group cursor-pointer transition-colors duration-300 hover:text-yellow-400">
 
-                    Home
+                    <a href="/barber-s-point">Home</a>
                     <hr class="w-0 h-[2px] bg-yellow-400 rounded-md transition-all duration-300 group-hover:w-full">
 
                 </li>
