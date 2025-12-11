@@ -1,11 +1,11 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
 
 include 'sessionCheck.php';
 ?>
 
-<nav class="bg-white/95 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 shadow-md">
+<nav class="bg-white/95 backdrop-blur-md border-b border-gray-200 sticky top-0 shadow-md z-[70]">
     <div class="max-w-7xl mx-auto">
         <div class=" mr-6 ml-5 2xl:m-0 flex items-center justify-between h-12">
 
@@ -141,19 +141,19 @@ include 'sessionCheck.php';
                 <ul class="flex flex-col gap-3">
 
                     <li>
-                        <a href="#"
+                        <a href="/barber-s-point"
                             class="block text-lg font-medium py-2 bg-white text-gray-800 rounded-md shadow-md hover:shadow-lg hover:bg-yellow-400 hover:text-white hover:scale-105 transition-all duration-300">
                             Home
                         </a>
                     </li>
                     <li>
-                        <a href="#"
+                        <a href="about.php"
                             class="block text-lg font-medium py-2 bg-white text-gray-800 rounded-md shadow-md hover:shadow-lg hover:bg-yellow-400 hover:text-white hover:scale-105 transition-all duration-300">
                             About Us
                         </a>
                     </li>
                     <li>
-                        <a href="#"
+                        <a href="contact.php"
                             class="block text-lg font-medium py-2 bg-white text-gray-800 rounded-md shadow-md hover:shadow-lg hover:bg-yellow-400 hover:text-white hover:scale-105 transition-all duration-300">
                             Contact
                         </a>
@@ -217,6 +217,25 @@ include 'sessionCheck.php';
         </div>
     </div>
     <script>
+        const hamburger = document.getElementById("hamburger");
+        const mobileMenu = document.getElementById("mobileMenu");
+        const imgs = hamburger.getElementsByClassName("img");
+
+        hamburger.addEventListener("click", (e) => {
+            e.stopPropagation();
+            imgs[0].classList.toggle("hidden");
+            imgs[1].classList.toggle("hidden");
+            mobileMenu.classList.toggle("hidden");
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.add("hidden");
+                imgs[0].classList.remove("hidden");
+                imgs[1].classList.add("hidden");
+            }
+        });
+
         function toggleMenu() {
             document.getElementById("menu").classList.toggle("hidden");
         }
