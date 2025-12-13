@@ -41,8 +41,13 @@ CREATE TABLE review (
 CREATE TABLE services(
     services_id int AUTO_INCREMENT PRIMARY KEY,
     services_name text,
-    price int,
-    duration int,
-    sid int,
-    FOREIGN KEY (sid) REFERENCES shop(sid)
+);
+CREATE TABLE shop_services(
+    sid INT,
+    services_id INT,
+    price INT,
+    duration INT,
+    PRIMARY KEY (sid, services_id),
+    FOREIGN KEY(sid) REFERENCES shop(sid),
+    FOREIGN KEY(services_id) REFERENCES services(services_id)
 );
