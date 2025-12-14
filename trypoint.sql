@@ -23,7 +23,7 @@ CREATE TABLE shop (
 CREATE TABLE queue (
     sid INT PRIMARY KEY,
     current_queue INT NOT NULL DEFAULT 0,
-    total_wait_time TIME NOT NULL DEFAULT '00:00:00',
+    total_wait_time TIMEf NOT NULL DEFAULT '00:00:00',
     FOREIGN KEY(sid) REFERENCES shop(sid)
 );
 -- reviews table
@@ -37,6 +37,8 @@ CREATE TABLE review (
     FOREIGN KEY(sid) REFERENCES shop(sid),
     UNIQUE (uid, sid)
 );
+
+
 -- services table
 -- CREATE TABLE services(
 --     services_id int AUTO_INCREMENT PRIMARY KEY,
