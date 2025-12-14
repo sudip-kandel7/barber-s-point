@@ -18,7 +18,8 @@ if (isset($_POST['create'])) {
     if ($type === "barber") {
         $sName = $_POST['sname'];
         $sAddress = $_POST['address'];
-        $selectedServices = [];
+        $defaultServices = [];
+        $customServices = [];
 
         if (!empty($_POST['defaultServices'])) {
 
@@ -40,12 +41,21 @@ if (isset($_POST['create'])) {
             $durations = $_POST['customSDurations'];
 
 
+
             for ($i = 0; $i < count($names); $i++) {
-                $selectedServices[] = [
-                    "name" => $names[$i],
-                    "price" => $prices[$i],
-                    "duration" => $durations[$i]
-                ];
+                $checkServices = "SELECT services_name FROM services";
+                $result = mysqli_query($conn, $checkServices);
+                while ($row = mysqli_fetch_assoc($result)) {
+                    if ($row['services_name'] === $names[$i]) {
+                        continue;
+                    } else {
+                        $customServices[] = [
+                            "name" => $row['services_name'],
+                            "price" => $prices[$i],
+                            "duration" => $durations[$i]
+                        ];
+                    }
+                }
             }
         }
 
@@ -65,25 +75,73 @@ if (isset($_POST['create'])) {
             VALUES ('$type', '$firstN', '$lastN', '$email', '$phone', '$password')";
             if (mysqli_query($conn, $stmt1)) {
                 $uid = mysqli_insert_id($conn);
+                $status = "active";
 
 
-                $stmt2 = "INSERT INTO shop (sname, saddress, photo, uid)
-                VALUES ('$sName', '$sAddress', '$fullPath', '$uid')";
+                $stmt2 = "INSERT INTO shop (sname, saddress, photo, uid,status)
+                VALUES ('$sName', '$sAddress', '$fullPath', '$uid','$status')";
 
                 if (mysqli_query($conn, $stmt2)) {
                     $sid = mysqli_insert_id($conn);
 
 
                     foreach ($selectedServices as $value) {
-                        $serviceName = $value['name'];
-                        $servicePrice = $value['price'];
-                        $serviceDuration = $value['duration'];
 
-                        $stmt3 = "INSERT INTO services (services_name, price, duration, sid)
-                        VALUES ('$serviceName', '$servicePrice', '$serviceDuration', '$sid')";
+                        $serviceName  = $value['name'];
+                        $price        = $value['price'];
+                        $duration     = $value['duration'];
 
-                        mysqli_query($conn, $stmt3);
+                        $q1 = "SELECT services_id FROM services WHERE services_name = '$serviceName'";
+                        $r1 = mysqli_query($conn, $q1);
+
+                        if (mysqli_num_rows($r1) > 0) {
+                            $row = mysqli_fetch_assoc($r1);
+                            $serviceId = $row['services_id'];
+                        } else {
+                            $q2 = "INSERT INTO services (services_name) VALUES ('$serviceName')";
+                            mysqli_query($conn, $q2);
+                            $serviceId = mysqli_insert_id($conn);
+                        }
+
+                        $q3 = "INSERT INTO shop_services (sid, services_id, price, duration)
+           VALUES ('$sid', '$serviceId', '$price', '$duration')";
+                        mysqli_query($conn, $q3);
                     }
+
+
+                    foreach ($customServices as $value) {
+
+                        $serviceName = $value['name'];
+                        $price       = $value['price'];
+                        $duration    = $value['duration'];
+
+                        $q1 = "SELECT services_id FROM services WHERE services_name = '$serviceName'";
+                        $r1 = mysqli_query($conn, $q1);
+
+                        if (mysqli_num_rows($r1) > 0) {
+
+                            $row = mysqli_fetch_assoc($r1);
+                            $serviceId = $row['id'];
+                        } else {
+
+                            $q2 = "
+            INSERT INTO services (services_name)
+            VALUES ('$serviceName')
+        ";
+                            mysqli_query($conn, $q2);
+
+                            $serviceId = mysqli_insert_id($conn);
+                        }
+
+                        $q3 = "
+        INSERT INTO shop_services
+        (sid, services_id, price, duration)
+        VALUES ('$sid', '$serviceId', '$price', '$duration')
+    ";
+                        mysqli_query($conn, $q3);
+                    }
+
+
 
                     $user = new User($email, $type, $uid, $sid);
                     $_SESSION['user'] = $user;
@@ -249,100 +307,46 @@ if (isset($_POST['create'])) {
                             <p class="font-medium mb-1.5">Default Services</p>
 
                             <div class="bg-white flex flex-col gap-2 p-3 rounded-md shadow-md">
-
-                                <div class="default-service flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
-                                    <div class="flex gap-3 items-center">
-                                        <input type="checkbox" name="defaultServices[]" value="haircut"
-                                            class="flex-shrink-0">
-                                        <label for="haircut" class="w-24 flex-shrink-0">Hair Cut</label>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <input type="number" placeholder="Price (Rs.)" name="price[haircut]"
-                                            class="haircutp bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
-                                        <p class="haircutp text-red-600 text-sm pl-2 mt-0.5"></p>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <input type="number" placeholder="Duration (min)" name="duration[haircut]"
-                                            class="haircutd bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
-                                        <p class="haircutd text-red-600 text-sm pl-2 mt-0.5"></p>
-                                    </div>
-                                </div>
+                                <?php
+                                $conn = new mysqli("localhost", "root", "", "trypoint");
+                                if ($conn->connect_error) {
+                                    die("Connection failed: " . $conn->connect_error);
+                                }
+                                $sql = "SELECT * FROM services";
+                                $result = $conn->query($sql);
+                                if (mysqli_num_rows($result) > 0) {
+                                    while ($row = mysqli_fetch_assoc($result)) {
+                                        $serviceName = $row['services_name'];
+                                        $serviceValue = strtolower(str_replace(' ', '', $serviceName));
+                                ?>
 
 
-                                <div class="default-service flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
-                                    <div class="flex gap-3 items-center">
-                                        <input type="checkbox" name="defaultServices[]" value="shaving"
-                                            class="flex-shrink-0">
-                                        <label for="shaving" class="w-24 flex-shrink-0">Shaving</label>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <input type="number" placeholder="Price (Rs.)" name="price[shaving]"
-                                            class="shavingp bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
-                                        <p class="shavingp text-red-600 text-sm pl-2 mt-0.5"></p>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <input type="number" placeholder="Duration (min)" name="duration[shaving]"
-                                            class="shavingd bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
-                                        <p class="shavingd text-red-600 text-sm pl-2 mt-0.5"></p>
-                                    </div>
-                                </div>
+                                        <div class="default-service flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
+                                            <div class="flex gap-3 items-center">
+                                                <input type="checkbox" name="defaultServices[]"
+                                                    value="<?php echo $serviceValue; ?>" class="flex-shrink-0">
+                                                <label for="<?php echo $serviceValue; ?>"
+                                                    class="w-24 flex-shrink-0"><?php echo $serviceName; ?></label>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <input type="number" placeholder="Price (Rs.)"
+                                                    name="price[<?php echo $serviceValue; ?>]"
+                                                    class="<?php echo $serviceValue; ?>p bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
+                                                <p class="<?php echo $serviceValue; ?>p text-red-600 text-sm pl-2 mt-0.5"></p>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <input type="number" placeholder="Duration (min)"
+                                                    name="duration[<?php echo $serviceValue; ?>]"
+                                                    class="<?php echo $serviceValue; ?>d bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
+                                                <p class="<?php echo $serviceValue; ?>d text-red-600 text-sm pl-2 mt-0.5"></p>
+                                            </div>
+                                        </div>
 
-
-                                <div class="default-service flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
-                                    <div class="flex gap-3 items-center">
-                                        <input type="checkbox" name="defaultServices[]" value="haircolor"
-                                            class="flex-shrink-0">
-                                        <label for="haircolor" class="w-24 flex-shrink-0">Hair Color</label>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <input type="number" placeholder="Price (Rs.)" name="price[haircolor]"
-                                            class="haircolorp bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
-                                        <p class="haircolorp text-red-600 text-sm pl-2 mt-0.5"></p>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <input type="number" placeholder="Duration (min)" name="duration[haircolor]"
-                                            class="haircolord bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
-                                        <p class="haircol ord text-red-600 text-sm pl-2 mt-0.5"></p>
-                                    </div>
-                                </div>
-
-
-                                <div class="default-service flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
-                                    <div class="flex gap-3 items-center">
-                                        <input type="checkbox" name="defaultServices[]" value="facials"
-                                            class="flex-shrink-0">
-                                        <label for="facials" class="w-24 flex-shrink-0">Facials</label>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <input type="number" placeholder="Price (Rs.)" name="price[facials]"
-                                            class="facialsp bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
-                                        <p class="facialsp text-red-600 text-sm pl-2 mt-0.5"></p>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <input type="number" placeholder="Duration (min)" name="duration[facials]"
-                                            class="facialsd bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
-                                        <p class="facialsd text-red-600 text-sm pl-2 mt-0.5"></p>
-                                    </div>
-                                </div>
-
-
-                                <div class="default-service flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
-                                    <div class="flex gap-3 items-center">
-                                        <input type="checkbox" name="defaultServices[]" value="waxing"
-                                            class="flex-shrink-0">
-                                        <label for="waxing" class="w-24 flex-shrink-0">Waxing</label>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <input type="number" placeholder="Price (Rs.)" name="price[waxing]"
-                                            class="waxingp bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
-                                        <p class="waxingp text-red-600 text-sm pl-2 mt-0.5"></p>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <input type="number" placeholder="Duration (min)" name="duration[waxing]"
-                                            class="waxingd bg-gray-100 border-2 border-gray-400 rounded-md w-full text-md py-1 px-3">
-                                        <p class="waxingd text-red-600 text-sm pl-2 mt-0.5"></p>
-                                    </div>
-                                </div>
+                                <?php
+                                    }
+                                }
+                                $conn->close();
+                                ?>
                             </div>
                         </div>
 

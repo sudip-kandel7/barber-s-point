@@ -1,10 +1,9 @@
-<section style="   
+<section>
+    <div style="   
   background:
       linear-gradient(to right, rgba(255,255,255,0.8), rgba(255,255,255,0.8)),
       url('./public/images/hero-barber.jpg') center/cover no-repeat;   
-" class="min-h-[77vh] sm:h-[60vh] w-full hero-section">
-
-    <div class="flex justify-center items-start sm:items-center flex-col text-center min-h-[80vh] px-4 py-8">
+" class="flex justify-center items-start sm:items-center flex-col text-center min-h-[80vh] px-4 py-8">
         <div class="mb-6 sm:mb-8">
             <h1 class="text-3xl sm:text-4xl md:text-6xl text-black font-semibold leading-tight">Find Your Perfect</h1>
             <h1 class="text-3xl sm:text-4xl md:text-6xl font-bold text-yellow-500 leading-tight">Barber Shop</h1>
