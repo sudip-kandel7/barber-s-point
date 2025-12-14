@@ -113,82 +113,89 @@
             $conn = new mysqli("localhost", "root", "", "trypoint");
 
             $qry = "
-                SELECT 
-                    shop.sid,
-                    shop.sname,
-                    shop.saddress,
-                    shop.photo,
-                    shop.status,
-                    queue.current_queue,
-                    queue.total_wait_time
-                FROM shop
-                LEFT JOIN queue ON shop.sid = queue.sid
-            ";
+    SELECT 
+        shop.sid,
+        shop.sname,
+        shop.saddress,
+        shop.photo,
+        shop.status,
+        queue.current_queue,
+        queue.total_wait_time
+    FROM shop
+    LEFT JOIN queue ON shop.sid = queue.sid
+";
 
             $result = mysqli_query($conn, $qry);
 
             if (mysqli_num_rows($result) == 0) {
-                echo "<h3 class='text-center w-full'>No Barber Shops</h3>";
+                echo "<h3>No Barber Shops</h3>";
             } else {
                 while ($rows = mysqli_fetch_assoc($result)) {
 
                     $status = strtolower(trim($rows['status']));
                     $statusColor = ($status === "open") ? "green" : "red";
 
-                    // Calculate estimated wait time
-                    $wait_minutes = $rows['total_wait_time'];
+
             ?>
                     <div
-                        class="flex flex-col justify-between w-full max-w-[450px] mx-auto bg-white shadow-md rounded-lg hover:-translate-y-1 hover:shadow-xl transition-all group">
+                        class="w-full max-w-[450px] mx-auto relative bg-white shadow-md rounded-lg hover:-translate-y-1 hover:shadow-xl transition-all group">
 
-                        <img src="<?= $rows['photo'] ?>" alt="<?= $rows['sname'] ?>"
+                        <img src="<?php echo $rows['photo']; ?>" alt="<?php echo $rows['sname']; ?>"
                             class="w-full h-48 sm:h-56 object-cover rounded-t-lg">
 
                         <p
-                            class="absolute top-2 sm:top-3 right-2 sm:right-3 bg-yellow-400 group-hover:bg-<?= $statusColor ?>-500 bg-opacity-70 rounded-full px-2 sm:px-2.5 py-0.5 font-semibold text-[10px] sm:text-xs cursor-pointer inline-flex items-center">
-                            <?= ucfirst($rows['status']) ?>
+                            class="bg-opacity-70 px-2 sm:px-2.5 font-semibold absolute top-2 sm:top-3 right-2 sm:right-3 rounded-full 
+                     inline-flex items-center py-0.5 text-[10px] sm:text-xs cursor-pointer bg-yellow-400 group-hover:bg-<?php echo $statusColor; ?>-500">
+                            <?php echo ucfirst($rows['status']); ?>
                         </p>
 
-                        <div class="px-3 sm:px-4 py-3 flex-1 flex flex-col justify-between">
+                        <div class="px-3 sm:px-4 py-3">
 
-                            <div>
-                                <p
-                                    class="text-base sm:text-lg font-semibold text-start pl-2 sm:pl-3 group-hover:text-yellow-400 truncate">
-                                    <?= $rows['sname'] ?>
+                            <p
+                                class="text-base sm:text-lg font-semibold text-start pl-2 sm:pl-3 group-hover:text-yellow-400 truncate">
+                                <?php echo $rows['sname']; ?>
+                            </p>
+
+                            <div class="flex items-center gap-1 mt-1">
+                                <img src="./public/images/shop-location.png" class="w-4 h-4 flex-shrink-0" alt="">
+                                <p class="text-xs sm:text-sm text-gray-500 truncate">
+                                    <?php echo $rows['saddress']; ?>
                                 </p>
-
-                                <div class="flex items-center gap-1 mt-1">
-                                    <img src="./public/images/shop-location.png" class="w-4 h-4" alt="">
-                                    <p class="text-xs sm:text-sm text-gray-500 truncate"><?= $rows['saddress'] ?></p>
-                                </div>
-
-                                <div class="flex flex-col sm:flex-row justify-between gap-2 sm:gap-0 mt-3">
-                                    <div class="flex gap-1.5 sm:gap-2 items-center">
-                                        <img src="./public/images/user.png" class="w-3.5 h-3.5 sm:w-4 sm:h-4" alt="">
-                                        <p class="text-xs sm:text-sm text-gray-500">
-                                            Queue: <span
-                                                class="text-yellow-400 font-semibold"><?= $rows['current_queue'] ?? 0 ?>
-                                                People</span>
-                                        </p>
-                                    </div>
-
-                                    <div class="flex gap-1.5 sm:gap-2 items-center">
-                                        <img src="./public/images/time.png" class="w-4 h-4 sm:w-5 sm:h-5" alt="">
-                                        <p class="text-xs sm:text-sm text-gray-500">
-                                            Est. wait: <span class="text-yellow-400 font-semibold"><?= $wait_minutes ?>
-                                                min</span>
-                                        </p>
-                                    </div>
-                                </div>
                             </div>
 
-                            <button
-                                class="w-full mt-3 text-xs sm:text-sm font-semibold rounded-md bg-[#f8f9fa] border py-2 group-hover:bg-yellow-400 group-hover:shadow-md transition-all">
-                                View Details
-                            </button>
+                            <div class="flex flex-col sm:flex-row justify-between gap-2 sm:gap-0 mt-3">
 
+                                <div class="flex gap-1.5 sm:gap-2 items-center">
+                                    <img src="./public/images/user.png" class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" alt="">
+                                    <p class="text-xs sm:text-sm text-gray-500">
+                                        Queue:
+                                        <span class="text-yellow-400 font-semibold">
+                                            <?php echo $rows['current_queue']; ?> People
+                                        </span>
+                                    </p>
+                                </div>
+
+                                <div class="flex gap-1.5 sm:gap-2 items-center">
+                                    <img src="./public/images/time.png" class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" alt="">
+                                    <p class="text-xs sm:text-sm text-gray-500">
+                                        Est. wait:
+                                        <span class="text-yellow-400 font-semibold">
+                                            <?php echo $wait_minutes; ?> min
+                                        </span>
+                                    </p>
+                                </div>
+
+                            </div>
                         </div>
+
+                        <button class="w-[96%] text-xs sm:text-sm font-semibold rounded-md bg-[#f8f9fa] border py-2 
+       group-hover:bg-yellow-400 group-hover:shadow-md mt-3 mb-5 transition-all">
+                            View Details
+                        </button>
+
+
                     </div>
+
             <?php
                 }
             }
