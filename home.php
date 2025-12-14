@@ -14,7 +14,7 @@
         </div>
 
 
-        <form method="GET"
+        <form method="GET" accept="shops.php"
             class="flex flex-wrap bg-white mt-4 mb-4 sm:mb-8 h-10 items-center border rounded-xl pl-3 px-2 gap-2 max-[500px]:gap-1 w-full max-w-2xl">
 
             <label for="search" class="cursor-pointer flex items-center">
@@ -22,7 +22,7 @@
                     alt="search icon">
             </label>
 
-            <input type="search" id="search" name="barber"
+            <input type="search" id="search" name="search"
                 class="h-full flex-1 min-w-0 focus:outline-none text-sm sm:text-base"
                 placeholder="Search for shops, locations...">
 
