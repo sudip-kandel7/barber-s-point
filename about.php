@@ -50,10 +50,11 @@ include 'navbar.php'; ?>
     <div class="mt-11 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h3 class="text-3xl font-bold text-gray-900 mb-12 text-center">Meet Our Team</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-2  transition-all">
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl group hover:-translate-y-1  transition-all">
                 <div class="p-8 text-center">
-                    <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <img src="./public/images/profile.png" alt="">
+                    <div class="flex mb-6 justify-center group-hover:-translate-y-2 transition-all">
+                        <img class="border-4 border-green-500 w-20 h-20 rounded-full"
+                            src="./public/images/private/sudip.jpeg" alt="">
                     </div>
                     <h4 class="text-xl font-semibold text-gray-900 mb-1">Sudip Kandel</h4>
                     <p class="text-yellow-600 font-medium mb-3">Developer</p>
@@ -73,7 +74,7 @@ include 'navbar.php'; ?>
                             class="text-gray-400 hover:text-pink-500 transition-colors">
                             <i class="fab fa-instagram text-2xl"></i>
                         </a>
-                        <a href="https://twitter.com" target="_blank"
+                        <a href="https://twitter.com/paade_07" target="_blank"
                             class="text-gray-400 hover:text-blue-400 transition-colors">
                             <i class="fab fa-twitter text-2xl"></i>
                         </a>
@@ -81,10 +82,11 @@ include 'navbar.php'; ?>
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-2  transition-all">
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl group hover:-translate-y-1  transition-all">
                 <div class="p-8 text-center">
-                    <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <img src="./public/images/profile.png" alt="">
+                    <div class="flex mb-6 justify-center group-hover:-translate-y-2 transition-all">
+                        <img class="border-4 border-green-500 w-20 h-20 rounded-full"
+                            src="./public/images/private/kushal.jpg" alt="">
                     </div>
                     <h4 class="text-xl font-semibold text-gray-900 mb-1">Kushal Pandit</h4>
                     <p class="text-yellow-600 font-medium mb-3">Developer</p>
@@ -92,19 +94,19 @@ include 'navbar.php'; ?>
                         BCA 4th Semester | Cricket specialist.
                     </p>
                     <div class="flex justify-center gap-4">
-                        <a href="https://github.com/sumit-poudel" target="_blank"
+                        <a href="https://github.com/kushal-pandit" target="_blank"
                             class="text-gray-400 hover:text-gray-900 transition-colors">
                             <i class="fab fa-github text-2xl"></i>
                         </a>
-                        <a href="https://facebook.com" target="_blank"
+                        <a href="https://facebook.com/kushal.pandit.574512" target="_blank"
                             class="text-gray-400 hover:text-blue-600 transition-colors">
                             <i class="fab fa-facebook text-2xl"></i>
                         </a>
-                        <a href="https://instagram.com" target="_blank"
+                        <a href="https://instagram.com/kushalpandit_42" target="_blank"
                             class="text-gray-400 hover:text-pink-500 transition-colors">
                             <i class="fab fa-instagram text-2xl"></i>
                         </a>
-                        <a href="https://twitter.com" target="_blank"
+                        <a href="https://twitter.com/" target="_blank"
                             class="text-gray-400 hover:text-blue-400 transition-colors">
                             <i class="fab fa-twitter text-2xl"></i>
                         </a>
@@ -112,10 +114,12 @@ include 'navbar.php'; ?>
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-2  transition-all">
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl group hover:-translate-y-1  transition-all">
                 <div class="p-8 text-center">
-                    <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <img src="./public/images/profile.png" alt="">
+                    <div class="flex mb-6 justify-center group-hover:-translate-y-2 transition-all">
+                        <a href="httborder-4 border-green-500 ps://www.sumit-poudel.com.np" target="_blank"><img
+                                class="border-4 border-green-500 w-20 h-20 rounded-full"
+                                src="./public/images/private/sumit.jpg" alt=""></a>
                     </div>
                     <h4 class="text-xl font-semibold text-gray-900 mb-1">Sumit Poudel</h4>
                     <p class="text-yellow-600 font-medium mb-3">Supported to solve any problems and errors.</p>
@@ -124,15 +128,15 @@ include 'navbar.php'; ?>
                         solutions.
                     </p>
                     <div class="flex justify-center gap-4">
-                        <a href="https://github.com" target="_blank"
+                        <a href="https://github.com/sumit-poudel" target="_blank"
                             class="text-gray-400 hover:text-gray-900 transition-colors">
                             <i class="fab fa-github text-2xl"></i>
                         </a>
-                        <a href="https://facebook.com" target="_blank"
+                        <a href="https://facebook.com/sumitpdl" target="_blank"
                             class="text-gray-400 hover:text-blue-600 transition-colors">
                             <i class="fab fa-facebook text-2xl"></i>
                         </a>
-                        <a href="https://instagram.com" target="_blank"
+                        <a href="https://instagram.com/goku_chann_" target="_blank"
                             class="text-gray-400 hover:text-pink-500 transition-colors">
                             <i class="fab fa-instagram text-2xl"></i>
                         </a>
