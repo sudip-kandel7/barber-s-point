@@ -112,37 +112,6 @@ include 'navbar.php'; ?>
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-2  transition-all">
-                <div class="p-8 text-center">
-                    <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <img src="./public/images/profile.png" alt="">
-                    </div>
-                    <h4 class="text-xl font-semibold text-gray-900 mb-1">Sumit Poudel</h4>
-                    <p class="text-yellow-600 font-medium mb-3">Supported to solve any problems and errors.</p>
-                    <p class="text-gray-600 text-sm mb-5">
-                        BCA 4th Semester | Full-stack Developer, Arch User, passionate about creating innovative
-                        solutions.
-                    </p>
-                    <div class="flex justify-center gap-4">
-                        <a href="https://github.com" target="_blank"
-                            class="text-gray-400 hover:text-gray-900 transition-colors">
-                            <i class="fab fa-github text-2xl"></i>
-                        </a>
-                        <a href="https://facebook.com" target="_blank"
-                            class="text-gray-400 hover:text-blue-600 transition-colors">
-                            <i class="fab fa-facebook text-2xl"></i>
-                        </a>
-                        <a href="https://instagram.com" target="_blank"
-                            class="text-gray-400 hover:text-pink-500 transition-colors">
-                            <i class="fab fa-instagram text-2xl"></i>
-                        </a>
-                        <a href="https://twitter.com" target="_blank"
-                            class="text-gray-400 hover:text-blue-400 transition-colors">
-                            <i class="fab fa-twitter text-2xl"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
