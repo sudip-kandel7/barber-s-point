@@ -19,7 +19,7 @@ include 'navbar.php';
             <p class="text-2xl sm:text-3xl font-bold mt-3 sm:mt-5">Visit Us</p>
             <div
                 class="flex bg-white shadow-md gap-4 sm:gap-5 px-3 sm:px-4 py-3 sm:py-4 justify-start items-start sm:items-center hover:-translate-y-1 hover:shadow-lg transition-all rounded-lg">
-                <img src="./public/images/map.png" class="w-8 h-8 sm:w-9 sm:h-9 flex-shrink-0 mt-1 sm:mt-0"
+                <img src="./public/images/web/map.png" class="w-8 h-8 sm:w-9 sm:h-9 flex-shrink-0 mt-1 sm:mt-0"
                     alt="map icon">
                 <div class="text-sm sm:text-base">
                     <p class="font-semibold mb-1">Address</p>
@@ -29,7 +29,7 @@ include 'navbar.php';
             </div>
             <div
                 class="flex bg-white shadow-md gap-4 sm:gap-5 px-3 sm:px-4 py-3 sm:py-4 justify-start items-start sm:items-center hover:-translate-y-1 hover:shadow-lg transition-all rounded-lg">
-                <img src="./public/images/phone.png" class="w-8 h-8 sm:w-9 sm:h-9 flex-shrink-0 mt-1 sm:mt-0"
+                <img src="./public/images/web/phone.png" class="w-8 h-8 sm:w-9 sm:h-9 flex-shrink-0 mt-1 sm:mt-0"
                     alt="phone icon">
                 <div class="text-sm sm:text-base">
                     <p class="font-semibold mb-1">Phone</p>
@@ -39,7 +39,7 @@ include 'navbar.php';
             </div>
             <div
                 class="flex bg-white shadow-md gap-4 sm:gap-5 px-3 sm:px-4 py-3 sm:py-4 justify-start items-start sm:items-center hover:-translate-y-1 hover:shadow-lg transition-all rounded-lg">
-                <img src="./public/images/email.png" class="w-8 h-8 sm:w-9 sm:h-9 flex-shrink-0 mt-1 sm:mt-0"
+                <img src="./public/images/web/email.png" class="w-8 h-8 sm:w-9 sm:h-9 flex-shrink-0 mt-1 sm:mt-0"
                     alt="email icon">
                 <div class="text-sm sm:text-base break-words">
                     <p class="font-semibold mb-1">Email</p>
@@ -49,7 +49,7 @@ include 'navbar.php';
             </div>
             <div
                 class="flex bg-white shadow-md gap-4 sm:gap-5 px-3 sm:px-4 py-3 sm:py-4 justify-start items-start sm:items-center hover:-translate-y-1 hover:shadow-lg transition-all rounded-lg">
-                <img src="./public/images/clock.png" class="w-8 h-8 sm:w-9 sm:h-9 flex-shrink-0 mt-1 sm:mt-0"
+                <img src="./public/images/web/clock.png" class="w-8 h-8 sm:w-9 sm:h-9 flex-shrink-0 mt-1 sm:mt-0"
                     alt="clock icon">
                 <div class="text-sm sm:text-base">
                     <p class="font-semibold mb-1">Hours</p>

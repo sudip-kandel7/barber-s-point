@@ -10,7 +10,7 @@ include 'sessionCheck.php';
         <div class=" mr-6 ml-5 2xl:m-0 flex items-center justify-between h-12">
 
             <div class="flex items-center gap-2">
-                <img src="./public/images/logo.png" class="w-11 h-11 rounded-full " alt="logo">
+                <img src="./public/images/web/logo.png" class="w-11 h-11 rounded-full " alt="logo">
                 <span class="text-[22px] font-semibold text-gray-800">Barber's Point</span>
             </div>
 
@@ -42,7 +42,7 @@ include 'sessionCheck.php';
                 <div class="flex items-center font-light text-sm gap-4 max-[750px]:hidden max-[900px]:gap-2">
                     <a href="login.php"
                         class="flex items-center gap-2  h-9 px-3 rounded-md text-black shadow-sm border border-gray hover:scale-105 hover:shadow hover:bg-yellow-400 transition-all duration-300  ">
-                        <img src="./public/images/enter.png" class="w-3 h-3.w-3" alt="login icon">
+                        <img src="./public/images/web/enter.png" class="w-3 h-3.w-3" alt="login icon">
                         <span>Login</span>
                     </a>
 
@@ -63,7 +63,7 @@ include 'sessionCheck.php';
                     <?php endif; ?>
 
                     <div class="relative inline-block">
-                        <img src="./public/images/profile.png" onclick="toggleMenu()"
+                        <img src="./public/images/web/profile.png" onclick="toggleMenu()"
                             class="w-8 h-8 rounded-full cursor-pointer hover:scale-110 transition" alt="profile icon">
 
                         <div class="hidden text-center bg-[#fafafa] w-60 p-4 shadow-md absolute top-11 -right-[87px] rounded-md z-50"
@@ -129,8 +129,8 @@ include 'sessionCheck.php';
             <!-- Hamburger button -->
             <div class="min-[750px]:hidden flex flex-col p-2 rounded-md hover:bg-yellow-400 cursor-pointer transition-all duration-300"
                 id="hamburger">
-                <img src="./public/images/menu.png" class="w-4 h-4 hover:bg-yellow-400 img block " alt="">
-                <img src="./public/images/close.png" class="w-4 h-4 hover:bg-yellow-400 img hidden" alt="">
+                <img src="./public/images/web/menu.png" class="w-4 h-4 hover:bg-yellow-400 img block " alt="">
+                <img src="./public/images/web/close.png" class="w-4 h-4 hover:bg-yellow-400 img hidden" alt="">
             </div>
 
 
@@ -167,7 +167,7 @@ include 'sessionCheck.php';
                         <li>
                             <a href="./login.php"
                                 class="flex items-center justify-center gap-2 text-lg font-medium py-2 rounded-md shadow-md bg-gray-50 hover:bg-blue-50 hover:scale-105 transition-all duration-300">
-                                <img src="./public/images/enter.png"
+                                <img src="./public/images/web/enter.png"
                                     class="w-4 h-4 transition-transform duration-300 group-hover:rotate-12"
                                     alt="login icon">
                                 <span>Login</span>
@@ -203,7 +203,7 @@ include 'sessionCheck.php';
                         <li>
                             <a onclick="logout()"
                                 class="flex items-center justify-center gap-2 text-lg font-medium py-2 rounded-md shadow-md bg-gray-50 hover:bg-red-600 hover:text-black hover:scale-105 transition-all duration-300">
-                                <img src="./public/images/log-out.png" class="w-4 h-4 transition-transform duration-300"
+                                <img src="./public/images/web/log-out.png" class="w-4 h-4 transition-transform duration-300"
                                     alt="">
                                 <span>Logout</span>
                             </a>

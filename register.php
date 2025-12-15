@@ -200,7 +200,7 @@ if (isset($_POST['create'])) {
 
     section {
         background: linear-gradient(to right, rgba(255, 255, 255, 0.77), rgba(255, 255, 255, 0.77)),
-            url('./public/images/bg.jpeg') center/cover no-repeat;
+            url('./public/images/web/bg.jpeg') center/cover no-repeat;
         min-height: 100vh;
         width: 100%;
     }
@@ -208,7 +208,7 @@ if (isset($_POST['create'])) {
 
 <section class="flex justify-center items-center py-6 px-2">
     <div class="flex flex-col items-center w-full max-w-[800px]">
-        <img src="./public/images/logo.png" alt="" class="w-[80px] h-[80px]">
+        <img src="./public/images/web/logo.png" alt="" class="w-[80px] h-[80px]">
         <p class="text-3xl font-bold mb-2 text-center px-2">Join Barber's Point</p>
         <p class="text-gray-500 text-xl text-center px-4">Create your account and discover the best barber shops in
             your
@@ -269,7 +269,7 @@ if (isset($_POST['create'])) {
                         <input name="password" id="pass1" type="password"
                             class="mt-1.5 pl-2 pr-10 text-md h-11 rounded-[9px] bg-white w-full" required
                             placeholder="Create a password">
-                        <img src="./public/images/visible.png" id="toggle1"
+                        <img src="./public/images/web/visible.png" id="toggle1"
                             class="w-4 h-4 absolute top-11 right-3 cursor-pointer" alt="show password icon">
                         <p class="password text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
@@ -278,7 +278,7 @@ if (isset($_POST['create'])) {
                         <input name="cPassword" id="pass2" type="password"
                             class="mt-1.5 pl-2 pr-10 text-md h-11 rounded-[9px] bg-white w-full" required
                             placeholder="Confirm your password">
-                        <img src="./public/images/visible.png" id="toggle2"
+                        <img src="./public/images/web/visible.png" id="toggle2"
                             class="w-4 h-4 absolute top-11 right-3 cursor-pointer" alt="show password icon">
                         <p class="cPassword text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
@@ -372,7 +372,7 @@ if (isset($_POST['create'])) {
                             </p>
                             <button type="button" onclick="addCustomService()"
                                 class="mt-3 mb-2 flex justify-center border-none items-center border bg-yellow-500 rounded-xl hover:bg-yellow-400 w-full gap-3 py-2 text-xl font-medium">
-                                <img src="./public/images/black-cross.png" alt="create icon" class="w-5 h-5">
+                                <img src="./public/images/web/black-cross.png" alt="create icon" class="w-5 h-5">
                                 <p>Add Custom Service</p>
                             </button>
                         </div>
@@ -402,7 +402,7 @@ if (isset($_POST['create'])) {
 
                 <button type="submit" name="create"
                     class="flex justify-center items-center border bg-yellow-400 rounded-xl hover:bg-yellow-500 w-full gap-3 py-3 text-xl font-medium">
-                    <img src="./public/images/create.png" alt="create icon" class="w-5 h-5">
+                    <img src="./public/images/web/create.png" alt="create icon" class="w-5 h-5">
                     <p>Create Account</p>
                 </button>
 
@@ -418,8 +418,8 @@ if (isset($_POST['create'])) {
 
 
         <a href="/barber-s-point" class="flex gap-2 mt-4 items-center group cursor-pointer">
-            <img src="./public/images/left-arrow.png" class="w-4 h-4 group-hover:hidden" alt="arrow to home">
-            <img src="./public/images/left-arrow-yellow.png" class="w-4 h-6 hidden group-hover:block"
+            <img src="./public/images/web/left-arrow.png" class="w-4 h-4 group-hover:hidden" alt="arrow to home">
+            <img src="./public/images/web/left-arrow-yellow.png" class="w-4 h-6 hidden group-hover:block"
                 alt="arrow to home" id="photos">
             <p class="text-gray-500 group-hover:text-yellow-400">Back to Home</p>
         </a>

@@ -18,7 +18,7 @@
             class="flex flex-wrap bg-white mt-4 mb-4 sm:mb-8 h-10 items-center border rounded-xl pl-3 px-2 gap-2 max-[500px]:gap-1 w-full max-w-2xl">
 
             <label for="search" class="cursor-pointer flex items-center">
-                <img src="./public/images/search-icon.png" class="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7"
+                <img src="./public/images/web/search-icon.png" class="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7"
                     alt="search icon">
             </label>
 
@@ -30,9 +30,9 @@
 
             <div id="voiceBtn"
                 class="w-10 sm:w-11 h-full flex items-center hover:bg-yellow-400 justify-center rounded-md border-gray-300 cursor-pointer">
-                <img src="./public/images/voice.png" class="w-4 h-4 sm:w-5 sm:h-5" alt="voice search icon">
-                <img src="./public/images/pause.png" class="hidden w-4 h-4 sm:w-5 sm:h-5" alt="voice pause icon">
-                <img src="./public/images/play.png" class="hidden w-4 h-4 sm:w-5 sm:h-5" alt="voice resume icon">
+                <img src="./public/images/web/voice.png" class="w-4 h-4 sm:w-5 sm:h-5" alt="voice search icon">
+                <img src="./public/images/web/pause.png" class="hidden w-4 h-4 sm:w-5 sm:h-5" alt="voice pause icon">
+                <img src="./public/images/web/play.png" class="hidden w-4 h-4 sm:w-5 sm:h-5" alt="voice resume icon">
             </div>
 
             <button type="submit"
@@ -50,10 +50,10 @@
                 <div class="p-3 flex flex-col">
                     <div class="flex items-center justify-center gap-1 mb-2">
                         <p class="text-2xl font-bold text-yellow-500">50</p>
-                        <img src="./public/images/cross.png" alt="" class="w-4 h-4">
+                        <img src="./public/images/web/cross.png" alt="" class="w-4 h-4">
                     </div>
                     <div class="flex items-center justify-center gap-2">
-                        <img src="./public/images/shop.png" alt="" class="w-5 h-5">
+                        <img src="./public/images/web/shop.png" alt="" class="w-5 h-5">
                         <p class="text-gray-500 text-sm">Barber Shops</p>
                     </div>
                 </div>
@@ -61,10 +61,10 @@
                 <div class="p-3 flex flex-col">
                     <div class="flex items-center justify-center gap-1 mb-2">
                         <p class="text-2xl font-bold text-yellow-500">1000</p>
-                        <img src="./public/images/cross.png" alt="" class="w-4 h-4">
+                        <img src="./public/images/web/cross.png" alt="" class="w-4 h-4">
                     </div>
                     <div class="flex items-center justify-center gap-2">
-                        <img src="./public/images/heart.png" alt="" class="w-5 h-5">
+                        <img src="./public/images/web/heart.png" alt="" class="w-5 h-5">
                         <p class="text-gray-500 text-sm">Happy Customers</p>
                     </div>
                 </div>
@@ -72,10 +72,10 @@
                 <div class="p-3 flex flex-col">
                     <div class="flex items-center justify-center gap-1 mb-2">
                         <p class="text-2xl font-bold text-yellow-500">4.8</p>
-                        <img src="./public/images/star.png" alt="" class="w-4 h-4">
+                        <img src="./public/images/web/star.png" alt="" class="w-4 h-4">
                     </div>
                     <div class="flex items-center justify-center gap-2">
-                        <img src="./public/images/upward.png" alt="" class="w-5 h-5">
+                        <img src="./public/images/web/upward.png" alt="" class="w-5 h-5">
                         <p class="text-gray-500 text-sm">Average Rating</p>
                     </div>
                 </div>
@@ -85,10 +85,10 @@
                 <div class="p-4 md:p-6 flex flex-col flex-1 min-w-0 max-w-[200px]">
                     <div class="flex items-center justify-center gap-1 mb-3">
                         <p class="text-2xl  font-bold text-yellow-400">50</p>
-                        <img src="./public/images/cross.png" alt="" class="w-3 h-3">
+                        <img src="./public/images/web/cross.png" alt="" class="w-3 h-3">
                     </div>
                     <div class="flex items-center justify-center gap-2">
-                        <img src="./public/images/shop.png" alt="" class="w-4 h-4 md:w-5 md:h-5">
+                        <img src="./public/images/web/shop.png" alt="" class="w-4 h-4 md:w-5 md:h-5">
                         <p class="text-white text-sm md:text-base whitespace-nowrap">Barber Shops</p>
                     </div>
                 </div>
@@ -96,10 +96,10 @@
                 <div class="p-4 md:p-6 flex flex-col flex-1 min-w-0 max-w-[200px]">
                     <div class="flex items-center justify-center gap-1 mb-3">
                         <p class="text-2xl  font-bold text-yellow-400">1000</p>
-                        <img src="./public/images/cross.png" alt="" class="w-3 h-3">
+                        <img src="./public/images/web/cross.png" alt="" class="w-3 h-3">
                     </div>
                     <div class="flex items-center justify-center gap-2">
-                        <img src="./public/images/heart.png" alt="" class="w-4 h-4 md:w-5 md:h-5">
+                        <img src="./public/images/web/heart.png" alt="" class="w-4 h-4 md:w-5 md:h-5">
                         <p class="text-white text-sm md:text-base whitespace-nowrap">Happy Customers</p>
                     </div>
                 </div>
@@ -107,10 +107,10 @@
                 <div class="p-4 md:p-6 flex flex-col flex-1 min-w-0 max-w-[200px]">
                     <div class="flex items-center justify-center gap-1 mb-3">
                         <p class="text-2xl  font-bold text-yellow-400">4.8</p>
-                        <img src="./public/images/star.png" alt="" class="w-3 h-3 md:w-5 md:h-5">
+                        <img src="./public/images/web/star.png" alt="" class="w-3 h-3 md:w-5 md:h-5">
                     </div>
                     <div class="flex items-center justify-center gap-2">
-                        <img src="./public/images/upward.png" alt="" class="w-5 h-5 md:w-6 md:h-6">
+                        <img src="./public/images/web/upward.png" alt="" class="w-5 h-5 md:w-6 md:h-6">
                         <p class="text-white text-sm md:text-base whitespace-nowrap">Average Rating</p>
                     </div>
                 </div>

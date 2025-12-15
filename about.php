@@ -17,9 +17,9 @@ include 'navbar.php'; ?>
 
             <div>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                    <div>
+                    <div class="hover:-translate-y-1">
                         <h3 class="text-3xl font-bold text-gray-900 mb-6">Our Story</h3>
-                        <div class="space-y-4 text-gray-600">
+                        <div class="space-y-4 text-gray-600 break-all">
                             <p>
                                 Barber's Point is a BCA 4th semester academic project created by Sudip Kandel and Kushal
                                 Pandit.
@@ -40,21 +40,21 @@ include 'navbar.php'; ?>
                             </p>
                         </div>
                     </div>
-                    <img src="./public/images/barber-point.jpeg" alt=""
-                        class="w-200 h-100 hover:-translate-y-1 shadow-md hover:shadow-lg transition-all rounded-lg">
+                    <img src="./public/images/web/ab.jpg" alt=""
+                        class="h-[340px] w-96 hover:-translate-y-1 shadow-md hover:shadow-lg transition-all rounded-lg">
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="mt-11 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mt-11 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <h3 class="text-3xl font-bold text-gray-900 mb-12 text-center">Meet Our Team</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-2  transition-all">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 ">
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl group hover:-translate-y-1  transition-all">
                 <div class="p-8 text-center">
-                    <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <img src="./public/images/profile.png" alt="">
-                    </div>
+                    <img src="./private/images/sudip.jpeg"
+                        class="w-20 h-20 mx-auto mb-6 group-hover:-translate-y-2  transition-all rounded-full border-4 border-green-400"
+                        alt="Sudip Kandel">
                     <h4 class="text-xl font-semibold text-gray-900 mb-1">Sudip Kandel</h4>
                     <p class="text-yellow-600 font-medium mb-3">Developer</p>
                     <p class="text-gray-600 text-sm mb-5">
@@ -81,11 +81,11 @@ include 'navbar.php'; ?>
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-2  transition-all">
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1  transition-all">
                 <div class="p-8 text-center">
-                    <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <img src="./public/images/profile.png" alt="">
-                    </div>
+                    <img src="./private/images/kushal.jpg"
+                        class="w-20 h-20 mx-auto mb-6 group-hover:-translate-y-2 translate-all rounded-full border-4 border-green-400"
+                        alt="Kushal Pandit">
                     <h4 class="text-xl font-semibold text-gray-900 mb-1">Kushal Pandit</h4>
                     <p class="text-yellow-600 font-medium mb-3">Developer</p>
                     <p class="text-gray-600 text-sm mb-5">

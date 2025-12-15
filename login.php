@@ -72,7 +72,7 @@ if (isset($_POST['login'])) {
 
     section {
         background: linear-gradient(to right, rgba(255, 255, 255, 0.77), rgba(255, 255, 255, 0.77)),
-            url('./public/images/loginbg.jpg') center/cover no-repeat;
+            url('./public/images/web/loginbg.jpg') center/cover no-repeat;
         min-height: 100vh;
         width: 100%;
     }
@@ -80,7 +80,7 @@ if (isset($_POST['login'])) {
 
 <section class="flex flex-col justify-center items-center py-6 px-2">
 
-    <img src="./public/images/logo.png" alt="logo" class="w-[80px] h-[80px]">
+    <img src="./public/images/web/logo.png" alt="logo" class="w-[80px] h-[80px]">
 
     <h3 class="text-3xl font-bold mb-2 text-center px-2">Welcome Back To Barber's Point</h3>
 
@@ -110,14 +110,14 @@ if (isset($_POST['login'])) {
                 <input name="lpassword" type="password"
                     class="w-full mt-1.5 pl-2 pr-10 text-md h-11 rounded-[9px] bg-white" id="pass" required
                     placeholder="Create a password">
-                <img src="./public/images/visible.png" class="w-4 h-4 absolute top-11 right-3 cursor-pointer"
+                <img src="./public/images/web/visible.png" class="w-4 h-4 absolute top-11 right-3 cursor-pointer"
                     id="toggle" alt="show password icon">
                 <p class="lpassword text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
             </div>
 
             <button type="submit" name="login"
                 class="flex justify-center mt-5 items-center border bg-yellow-400 rounded-xl hover:bg-yellow-300 w-full gap-3 py-3 text-xl font-medium">
-                <img src="./public/images/enter.png" alt="create icon" class="w-5 h-5">
+                <img src="./public/images/web/enter.png" alt="create icon" class="w-5 h-5">
                 <p>Sign In</p>
             </button>
 
@@ -133,8 +133,9 @@ if (isset($_POST['login'])) {
     </div>
 
     <a href="/barber-s-point" class="flex gap-2 mt-4 items-center group cursor-pointer">
-        <img src="./public/images/left-arrow.png" class="w-4 h-4 group-hover:hidden" alt="arrow to home">
-        <img src="./public/images/left-arrow-yellow.png" class="w-4 h-6 hidden group-hover:block" alt="arrow to home">
+        <img src="./public/images/web/left-arrow.png" class="w-4 h-4 group-hover:hidden" alt="arrow to home">
+        <img src="./public/images/web/left-arrow-yellow.png" class="w-4 h-6 hidden group-hover:block"
+            alt="arrow to home">
         <p class="text-gray-500 group-hover:text-yellow-400">Back to Home</p>
     </a>
 
