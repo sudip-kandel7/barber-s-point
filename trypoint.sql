@@ -59,3 +59,10 @@ CREATE TABLE shop_services(
     FOREIGN KEY (sid) REFERENCES shop(sid),
     FOREIGN KEY (services_id) REFERENCES services(services_id)
 );
+CREATE TABLE favorites (
+    uid INT NOT NULL,
+    sid INT NOT NULL,
+    PRIMARY KEY(uid, sid),
+    FOREIGN KEY (uid) REFERENCES users(uid),
+    FOREIGN KEY (sid) REFERENCES shop(sid)
+);

@@ -10,7 +10,7 @@ if (isset($_POST['create'])) {
     $conn = new mysqli("localhost", "root", "", "trypoint");
     $type = $_POST['pType'];
     $firstN = $_POST['firstN'];
-    $lastN = $_POST['lastN'];
+    $add = $_POST['add'];
     $email = $_POST['email'];
     $phone = $_POST['number'];
     $password = $_POST['password'];
@@ -66,8 +66,9 @@ if (isset($_POST['create'])) {
         $fullPath = $targetDir . $uImageName;
 
         if (move_uploaded_file($tmpImage, $fullPath)) {
-            $stmt1 = "INSERT INTO users (type, firstN, lastN, email, phone, passwrd)
-            VALUES ('$type', '$firstN', '$lastN', '$email', '$phone', '$password')";
+            $stmt1 = "INSERT INTO users (type, firstN, address, email, phone, passwrd)
+VALUES ('$type', '$firstN', '$add', '$email', '$phone', '$password')";
+
             if (mysqli_query($conn, $stmt1)) {
                 $uid = mysqli_insert_id($conn);
                 $status = "active";
@@ -160,8 +161,8 @@ if (isset($_POST['create'])) {
             echo "Failed to upload image.";
         }
     } else {
-        $stmt = "INSERT INTO users (type, firstN, lastN, email, phone, passwrd)
-    VALUES ('$type', '$firstN', '$lastN', '$email', '$phone', '$password')";
+        $stmt = "INSERT INTO users (type, firstN, address, email, phone, passwrd)
+    VALUES ('$type', '$firstN', '$add', '$email', '$phone', '$password')";
 
         if (mysqli_query($conn, $stmt)) {
 
@@ -228,16 +229,18 @@ if (isset($_POST['create'])) {
 
                 <div class="flex flex-col min-[701px]:flex-row gap-5 md:gap-9 lg:gap-24 px-3">
                     <div class="w-full min-[701px]:w-80">
-                        <label for="firstN" class="font-medium">First Name</label> <br>
-                        <input name="firstN" type="text" class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-full"
-                            required placeholder="Enter your first name">
+                        <label for="firstN" class="font-medium">Full Name</label> <br>
+                        <input name="firstN" type="text" inputmode="text"
+                            class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-full" required
+                            placeholder="Enter your first name">
                         <p class="firstN text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
                     <div class="w-full min-[701px]:w-80">
-                        <label for="lastN" class="font-medium">Last Name (Optional)</label> <br>
-                        <input name="lastN" type="text" class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-full"
-                            placeholder="Enter your last name">
-                        <p class="lastN text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
+                        <label for="add" class="font-medium">Address</label> <br>
+                        <input name="add" type="text" required
+                            class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-full"
+                            placeholder="Enter your address">
+                        <p class="add text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
                 </div>
 
@@ -245,16 +248,19 @@ if (isset($_POST['create'])) {
                 <div class="flex flex-col min-[701px]:flex-row gap-5 md:gap-9 lg:gap-24 px-3">
                     <div class="w-full min-[701px]:w-80">
                         <label for="email" class="font-medium">Email Address</label> <br>
-                        <input name="email" type="text" class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-full"
-                            required placeholder="Enter your email">
+                        <input name="email" type="text" inputmode="text" inputmode="email"
+                            class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-full" required
+                            placeholder="Enter your email">
                         <p class="email text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
                     <div class="w-full min-[701px]:w-80">
                         <label for="number" class="font-medium">Phone Number</label> <br>
-                        <input name="number" type="text" class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-full"
+                        <input name="number" type="number" inputmode="numeric"
+                            class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-full"
                             placeholder="Enter your phone number">
                         <p class="number text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
+
                 </div>
 
 
@@ -285,13 +291,14 @@ if (isset($_POST['create'])) {
                     <div class="flex flex-col gap-2">
                         <div>
                             <label for="sname" class="font-medium">Shop Name</label> <br>
-                            <input type="text" name="sname" class="mt-1.5 w-full rounded-md text-md pl-2 h-11"
-                                placeholder="Enter your shop name">
+                            <input type="text" inputmode="text" name="sname"
+                                class="mt-1.5 w-full rounded-md text-md pl-2 h-11" placeholder="Enter your shop name">
                             <p class="sname text-red-600 text-sm pl-2 mt-0.5"></p>
                         </div>
                         <div>
                             <label for="address" class="font-medium">Shop Address</label> <br>
-                            <input type="text" name="address" class="mt-1.5 w-full rounded-md text-md pl-2 h-11"
+                            <input type="text" inputmode="text" name="address"
+                                class="mt-1.5 w-full rounded-md text-md pl-2 h-11"
                                 placeholder="Enter your complete shop address"> <br>
                             <p class="address text-red-600 text-sm pl-2 mt-0.5"></p>
                         </div>
@@ -349,15 +356,15 @@ if (isset($_POST['create'])) {
 
                         <div class="bg-white p-3 rounded-md shadow-md">
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                <input type="text"
+                                <input type="text" inputmode="text"
                                     class="bg-gray-100 border-2 border-gray-400 rounded-md mb-1.5 text-md py-1 px-3"
                                     id="customName" placeholder="Service Name">
 
-                                <input type="number"
+                                <input type="number" inputmode="numeric"
                                     class=" bg-gray-100 border-2 border-gray-400 rounded-md mb-1.5 text-md py-1 px-3"
                                     id="customPrice" placeholder="Price (Rs.)">
 
-                                <input type="number"
+                                <input type="number" inputmode="tel"
                                     class="bg-gray-100 border-2 border-gray-400 rounded-md mb-1.5 text-md py-1 px-3"
                                     id="customDuration" placeholder="Duration (min)">
 

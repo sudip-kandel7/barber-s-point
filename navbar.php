@@ -55,7 +55,6 @@ include 'sessionCheck.php';
             <?php else: ?>
 
                 <?php
-                // Get user data
                 $conn = new mysqli("localhost", "root", "", "trypoint");
                 if ($conn->connect_error) {
                     die("Connection failed: " . $conn->connect_error);
@@ -65,7 +64,6 @@ include 'sessionCheck.php';
                 $result = mysqli_query($conn, $stmt);
                 $row = mysqli_fetch_assoc($result);
                 $firstN = ucfirst(strtolower($row['firstN']));
-                $lastN = ucfirst(strtolower($row['lastN']));
                 $type = ucfirst(strtolower($row['type']));
                 ?>
 
@@ -78,16 +76,14 @@ include 'sessionCheck.php';
                             id="menu">
 
                             <ul class="flex flex-col gap-3">
-                                <!-- Name and Type (for all users) -->
                                 <li>
                                     <a
                                         class="block text-lg font-medium py-2 bg-white text-gray-800 rounded-md shadow-md hover:shadow-lg hover:text-white hover:bg-yellow-400 hover:scale-105 transition-all duration-300">
-                                        <p><?php echo $firstN . " " . $lastN; ?></p>
+                                        <p><?php echo $firstN; ?></p>
                                         <p class="text-gray-500 font-light"><?php echo $type; ?></p>
                                     </a>
                                 </li>
 
-                                <!-- Dashboard (only for admin) -->
                                 <?php if ($row['type'] === 'admin'): ?>
                                     <li>
                                         <a href="./dashboard.php"
@@ -97,7 +93,6 @@ include 'sessionCheck.php';
                                     </li>
                                 <?php endif; ?>
 
-                                <!-- Profile (only for customer) -->
                                 <?php if ($row['type'] === 'customer'): ?>
                                     <li>
                                         <a href="profile.php"
@@ -107,7 +102,6 @@ include 'sessionCheck.php';
                                     </li>
                                 <?php endif; ?>
 
-                                <!-- My Shop (only for barber) -->
                                 <?php if ($row['type'] === 'barber'): ?>
                                     <li>
                                         <a href="myshop.php"
@@ -119,7 +113,6 @@ include 'sessionCheck.php';
 
                                 <hr class="h-1 bg-gray-400 rounded-full shadow-sm my-2">
 
-                                <!-- Logout (for all users) -->
                                 <li>
                                     <a onclick="logout()"
                                         class="block text-lg font-medium py-2 px-2 bg-white text-gray-800 rounded-md shadow-md hover:shadow-lg hover:text-white hover:bg-red-600 hover:scale-105 transition-all duration-300 cursor-pointer">
@@ -133,14 +126,12 @@ include 'sessionCheck.php';
 
             <?php endif; ?>
 
-            <!-- Hamburger button -->
             <div class="min-[750px]:hidden flex flex-col p-2 rounded-md hover:bg-yellow-400 cursor-pointer transition-all duration-300"
                 id="hamburger">
                 <img src="./public/images/web/menu.png" class="w-4 h-4 hover:bg-yellow-400 img block " alt="">
                 <img src="./public/images/web/close.png" class="w-4 h-4 hover:bg-yellow-400 img hidden" alt="">
             </div>
 
-            <!-- Mobile menu (hidden by default) -->
             <div class="hidden min-[750px]:hidden text-center bg-[#fafafa] w-60 p-4 shadow-md absolute top-[67px] right-4 rounded-md z-50"
                 id="mobileMenu">
 
@@ -188,16 +179,14 @@ include 'sessionCheck.php';
 
                     <?php else: ?>
 
-                        <!-- Name and Type (for all users) -->
                         <li>
                             <a
                                 class="block text-lg font-medium py-2 bg-white text-gray-800 rounded-md shadow-md hover:shadow-lg hover:text-white hover:bg-yellow-400 hover:scale-105 transition-all duration-300">
-                                <p><?php echo $firstN . " " . $lastN; ?></p>
+                                <p><?php echo $firstN; ?></p>
                                 <p class="text-gray-500 font-light"><?php echo $type; ?></p>
                             </a>
                         </li>
 
-                        <!-- Dashboard (only for admin) -->
                         <?php if ($row['type'] === 'admin'): ?>
                             <li>
                                 <a href="./dashboard.php"
@@ -207,7 +196,6 @@ include 'sessionCheck.php';
                             </li>
                         <?php endif; ?>
 
-                        <!-- Profile (only for customer) -->
                         <?php if ($row['type'] === 'customer'): ?>
                             <li>
                                 <a href="./profile.php"
@@ -217,7 +205,6 @@ include 'sessionCheck.php';
                             </li>
                         <?php endif; ?>
 
-                        <!-- My Shop (only for barber) -->
                         <?php if ($row['type'] === 'barber'): ?>
                             <li>
                                 <a href="./myshop.php"
@@ -227,7 +214,6 @@ include 'sessionCheck.php';
                             </li>
                         <?php endif; ?>
 
-                        <!-- Logout (for all users) -->
                         <li>
                             <a onclick="logout()"
                                 class="flex items-center justify-center gap-2 text-lg font-medium py-2 rounded-md shadow-md bg-gray-50 hover:bg-red-600 hover:text-white hover:scale-105 transition-all duration-300 cursor-pointer">

@@ -1,82 +1,59 @@
-document.addEventListener("DOMContentLoaded", () => {
-  //  hide and show filter and sort lists
+function toggleDiv(btn) {
+  let btnr = document.getElementById("myreview");
+  let btnf = document.getElementById("myfav");
+  let imgr = document.getElementById("imgr");
+  let imgf = document.getElementById("imgf");
+  let reviewD = document.getElementById("reviewD");
+  let favD = document.getElementById("favD");
 
-  const btn1 = document.getElementsByClassName("filter")[0];
-  const btn2 = document.getElementsByClassName("sort")[0];
+  if (btn === "review") {
+    btnr.classList.add("text-black", "bg-[#f1f5f9]");
+    btnr.classList.remove("text-gray-500");
+    imgr.src = "./public/images/web/timeB.png";
 
-  const filterList = document.getElementsByClassName("list1")[0];
-  const sortList = document.getElementsByClassName("list2")[0];
+    reviewD.classList.remove("hidden");
+    favD.classList.add("hidden");
 
-  btn1.addEventListener("click", () => {
-    filterList.classList.toggle("hidden");
-    sortList.classList.add("hidden");
-  });
+    btnf.classList.remove("text-black", "bg-[#f1f5f9]");
+    btnf.classList.add("text-gray-500");
+    imgf.src = "./public/images/web/favoriteG.png";
+  } else if (btn === "fav") {
+    btnr.classList.remove("text-black", "bg-[#f1f5f9]");
+    btnr.classList.add("text-gray-500");
+    imgr.src = "./public/images/web/time.png";
+    reviewD.classList.add("hidden");
 
-  btn2.addEventListener("click", () => {
-    filterList.classList.add("hidden");
-    sortList.classList.toggle("hidden");
-  });
+    favD.classList.remove("hidden");
 
-  // change filter value and img on click
+    btnf.classList.add("text-black", "bg-[#f1f5f9]");
+    btnf.classList.remove("text-gray-500");
+    imgf.src = "./public/images/web/favoriteB.png";
+  }
+}
 
-  const filterOpts = document.querySelectorAll(".fOption");
-  const filterText = document.querySelector(".filter p");
+function changer(btn) {
+  let edit = document.getElementsByClassName("edit")[0];
+  let remove = document.getElementsByClassName("delete")[0];
+  let imge = document.getElementById("imge");
+  let reviewi = document.getElementById("review1");
+  let editer = document.getElementById("editer");
 
-  let selected1 = filterOpts[0];
+  if (btn === "edit") {
+    if (editer.innerText === "Edit") {
+      // Changed from .value to .innerText
+      reviewi.disabled = false;
+      editer.innerText = "Save";
+      imge.src = "./public/images/web/check.png";
+      reviewi.focus();
+    } else {
+      reviewi.disabled = true;
+      editer.innerText = "Edit";
+      imge.src = "./public/images/web/edit.png";
+    }
+  }
+}
 
-  selected1.classList.add("bg-yellow-100");
-
-  selected1.querySelector("img").classList.remove("opacity-0");
-
-  filterOpts.forEach((opt) => {
-    opt.addEventListener("click", () => {
-      filterText.innerText = opt.querySelector("p").innerText;
-      filterList.classList.add("hidden");
-
-      filterOpts.forEach((o) => {
-        o.classList.remove("bg-yellow-100");
-        o.querySelector("img").classList.add("opacity-0");
-      });
-
-      selected1 = opt;
-      selected1.classList.add("bg-yellow-100");
-      selected1.querySelector("img").classList.remove("opacity-0");
-    });
-  });
-
-  // change sort value and img on click
-
-  const sortOpts = document.querySelectorAll(".sOption");
-  const sortText = document.querySelector(".sort p");
-
-  let selected2 = sortOpts[0];
-
-  selected2.classList.add("bg-yellow-100");
-
-  selected2.querySelector("img").classList.remove("opacity-0");
-
-  sortOpts.forEach((opt) => {
-    opt.addEventListener("click", () => {
-      sortText.innerText = opt.querySelector("p").innerText;
-      sortList.classList.add("hidden");
-
-      sortOpts.forEach((o) => {
-        o.classList.remove("bg-yellow-100");
-        o.querySelector("img").classList.add("opacity-0");
-      });
-
-      selected2 = opt;
-      selected2.classList.add("bg-yellow-100");
-      selected2.querySelector("img").classList.remove("opacity-0");
-    });
-  });
-});
-
-// view detials button
-
-// Services and reviews button color change on click
-let sid = null;
-
+// view detail
 function toggleTab(btn) {
   const btnServices = document.getElementsByClassName("services")[0];
   const btnReviews = document.getElementsByClassName("reviews")[0];
@@ -112,9 +89,7 @@ function toggleTab(btn) {
 
 // view details button
 function view(btn) {
-  console.log(sid);
-  sid = btn.dataset.sid;
-  console.log(sid);
+  const sid = btn.dataset.sid;
   const name = btn.dataset.name;
   const address = btn.dataset.address;
   const photo = btn.dataset.photo;
@@ -134,8 +109,8 @@ function view(btn) {
         if (response.status === "success") {
           showD.classList.remove("hidden");
           setTimeout(() => {
-            showD.classList.remove("opacity-0", "scale-95");
-          }, 200);
+            showD.classList.remove("opacity-0", "scale-x-0");
+          }, 10);
 
           document.getElementById("sname").innerText = name;
           document.getElementById("saddress").innerText = address;
@@ -213,36 +188,14 @@ flex flex-col px-3 py-3 mb-3 gap-1">
     }
   };
 
-  xhr.send();
-}
-
-function addFav() {
-  if (!sid) {
-    alert("No shop selected");
-    return;
-  }
-
-  let xhr = new XMLHttpRequest();
-  xhr.open("POST", "shops.php", true);
-  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState === 4 && xhr.status === 200) {
-      try {
-        const response = JSON.parse(xhr.responseText);
-
-        if (response.status === "success") {
-          document.getElementById("fav").src = "./public/images/web/saved.png";
-          btn.disabled = true;
-          btn.classList.add("bg-yellow-600");
-        } else {
-          alert(response.message);
-        }
-      } catch (e) {
-        console.error(xhr.responseText);
-      }
+  document.addEventListener("click", (event) => {
+    if (!showD.contains(event.target) && event.target !== btn) {
+      showD.classList.add("opacity-0", "scale-x-0");
+      setTimeout(() => {
+        showD.classList.add("hidden");
+      }, 500);
     }
-  };
+  });
 
-  xhr.send("sid=" + encodeURIComponent(sid));
+  xhr.send();
 }

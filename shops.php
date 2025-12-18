@@ -1,5 +1,9 @@
 <?php
 
+include 'sessionCheck.php';
+
+
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 // header('Content-Type: application/json');
@@ -7,6 +11,22 @@ ini_set('display_errors', 1);
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
 $conn = new mysqli("localhost", "root", "", "trypoint");
+
+
+
+if (isset($_SESSION['user'])) {
+
+    $email = $_SESSION['user']->email;
+
+    $qryi = "SELECT uid FROM users WHERE email = '$email'";
+    $resulti = mysqli_query($conn, $qryi);
+
+    if ($resulti && mysqli_num_rows($resulti) > 0) {
+        $rowi = mysqli_fetch_assoc($resulti);
+        $uid = $rowi['uid'];
+    }
+}
+
 
 $Aqry = "
     SELECT 
@@ -19,7 +39,9 @@ $Aqry = "
         queue.total_wait_time
     FROM shop
     LEFT JOIN queue ON shop.sid = queue.sid
+    ORDER BY queue.current_queue ASC
 ";
+
 
 $Aresult = mysqli_query($conn, $Aqry);
 $Ashops = [];
@@ -47,7 +69,6 @@ if (isset($_GET['sid'])) {
     $shopQry = "
         SELECT 
             users.firstN,
-            users.lastN,
             queue.current_queue,
             queue.total_wait_time,
             COUNT(review.rid) AS total_reviews
@@ -58,7 +79,6 @@ if (isset($_GET['sid'])) {
         WHERE shop.sid = $sid
         GROUP BY 
             users.firstN,
-            users.lastN,
             queue.current_queue,
             queue.total_wait_time
     ";
@@ -87,7 +107,6 @@ if (isset($_GET['sid'])) {
     $reviewsQry = "
         SELECT 
             users.firstN,
-            users.lastN,
             review.review,
             review.date_added
         FROM review
@@ -101,7 +120,7 @@ if (isset($_GET['sid'])) {
     $reviews = [];
     while ($row = mysqli_fetch_assoc($reviewsResult)) {
         $reviews[] = [
-            'name' => $row['firstN'] . ' ' . $row['lastN'],
+            'name' => $row['firstN'],
             'review_text' => $row['review'],
             'date' => date('M d, Y', strtotime($row['date_added']))
         ];
@@ -115,6 +134,24 @@ if (isset($_GET['sid'])) {
     ]);
     exit;
 }
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sid'], $uid)) {
+
+    $sid = (int) $_POST['sid'];
+
+    $favQry = "INSERT INTO favorites (uid, sid) VALUES ($uid, $sid)";
+
+    if (mysqli_query($conn, $favQry)) {
+        echo json_encode(['status' => 'success']);
+    } else {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Already added to favorites'
+        ]);
+    }
+    exit;
+}
+
 
 mysqli_close($conn);
 ?>
@@ -392,10 +429,157 @@ mysqli_close($conn);
                     </div>
 
                 <?php endforeach ?>
-
             </div>
 
+            <!-- // sorting and filtering here using js  -->
+
         </div>
+
+        <script>
+            const allShops = <?php echo json_encode($Ashops); ?>;
+
+            document.addEventListener('DOMContentLoaded', () => {
+
+                const filterOptions = document.querySelectorAll('.fOption');
+
+                filterOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        const filterText = option.querySelector('p')
+                            .innerText;
+                        applyFilter(filterText);
+                    });
+                });
+
+                const sortOptions = document.querySelectorAll('.sOption');
+
+                sortOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        const sortText = option.querySelector('p')
+                            .innerText;
+                        applySort(sortText);
+                    });
+                });
+
+                function applyFilter(filterType) {
+                    let filtered = allShops;
+
+                    if (filterType === 'Open Now') {
+                        filtered = allShops.filter(shop => {
+                            const status = shop.status.toLowerCase();
+                            return status === 'open' || status === 'active';
+                        });
+                    } else if (filterType === 'No Wait') {
+                        filtered = allShops.filter(shop => shop.current_queue == 0);
+                    }
+
+                    showShops(filtered);
+                }
+
+                function applySort(sortType) {
+                    let sorted = [...allShops];
+
+                    if (sortType === 'Queue') {
+                        sorted.sort((a, b) => a.current_queue - b.current_queue);
+                    } else if (sortType === 'Wait Time') {
+                        sorted.sort((a, b) => {
+                            const timeA = parseInt(a.total_wait_time) || 0;
+                            const timeB = parseInt(b.total_wait_time) || 0;
+                            return timeA - timeB;
+                        });
+                    }
+
+                    showShops(sorted);
+                }
+
+                function showShops(shops) {
+                    const container = document.querySelector('.grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-3');
+
+                    container.innerHTML = '';
+
+                    if (shops.length === 0) {
+                        container.innerHTML =
+                            '<div class="col-span-full text-center py-16"><p class="text-gray-500 text-xl">No shops found</p></div>';
+                        return;
+                    }
+
+                    shops.forEach(shop => {
+                        const statusColor = (shop.status.toLowerCase() === 'open') ? 'green' : 'red';
+
+                        const shopHTML = `
+            <div class="w-full max-w-[450px] mx-auto relative bg-white shadow-md rounded-lg hover:-translate-y-1 hover:shadow-xl transition-all group">
+                <img src="${shop.photo}" alt="${shop.sname}" class="w-full h-48 sm:h-56 object-cover rounded-t-lg">
+                
+                <p class="bg-opacity-70 px-2 sm:px-2.5 font-semibold absolute top-2 sm:top-3 right-2 sm:right-3 rounded-full inline-flex items-center py-0.5 text-[10px] sm:text-xs cursor-pointer bg-yellow-400">
+                    ${shop.status}
+                </p>
+                
+                <div class="px-3 sm:px-4 py-3">
+                    <p class="text-base sm:text-lg font-semibold text-start pl-2 sm:pl-3 group-hover:text-yellow-400 truncate">
+                        ${shop.sname}
+                    </p>
+                    
+                    <div class="flex items-center gap-1 mt-1">
+                        <img src="./public/images/web/shop-location.png" class="w-4 h-4 flex-shrink-0" alt="">
+                        <p class="text-xs sm:text-sm text-gray-500 truncate">${shop.saddress}</p>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row justify-between gap-2 sm:gap-0 mt-3">
+                        <div class="flex gap-1.5 sm:gap-2 items-center">
+                            <img src="./public/images/web/user.png" class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" alt="">
+                            <p class="text-xs sm:text-sm text-gray-500">
+                                Queue: <span class="text-yellow-400 font-semibold">${shop.current_queue} People</span>
+                            </p>
+                        </div>
+                        
+                        <div class="flex gap-1.5 sm:gap-2 items-center">
+                            <img src="./public/images/web/time.png" class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" alt="">
+                            <p class="text-xs sm:text-sm text-gray-500">
+                                Est. wait: <span class="text-yellow-400 font-semibold">${shop.total_wait_time} Min</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <button onclick="view(this)" class="w-[96%] text-xs sm:text-sm font-semibold rounded-md bg-[#f8f9fa] border py-2 group-hover:bg-yellow-400 group-hover:shadow-md mt-3 mb-5 transition-all mx-auto block"
+                    data-sid="${shop.sid}"
+                    data-name="${shop.sname}"
+                    data-address="${shop.saddress}"
+                    data-photo="${shop.photo}"
+                    data-status="${shop.status}">
+                    View Details
+                </button>
+            </div>
+        `;
+
+                        container.innerHTML += shopHTML;
+                    });
+
+                    const countText = document.querySelector('.flex-shrink-0.ml-auto p');
+                    if (countText) {
+                        countText.textContent = `Showing ${shops.length} of ${allShops.length} shops`;
+                    }
+                }
+            });
+
+
+            document.addEventListener("click", (event) => {
+                const showD = document.getElementsByClassName("showD")[0];
+
+                const clickedInsideModal = showD.contains(event.target);
+                const clickedButton = event.target.closest('button[onclick^="view"]');
+
+                if (!clickedInsideModal && !clickedButton) {
+                    if (!showD.classList.contains("hidden")) {
+                        showD.classList.add("opacity-0", "scale-x-0");
+                        setTimeout(() => {
+                            showD.classList.add("hidden");
+                        }, 500);
+                    }
+                }
+            });
+        </script>
+
+    </div>
     </div>
 </section>
 
@@ -452,11 +636,13 @@ transition-all duration-500 ease-out opacity-0 scale-x-0">
     </div>
 
     <div class="p-4 sm:p-6 border-t border-gray-200 flex gap-2 flex-wrap">
-        <button
-            class="px-4 flex items-center gap-2 py-2 hover:-translate-y-1 bg-yellow-400  hover:bg-yellow-500 text-gray-700 font-medium rounded-lg transition-colors text-sm">
-            <img src="./public/images/web/save.png" class="w-3 h-3" alt="">
-            Favorite
-        </button>
+        <?php if ($_SESSION['user']->type === "customer"): ?>
+            <button onclick="addFav(this)"
+                class="px-4 flex items-center gap-2 py-2 hover:-translate-y-1 bg-yellow-400  hover:bg-yellow-500 text-gray-700 font-medium rounded-lg transition-colors text-sm">
+                <img id="fav" src="./public/images/web/save.png" class="w-3 h-3" alt="">
+                <span class="fav">Favorite</span>
+            </button>
+        <?php endif ?>
         <button
             class="px-4 py-2 border-2 border-gray-300 hover:-translate-y-1 hover:border-yellow-500 text-gray-700 font-medium rounded-lg transition-colors text-sm">
             Share
