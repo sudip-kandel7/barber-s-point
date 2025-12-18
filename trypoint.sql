@@ -4,7 +4,7 @@ CREATE TABLE users (
     type VARCHAR(8) NOT NULL,
     firstN TEXT NOT NULL,
     lastN TEXT,
-    email VARCHAR(200) NOT NULL UNIQUE,
+    email text NOT NULL UNIQUE,
     phone VARCHAR(10),
     passwrd TEXT NOT NULL
 );
@@ -23,7 +23,7 @@ CREATE TABLE shop (
 CREATE TABLE queue (
     sid INT PRIMARY KEY,
     current_queue INT NOT NULL DEFAULT 0,
-    total_wait_time TIMEf NOT NULL DEFAULT '00:00:00',
+    total_wait_time TIME NOT NULL DEFAULT '00:00:00',
     FOREIGN KEY(sid) REFERENCES shop(sid)
 );
 -- reviews table
@@ -37,8 +37,6 @@ CREATE TABLE review (
     FOREIGN KEY(sid) REFERENCES shop(sid),
     UNIQUE (uid, sid)
 );
-
-
 -- services table
 -- CREATE TABLE services(
 --     services_id int AUTO_INCREMENT PRIMARY KEY,
@@ -48,10 +46,9 @@ CREATE TABLE review (
 --     sid int,
 --     FOREIGN KEY (sid) REFERENCES shop(sid)
 -- );
-
 CREATE TABLE services(
     services_id int AUTO_INCREMENT PRIMARY KEY,
-    services_name text,
+    services_name text
 );
 CREATE TABLE shop_services(
     sid INT,

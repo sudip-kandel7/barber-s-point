@@ -54,14 +54,22 @@ include 'sessionCheck.php';
 
             <?php else: ?>
 
-                <div class="flex items-center font-medium text-md gap-11 max-[750px]:hidden max-[900px]:gap-2">
-                    <?php if ($_SESSION['user']->type === "admin"): ?>
-                        <a href="./dashboard.php"
-                            class="bg-black text-white h-9 py-2 px-3 flex items-center justify-center rounded-md shadow hover:bg-gray-700 hover:shadow-lg transition-all duration-300">
-                            Dashboard
-                        </a>
-                    <?php endif; ?>
+                <?php
+                // Get user data
+                $conn = new mysqli("localhost", "root", "", "trypoint");
+                if ($conn->connect_error) {
+                    die("Connection failed: " . $conn->connect_error);
+                }
+                $email = $_SESSION['user']->email;
+                $stmt = "SELECT * FROM users WHERE email = '$email'";
+                $result = mysqli_query($conn, $stmt);
+                $row = mysqli_fetch_assoc($result);
+                $firstN = ucfirst(strtolower($row['firstN']));
+                $lastN = ucfirst(strtolower($row['lastN']));
+                $type = ucfirst(strtolower($row['type']));
+                ?>
 
+                <div class="flex items-center font-medium text-md gap-3 max-[750px]:hidden max-[900px]:gap-2">
                     <div class="relative inline-block">
                         <img src="./public/images/web/profile.png" onclick="toggleMenu()"
                             class="w-8 h-8 rounded-full cursor-pointer hover:scale-110 transition" alt="profile icon">
@@ -70,58 +78,57 @@ include 'sessionCheck.php';
                             id="menu">
 
                             <ul class="flex flex-col gap-3">
-
+                                <!-- Name and Type (for all users) -->
                                 <li>
                                     <a
                                         class="block text-lg font-medium py-2 bg-white text-gray-800 rounded-md shadow-md hover:shadow-lg hover:text-white hover:bg-yellow-400 hover:scale-105 transition-all duration-300">
-                                        <?php
-                                        $conn = new mysqli("localhost", "root", "", "trypoint");
-
-                                        if ($conn->connect_error) {
-                                            die("Connection failed: " . $conn->connect_error);
-                                        }
-
-                                        $email = $_SESSION['user']->email;
-
-                                        $stmt = "SELECT * FROM users WHERE email = '$email'";
-                                        $result = mysqli_query($conn, $stmt);
-                                        $row = mysqli_fetch_assoc($result);
-
-                                        $firstN = ucfirst(strtolower($row['firstN']));
-                                        $lastN = ucfirst(strtolower($row['lastN']));
-                                        $type = ucfirst(strtolower($row['type']));
-                                        ?>
                                         <p><?php echo $firstN . " " . $lastN; ?></p>
                                         <p class="text-gray-500 font-light"><?php echo $type; ?></p>
-
                                     </a>
                                 </li>
-                                <li>
-                                    <a onclick="profile()"
-                                        class="block text-lg font-medium py-2 px-2 bg-white text-gray-800 rounded-md shadow-md hover:shadow-lg hover:text-white hover:bg-yellow-400  hover:scale-105 transition-all duration-300">
-                                        Profile
-                                    </a>
 
-                                </li>
+                                <!-- Dashboard (only for admin) -->
+                                <?php if ($row['type'] === 'admin'): ?>
+                                    <li>
+                                        <a href="./dashboard.php"
+                                            class="block text-lg font-medium py-2 px-2 bg-white text-gray-800 rounded-md shadow-md hover:shadow-lg hover:text-white hover:bg-yellow-400 hover:scale-105 transition-all duration-300">
+                                            Dashboard
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
 
+                                <!-- Profile (only for customer) -->
+                                <?php if ($row['type'] === 'customer'): ?>
+                                    <li>
+                                        <a href="profile.php"
+                                            class="block text-lg font-medium py-2 px-2 bg-white text-gray-800 rounded-md shadow-md hover:shadow-lg hover:text-white hover:bg-yellow-400 hover:scale-105 transition-all duration-300">
+                                            Profile
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
+
+                                <!-- My Shop (only for barber) -->
+                                <?php if ($row['type'] === 'barber'): ?>
+                                    <li>
+                                        <a href="myshop.php"
+                                            class="block text-lg font-medium py-2 px-2 bg-white text-gray-800 rounded-md shadow-md hover:shadow-lg hover:text-white hover:bg-yellow-400 hover:scale-105 transition-all duration-300">
+                                            My Shop
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
 
                                 <hr class="h-1 bg-gray-400 rounded-full shadow-sm my-2">
 
+                                <!-- Logout (for all users) -->
                                 <li>
                                     <a onclick="logout()"
-                                        class="block text-lg font-medium py-2 bg-white text-gray-800 rounded-md shadow-md hover:shadow-lg hover:text-white hover:bg-red-600 hover:scale-105 transition-all duration-300">
+                                        class="block text-lg font-medium py-2 px-2 bg-white text-gray-800 rounded-md shadow-md hover:shadow-lg hover:text-white hover:bg-red-600 hover:scale-105 transition-all duration-300 cursor-pointer">
                                         Logout
                                     </a>
                                 </li>
-
                             </ul>
-
                         </div>
-
                     </div>
-
-
-
                 </div>
 
             <?php endif; ?>
@@ -132,7 +139,6 @@ include 'sessionCheck.php';
                 <img src="./public/images/web/menu.png" class="w-4 h-4 hover:bg-yellow-400 img block " alt="">
                 <img src="./public/images/web/close.png" class="w-4 h-4 hover:bg-yellow-400 img hidden" alt="">
             </div>
-
 
             <!-- Mobile menu (hidden by default) -->
             <div class="hidden min-[750px]:hidden text-center bg-[#fafafa] w-60 p-4 shadow-md absolute top-[67px] right-4 rounded-md z-50"
@@ -159,7 +165,6 @@ include 'sessionCheck.php';
                         </a>
                     </li>
 
-
                     <hr class="h-1 bg-gray-400 rounded-full shadow-sm my-2">
 
                     <?php if (!isset($_SESSION['user']->email)): ?>
@@ -183,8 +188,17 @@ include 'sessionCheck.php';
 
                     <?php else: ?>
 
-                        <?php if ($_SESSION['user']->type === "admin"): ?>
+                        <!-- Name and Type (for all users) -->
+                        <li>
+                            <a
+                                class="block text-lg font-medium py-2 bg-white text-gray-800 rounded-md shadow-md hover:shadow-lg hover:text-white hover:bg-yellow-400 hover:scale-105 transition-all duration-300">
+                                <p><?php echo $firstN . " " . $lastN; ?></p>
+                                <p class="text-gray-500 font-light"><?php echo $type; ?></p>
+                            </a>
+                        </li>
 
+                        <!-- Dashboard (only for admin) -->
+                        <?php if ($row['type'] === 'admin'): ?>
                             <li>
                                 <a href="./dashboard.php"
                                     class="flex items-center justify-center gap-2 text-lg font-medium py-2 rounded-md shadow-md bg-gray-50 hover:bg-blue-50 hover:scale-105 transition-all duration-300">
@@ -193,16 +207,30 @@ include 'sessionCheck.php';
                             </li>
                         <?php endif; ?>
 
-                        <li>
-                            <a href="./profile.php"
-                                class="flex items-center justify-center gap-2 text-lg font-medium py-2 rounded-md shadow-md bg-gray-50 hover:bg-blue-200 hover:scale-105 transition-all duration-300">
-                                <span>Profile</span>
-                            </a>
-                        </li>
+                        <!-- Profile (only for customer) -->
+                        <?php if ($row['type'] === 'customer'): ?>
+                            <li>
+                                <a href="./profile.php"
+                                    class="flex items-center justify-center gap-2 text-lg font-medium py-2 rounded-md shadow-md bg-gray-50 hover:bg-blue-200 hover:scale-105 transition-all duration-300">
+                                    <span>Profile</span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
 
+                        <!-- My Shop (only for barber) -->
+                        <?php if ($row['type'] === 'barber'): ?>
+                            <li>
+                                <a href="./myshop.php"
+                                    class="flex items-center justify-center gap-2 text-lg font-medium py-2 rounded-md shadow-md bg-gray-50 hover:bg-blue-200 hover:scale-105 transition-all duration-300">
+                                    <span>My Shop</span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+
+                        <!-- Logout (for all users) -->
                         <li>
                             <a onclick="logout()"
-                                class="flex items-center justify-center gap-2 text-lg font-medium py-2 rounded-md shadow-md bg-gray-50 hover:bg-red-600 hover:text-black hover:scale-105 transition-all duration-300">
+                                class="flex items-center justify-center gap-2 text-lg font-medium py-2 rounded-md shadow-md bg-gray-50 hover:bg-red-600 hover:text-white hover:scale-105 transition-all duration-300 cursor-pointer">
                                 <img src="./public/images/web/log-out.png" class="w-4 h-4 transition-transform duration-300"
                                     alt="">
                                 <span>Logout</span>

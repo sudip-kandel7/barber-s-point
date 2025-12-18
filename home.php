@@ -2,8 +2,8 @@
     <div style="   
   background:
       linear-gradient(to right, rgba(255,255,255,0.8), rgba(255,255,255,0.8)),
-      url('./public/images/hero-barber.jpg') center/cover no-repeat;   
-" class="flex justify-center items-center flex-col text-center min-h-[40vh] px-4 py-8">
+      url('./public/images/web/hero-barber.jpg') center/cover no-repeat;   
+" class="flex justify-center items-center flex-col text-center min-h-[40vh] px-4 py-4">
         <div class="mb-6 sm:mb-8 text-center">
             <h1 class="text-3xl sm:text-4xl md:text-6xl text-black font-semibold leading-tight">Find Your Perfect</h1>
             <h1 class="text-3xl sm:text-4xl md:text-6xl font-bold text-yellow-500 leading-tight">Barber Shop</h1>

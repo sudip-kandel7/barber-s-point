@@ -6,10 +6,10 @@ let toggle1 = document.getElementById("toggle1");
 toggle1.addEventListener("click", () => {
   if (password1.type === "password") {
     password1.type = "text";
-    toggle1.src = "./public/images/hide.png";
+    toggle1.src = "./public/images/web/hide.png";
   } else {
     password1.type = "password";
-    toggle1.src = "./public/images/visible.png";
+    toggle1.src = "./public/images/web/visible.png";
   }
 });
 
@@ -19,7 +19,7 @@ let password2 = document.getElementById("pass2");
 toggle2.addEventListener("click", () => {
   if (password2.type === "password") {
     password2.type = "text";
-    toggle2.src = "./public/images/hide.png";
+    toggle2.src = "./public/images/web/hide.png";
   } else {
     password2.type = "password";
     toggle2.src = "./public/images/visible.png";
@@ -346,27 +346,64 @@ document.getElementById("photos").addEventListener("change", function () {
 
 // custom services in register form
 
+["customName", "customPrice", "customDuration"].forEach((id) => {
+  document.getElementById(id).addEventListener("input", () => {
+    validateCustomService();
+    checkErrors();
+  });
+});
+
+function validateCustomService() {
+  const nameInput = document.getElementById("customName");
+  const priceInput = document.getElementById("customPrice");
+  const durationInput = document.getElementById("customDuration");
+  const el = document.getElementsByClassName("customErr")[0];
+
+  const name = nameInput.value.trim();
+  const price = priceInput.value.trim();
+  const duration = durationInput.value.trim();
+
+  const serviceNpattern = /^[A-Za-z]+( [A-Za-z]+)?$/;
+
+  if (name === "" || price === "" || duration === "") {
+    el.innerText = "Please enter all fields!";
+    return false;
+  }
+
+  if (price < 0 || duration < 0) {
+    el.innerText = "Must not enter negative values!";
+    return false;
+  }
+
+  if (name.length < 3) {
+    el.innerText = "Service name must contain at least 3 letters!";
+    return false;
+  }
+
+  if (!serviceNpattern.test(name)) {
+    el.innerText = "Service name must contain only letters!";
+    return false;
+  }
+
+  el.innerText = "";
+  return true;
+}
+
 function addCustomService() {
+  if (!validateCustomService()) {
+    checkErrors();
+    return;
+  }
+
   let name = document.getElementById("customName").value.trim();
   let price = document.getElementById("customPrice").value.trim();
   let duration = document.getElementById("customDuration").value.trim();
-  const serviceNpattern = /^[A-Za-z]{2,}$/;
 
-  const el = document.getElementsByClassName("customErr")[0];
+  let div = document.createElement("div");
+  div.className =
+    "services bg-gray-200 rounded-md py-1 px-3 mb-4 flex justify-between items-center";
 
-  if (name === "" || price === "" || duration === "") {
-    el.innerText = "Please Enter All Fields!";
-  } else if (price < 0 || duration < 0) {
-    el.innerText = "Must Not Enter Negative Value!";
-  } else if (name.length < 3) {
-    el.innerText = "Service name at least contain 3 leters!";
-  } else if (!serviceNpattern.test(name)) {
-    el.innerText = "Service name must contain only letters!";
-  } else {
-    let div = document.createElement("div");
-    div.className =
-      "services bg-gray-200 rounded-md py-1 px-3 mb-4 flex justify-between items-center";
-    div.innerHTML = `
+  div.innerHTML = `
     <div>
       <p>${name}</p>
       <ul class="flex gap-1 items-center text-sm text-gray-500">
@@ -378,26 +415,23 @@ function addCustomService() {
       <input type="hidden" name="customSNames[]" value="${name}" />
       <input type="hidden" name="customSPrices[]" value="${price}" />
       <input type="hidden" name="customSDurations[]" value="${duration}" />
-
     </div>
-    <img src="./public/images/remove.png" alt="Remove service"
-    class="cursor-pointer w-4 h-4 hover:w-5 hover:h-5" onclick="removeS(this)" />
 
-    `;
+    <img src="./public/images/remove.png"
+         class="cursor-pointer w-4 h-4"
+         onclick="removeS(this)" />
+  `;
 
-    let customList = document.getElementById("customList");
+  const customList = document.getElementById("customList");
+  customList.className = "bg-white p-4 mt-4 rounded-md shadow-lg";
+  customList.appendChild(div);
 
-    customList.className = "bg-white p-4 mt-4 rounded-md shadow-lg";
+  // Clear inputs
+  document.getElementById("customName").value = "";
+  document.getElementById("customPrice").value = "";
+  document.getElementById("customDuration").value = "";
 
-    customList.appendChild(div);
-
-    // Clear
-    document.getElementById("customName").value = "";
-    document.getElementById("customPrice").value = "";
-    document.getElementById("customDuration").value = "";
-
-    checkErrors();
-  }
+  checkErrors();
 }
 
 // remove custom service
@@ -412,7 +446,7 @@ function removeS(ele) {
     customList.className = "";
   }
 }
-// this is for error msg of checkbox and other
+// this is for error msg of checkbox and other ( default services )
 
 document.querySelectorAll(".default-service").forEach((service) => {
   const checkbox = service.querySelector("input[type='checkbox']");

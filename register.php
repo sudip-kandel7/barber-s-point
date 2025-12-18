@@ -43,21 +43,16 @@ if (isset($_POST['create'])) {
 
 
             for ($i = 0; $i < count($names); $i++) {
-                $checkServices = "SELECT services_name FROM services";
-                $result = mysqli_query($conn, $checkServices);
-                while ($row = mysqli_fetch_assoc($result)) {
-                    if ($row['services_name'] === $names[$i]) {
-                        continue;
-                    } else {
-                        $customServices[] = [
-                            "name" => $row['services_name'],
-                            "price" => $prices[$i],
-                            "duration" => $durations[$i]
-                        ];
-                    }
+                if (!empty($names[$i])) {
+                    $customServices[] = [
+                        "name" => $row['services_name'],
+                        "price" => $prices[$i],
+                        "duration" => $durations[$i]
+                    ];
                 }
             }
         }
+
 
         $image = $_FILES['photos'];
         $imageN = $image['name'];
@@ -121,7 +116,7 @@ if (isset($_POST['create'])) {
                         if (mysqli_num_rows($r1) > 0) {
 
                             $row = mysqli_fetch_assoc($r1);
-                            $serviceId = $row['id'];
+                            $serviceId = $row['services_id'];
                         } else {
 
                             $q2 = "

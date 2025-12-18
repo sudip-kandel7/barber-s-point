@@ -115,7 +115,8 @@ include 'navbar.php'; ?>
         </div>
     </div>
 
-    <div class="bg-blue-50 rounded-xl shadow-lg hover:shadow-xl flex flex-col justify-center p-16 mx-16 mt-16 mb-7">
+    <div
+        class="bg-blue-50 hover:-translate-y-1 rounded-xl shadow-lg hover:shadow-xl flex flex-col justify-center p-16 mx-16 mt-16 mb-7">
         <h3 class="text-3xl font-bold text-gray-900 mb-6 text-center">Project Overview</h3>
         <div class="grid grid-cols-1  md:grid-cols-2 gap-8">
             <div>
