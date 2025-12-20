@@ -13,7 +13,7 @@ $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $conn = new mysqli("localhost", "root", "", "trypoint");
 
 
-
+$uid = null;
 if (isset($_SESSION['user'])) {
 
     $email = $_SESSION['user']->email;
@@ -150,6 +150,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sid'], $uid)) {
         ]);
     }
     exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $action = $_POST['action'] ?? '';
+
+    if ($action === 'add_review') {
+
+        $sid = $_POST['sid'] ?? null;
+        $review = trim($_POST['review'] ?? '');
+
+
+        $sql = "INSERT INTO review (uid, sid, review) VALUES ('$uid', '$sid', '$review')";
+
+        if ($conn->query($sql)) {
+            echo json_encode(['status' => 'success']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Failed to post review']);
+        }
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Invalid action']);
+    }
 }
 
 
@@ -655,6 +677,17 @@ transition-all duration-500 ease-out opacity-0 scale-x-0">
     </div>
 
     <hr class="mx-3 h-11 border-gray-300">
+    <?php if ($_SESSION['user']->type === "customer"): ?>
+        <div class="flex items-center gap-3 justify-between border-2 border-gray-300 rounded-md shadow-sm -mt-3 mx-auto mb-4
+w-[96%]  text-sm sm:text-base">
+            <input class="reviewtxt text-base text-gray-400 h-full w-full py-3 px-2 outline-none"
+                placeholder="Comment....." />
+            <p onclick="review()"
+                class="reviewpost cursor-pointer bg-yellow-400 hover:bg-yellow-500 hover:shadow-md py-1.5 px-5 my-1 mx-2 rounded-md">
+                Post
+            </p>
+        </div>
+    <?php endif ?>
 
     <div class="mx-auto mb-5 py-1 rounded-md shadow-sm bg-[#F1F4F9]
 w-[96%] flex gap-2 sm:gap-6 justify-around text-sm sm:text-base">

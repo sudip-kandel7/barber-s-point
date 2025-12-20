@@ -31,25 +31,147 @@ function toggleDiv(btn) {
   }
 }
 
-function changer(btn) {
-  let edit = document.getElementsByClassName("edit")[0];
-  let remove = document.getElementsByClassName("delete")[0];
-  let imge = document.getElementById("imge");
-  let reviewi = document.getElementById("review1");
-  let editer = document.getElementById("editer");
+// function changer(btn) {
+//   let edit = document.getElementsByClassName("edit")[0];
+//   let remove = document.getElementsByClassName("delete")[0];
+//   let imge = document.getElementById("imge");
+//   let reviewi = btn.dataset.rid;
+//   let editer = document.getElementById("editer");
 
-  if (btn === "edit") {
-    if (editer.innerText === "Edit") {
-      // Changed from .value to .innerText
-      reviewi.disabled = false;
-      editer.innerText = "Save";
-      imge.src = "./public/images/web/check.png";
-      reviewi.focus();
+//   if (btn === "edit") {
+//     if (editer.innerText === "Edit") {
+//       // Changed from .value to .innerText
+//       reviewi.disabled = false;
+//       editer.innerText = "Save";
+//       imge.src = "./public/images/web/check.png";
+//       reviewi.focus();
+//     } else {
+//       reviewi.disabled = true;
+//       editer.innerText = "Edit";
+//       newReview = reviewi.value;
+//       let xhr = new XMLHttpRequest();
+//       xhr.open(
+//         "GET",
+//         "profile.php?review=" +
+//           encodeURIComponent(newReview) +
+//           "&rid=" +
+//           encodeURIComponent(reviewi),
+//         true
+//       );
+
+// xhr.onreadystatechange = function () {
+//   if (xhr.readyState === 4) {
+//     if (xhr.status === 200) {
+//       try {
+//         const response = JSON.parse(xhr.responseText);
+
+//         if (response.status === "success") {
+//           console.log("Review updated successfully");
+//         } else {
+//           console.error(
+//             "Server error:",
+//             response.message || "Unknown error"
+//           );
+//         }
+//       } catch (e) {
+//         console.error("Invalid JSON response:", xhr.responseText);
+//       }
+//     } else {
+//       console.error("HTTP error:", xhr.status);
+//     }
+//   }
+// };
+
+//       xhr.send();
+//     }
+//     imge.src = "./public/images/web/edit.png";
+//   }
+// }
+
+function changer(btn, wch) {
+  let rid = btn.dataset.rid;
+
+  let review = document.getElementById("review" + rid);
+
+  if (wch === "edit") {
+    let img = document.getElementsByClassName("srce")[0];
+    let spne = document.getElementsByClassName("edit")[0];
+
+    if (spne.innerText === "Edit") {
+      spne.innerText = "Save";
+      img.src = "./public/images/web/check.png";
+      review.disabled = false;
+      review.focus();
     } else {
-      reviewi.disabled = true;
-      editer.innerText = "Edit";
-      imge.src = "./public/images/web/edit.png";
+      let newReview = review.value;
+      let xhr = new XMLHttpRequest();
+      xhr.open(
+        "GET",
+        "profile.php?review=" +
+          encodeURIComponent(newReview) +
+          "&rid=" +
+          encodeURIComponent(rid),
+        true
+      );
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            try {
+              const response = JSON.parse(xhr.responseText);
+
+              if (response.status === "success") {
+                console.log("Review updated successfully");
+              } else {
+                console.error(
+                  "Server error:",
+                  response.message || "Unknown error"
+                );
+              }
+            } catch (e) {
+              console.error("Invalid JSON response:", xhr.responseText);
+            }
+          } else {
+            console.error("HTTP error:", xhr.status);
+          }
+        }
+      };
+
+      xhr.send();
+
+      spne.innerText = "Edit";
+      review.disabled = true;
+      img.src = "./public/images/web/edit.png";
     }
+  } else if (wch === "delete") {
+    let rid = btn.dataset.rid;
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", "profile.php?rid=" + encodeURIComponent(rid), true);
+
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          try {
+            const response = JSON.parse(xhr.responseText);
+
+            if (response.status === "success") {
+              location.reload();
+            } else {
+              console.error(
+                "Server error:",
+                response.message || "Unknown error"
+              );
+            }
+          } catch (e) {
+            console.error("Invalid JSON response:", xhr.responseText);
+          }
+        } else {
+          console.error("HTTP error:", xhr.status);
+        }
+      }
+    };
+
+    xhr.send();
   }
 }
 
@@ -88,7 +210,7 @@ function toggleTab(btn) {
 }
 
 // view details button
-function view(btn) {
+function viewf(btn) {
   const sid = btn.dataset.sid;
   const name = btn.dataset.name;
   const address = btn.dataset.address;
@@ -199,3 +321,10 @@ flex flex-col px-3 py-3 mb-3 gap-1">
 
   xhr.send();
 }
+
+// function changer(btn) {
+//   let review = document.getElementById(review1);
+
+//   if (btn === "edit") {
+//   }
+// }

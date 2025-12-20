@@ -1,5 +1,5 @@
-<?php include 'header.php'; ?>
-<?php include 'navbar.php'; ?>
-<?php include 'home.php'; ?>
-<?php include 'shops.php'; ?>
-<?php include 'footer.php'; ?>
+<?php include 'header.php';
+include 'navbar.php';
+include 'home.php';
+include 'shops.php';
+include 'footer.php';

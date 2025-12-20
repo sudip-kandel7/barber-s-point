@@ -20,5 +20,5 @@ if (isset($_COOKIE['user'])) {
     }
 }
 
-header("Location: login.php");
-exit;
+// header("Location: login.php");
+// exit;

@@ -85,7 +85,7 @@ include 'navbar.php';
                 </div>
                 <div class="flex w-full items-start flex-col">
                     <label class="text-sm mb-1 sm:mb-2 font-semibold" for="message">Message</label>
-                    <textarea rows="4"
+                    <textarea rows="4" 2
                         class="px-3 pl-2 text-sm sm:text-md w-full py-2 hover:bg-[#f5f5f5] bg-[#f8f9fa] border outline-none rounded-md border-[#E4E4E7] focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-colors resize-none"
                         name="message" placeholder="Tell us how we can help you..." id="message"></textarea>
                 </div>
