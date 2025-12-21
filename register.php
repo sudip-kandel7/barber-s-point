@@ -297,10 +297,18 @@ VALUES ('$type', '$firstN', '$add', '$email', '$phone', '$password')";
                         </div>
                         <div>
                             <label for="address" class="font-medium">Shop Address</label> <br>
-                            <input type="text" inputmode="text" name="address"
+                            <input type="text" inputmode="text" name="saddress"
                                 class="mt-1.5 w-full rounded-md text-md pl-2 h-11"
                                 placeholder="Enter your complete shop address"> <br>
-                            <p class="address text-red-600 text-sm pl-2 mt-0.5"></p>
+                            <p class="saddress text-red-600 text-sm pl-2 mt-0.5"></p>
+                        </div>
+
+                        <div>
+                            <label for="sbarber" class="font-medium">Barbers</label> <br>
+                            <input id="sbarber" type="number" inputmode="numeric" name="sbarber"
+                                class="mt-1.5 w-full rounded-md text-md pl-2 h-11"
+                                placeholder="Enter Number of barbers in shop"> <br>
+                            <p class="sbarber text-red-600 text-sm pl-2 mt-0.5"></p>
                         </div>
 
 

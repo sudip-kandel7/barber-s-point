@@ -31,63 +31,6 @@ function toggleDiv(btn) {
   }
 }
 
-// function changer(btn) {
-//   let edit = document.getElementsByClassName("edit")[0];
-//   let remove = document.getElementsByClassName("delete")[0];
-//   let imge = document.getElementById("imge");
-//   let reviewi = btn.dataset.rid;
-//   let editer = document.getElementById("editer");
-
-//   if (btn === "edit") {
-//     if (editer.innerText === "Edit") {
-//       // Changed from .value to .innerText
-//       reviewi.disabled = false;
-//       editer.innerText = "Save";
-//       imge.src = "./public/images/web/check.png";
-//       reviewi.focus();
-//     } else {
-//       reviewi.disabled = true;
-//       editer.innerText = "Edit";
-//       newReview = reviewi.value;
-//       let xhr = new XMLHttpRequest();
-//       xhr.open(
-//         "GET",
-//         "profile.php?review=" +
-//           encodeURIComponent(newReview) +
-//           "&rid=" +
-//           encodeURIComponent(reviewi),
-//         true
-//       );
-
-// xhr.onreadystatechange = function () {
-//   if (xhr.readyState === 4) {
-//     if (xhr.status === 200) {
-//       try {
-//         const response = JSON.parse(xhr.responseText);
-
-//         if (response.status === "success") {
-//           console.log("Review updated successfully");
-//         } else {
-//           console.error(
-//             "Server error:",
-//             response.message || "Unknown error"
-//           );
-//         }
-//       } catch (e) {
-//         console.error("Invalid JSON response:", xhr.responseText);
-//       }
-//     } else {
-//       console.error("HTTP error:", xhr.status);
-//     }
-//   }
-// };
-
-//       xhr.send();
-//     }
-//     imge.src = "./public/images/web/edit.png";
-//   }
-// }
-
 function changer(btn, wch) {
   let rid = btn.dataset.rid;
 
@@ -209,122 +152,65 @@ function toggleTab(btn) {
   }
 }
 
-// view details button
-function viewf(btn) {
-  const sid = btn.dataset.sid;
-  const name = btn.dataset.name;
-  const address = btn.dataset.address;
-  const photo = btn.dataset.photo;
-  const status = btn.dataset.status;
+// view details button to show overaly
 
-  const showD = document.getElementsByClassName("showD")[0];
-  const servicesDiv = document.getElementsByClassName("servicesDetails")[0];
-
-  let xhr = new XMLHttpRequest();
-  xhr.open("GET", "shops.php?sid=" + encodeURIComponent(sid), true);
-
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState === 4 && xhr.status === 200) {
-      try {
-        const response = JSON.parse(xhr.responseText);
-
-        if (response.status === "success") {
-          showD.classList.remove("hidden");
-          setTimeout(() => {
-            showD.classList.remove("opacity-0", "scale-x-0");
-          }, 10);
-
-          document.getElementById("sname").innerText = name;
-          document.getElementById("saddress").innerText = address;
-          const backgroundDiv = document.getElementById("shopBg");
-          backgroundDiv.style.backgroundImage = `linear-gradient(to right, rgba(255,255,255,0.8), rgba(255,255,255,0.8)), url('${photo}')`;
-          backgroundDiv.style.backgroundPosition = "center";
-          backgroundDiv.style.backgroundSize = "cover";
-          backgroundDiv.style.backgroundRepeat = "no-repeat";
-          document.getElementById("status").innerText = status;
-          document.getElementById("review").innerText = response.shop
-            .total_reviews
-            ? response.shop.total_reviews + " Reviews"
-            : "No Reviews";
-
-          document.getElementById("queue").innerText =
-            response.shop.current_queue > 1
-              ? response.shop.current_queue + " People"
-              : response.shop.current_queue + " Person";
-
-          document.getElementById("wait").innerText =
-            response.shop.total_wait_time > 1
-              ? response.shop.total_wait_time + " Mins"
-              : response.shop.total_wait_time + " Min";
-
-          servicesDiv.innerHTML = "";
-          servicesDiv.classList.remove("hidden");
-
-          if (response.services && response.services.length > 0) {
-            response.services.forEach((service) => {
-              servicesDiv.innerHTML += `
-                <div class="border rounded-md w-full border-gray-500 flex flex-col sm:flex-row sm:justify-between sm:items-center px-3 py-3 mb-3 gap-2">
-                  <div>
-                    <p class="font-medium">${service.services_name}</p>
-                    <p class="text-sm text-gray-400">${service.duration} mins</p>
-                  </div>
-                  <p class="font-semibold text-yellow-400">Rs. ${service.price}</p>
-                </div>
-              `;
-            });
-          } else {
-            servicesDiv.innerHTML =
-              "<p class='text-center mb-2 text-2xl text-gray-400'>No services available.</p>";
-          }
-
-          const reviewsDiv =
-            document.getElementsByClassName("reviewsDetails")[0];
-          reviewsDiv.innerHTML = "";
-          reviewsDiv.classList.add("hidden");
-
-          if (response.reviews && response.reviews.length > 0) {
-            response.reviews.forEach((review) => {
-              reviewsDiv.innerHTML += `
-                <div class="border rounded-md w-full border-gray-500
-flex flex-col px-3 py-3 mb-3 gap-1">
-
-                <div class="flex items-center gap-3">
-                  <img src="./public/images/web/profile.png" alt="user icon" class="w-10 h-10 rounded-full"/>
-                   <div>
-                    <p class="font-medium">${review.name}</p>
-                    <p class="text-sm text-gray-400 mb-2">${review.date}</p>
-                   </div>
-                </div>
-                  <p>${review.review_text}</p>
-                </div>
-              `;
-            });
-          } else {
-            reviewsDiv.innerHTML =
-              "<p class='text-center mb-2 text-2xl text-gray-400'>No reviews available.</p>";
-          }
-        }
-      } catch (e) {
-        console.error("JSON error:", xhr.responseText);
-      }
+function viewf(sid) {
+  alert(sid);
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", "shopdetails.php?sid=" + sid);
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      document.body.insertAdjacentHTML("beforeend", xhr.responseText);
     }
   };
-
-  document.addEventListener("click", (event) => {
-    if (!showD.contains(event.target) && event.target !== btn) {
-      showD.classList.add("opacity-0", "scale-x-0");
-      setTimeout(() => {
-        showD.classList.add("hidden");
-      }, 500);
-    }
-  });
-
   xhr.send();
 }
 
-// function changer(btn) {
-//   let review = document.getElementById(review1);
+document.addEventListener("click", function (e) {
+  const overlay = document.getElementById("shopOverlay");
+  const modal = document.getElementById("shopModal");
+  const fav = document.getElementById("fav");
 
-//   if (btn === "edit") {
-//   }
-// }
+  if (!overlay || !modal) return;
+
+  if (e.target === overlay) {
+    overlay?.remove();
+  }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  const profileD = document.getElementById("overlayp");
+  const editp = document.getElementById("editp");
+
+  editp.addEventListener("click", () => {
+    // alert("ok");
+    profileD.classList.remove("hidden");
+  });
+
+  profileD.addEventListener("click", () => {
+    profileD.classList.add("hidden");
+  });
+});
+
+// profile overaly
+function viewp() {
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", "update_profile.php");
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      document.body.insertAdjacentHTML("beforeend", xhr.responseText);
+    }
+  };
+  xhr.send();
+}
+
+document.addEventListener("click", function (e) {
+  const overlayp = document.getElementById("overlayp");
+  const modal = document.getElementById("profileModal");
+
+  if (!overlayp || !modal) return;
+
+  if (e.target === overlayp) {
+    overlayp?.remove();
+  }
+});

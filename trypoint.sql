@@ -3,7 +3,7 @@ CREATE TABLE users (
     uid INT PRIMARY KEY AUTO_INCREMENT,
     type VARCHAR(8) NOT NULL,
     firstN TEXT NOT NULL,
-    lastN TEXT,
+    address TEXT,
     email text NOT NULL UNIQUE,
     phone VARCHAR(10),
     passwrd TEXT NOT NULL

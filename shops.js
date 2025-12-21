@@ -1,3 +1,6 @@
+// Global variable to store current shop ID
+let currentShopId = null;
+
 document.addEventListener("DOMContentLoaded", () => {
   const btn1 = document.getElementsByClassName("filter")[0];
   const btn2 = document.getElementsByClassName("sort")[0];
@@ -62,218 +65,82 @@ document.addEventListener("DOMContentLoaded", () => {
       selected2.querySelector("img").classList.remove("opacity-0");
     });
   });
-
-  // Services and reviews button color change on click
-  function toggleTab(btn) {
-    const btnServices = document.getElementsByClassName("services")[0];
-    const btnReviews = document.getElementsByClassName("reviews")[0];
-
-    if (btn === "services") {
-      btnServices.classList.add("bg-white", "text-black");
-      btnServices.classList.remove("text-gray-600");
-
-      document
-        .getElementsByClassName("servicesDetails")[0]
-        .classList.remove("hidden");
-      document
-        .getElementsByClassName("reviewsDetails")[0]
-        .classList.add("hidden");
-
-      btnReviews.classList.remove("bg-white", "text-black");
-      btnReviews.classList.add("text-gray-600");
-    } else if (btn === "reviews") {
-      btnReviews.classList.add("bg-white", "text-black");
-      btnReviews.classList.remove("text-gray-600");
-
-      document
-        .getElementsByClassName("servicesDetails")[0]
-        .classList.add("hidden");
-      document
-        .getElementsByClassName("reviewsDetails")[0]
-        .classList.remove("hidden");
-
-      btnServices.classList.remove("bg-white", "text-black");
-      btnServices.classList.add("text-gray-600");
-    }
-  }
-
-  // view details button
-  function view(btn) {
-    // event.stopPropagation();
-    alert("ok");
-    const sid = btn.dataset.sid;
-    const name = btn.dataset.name;
-    const address = btn.dataset.address;
-    const photo = btn.dataset.photo;
-    const status = btn.dataset.status;
-
-    const showD = document.getElementsByClassName("showD")[0];
-    const servicesDiv = document.getElementsByClassName("servicesDetails")[0];
-
-    let xhr = new XMLHttpRequest();
-    xhr.open("GET", "shops.php?sid=" + encodeURIComponent(sid), true);
-
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4 && xhr.status === 200) {
-        try {
-          const response = JSON.parse(xhr.responseText);
-
-          if (response.status === "success") {
-            showD.classList.remove("hidden", "opacity-0", "scale-x-0");
-
-            document.getElementById("sname").innerText = name;
-            document.getElementById("saddress").innerText = address;
-            const backgroundDiv = document.getElementById("shopBg");
-            backgroundDiv.style.backgroundImage = `linear-gradient(to right, rgba(255,255,255,0.8), rgba(255,255,255,0.8)), url('${photo}')`;
-            backgroundDiv.style.backgroundPosition = "center";
-            backgroundDiv.style.backgroundSize = "cover";
-            backgroundDiv.style.backgroundRepeat = "no-repeat";
-            document.getElementById("status").innerText = status;
-            document.getElementById("review").innerText = response.shop
-              .total_reviews
-              ? response.shop.total_reviews + " Reviews"
-              : "No Reviews";
-
-            document.getElementById("queue").innerText =
-              response.shop.current_queue > 1
-                ? response.shop.current_queue + " People"
-                : response.shop.current_queue + " Person";
-
-            document.getElementById("wait").innerText =
-              response.shop.total_wait_time > 1
-                ? response.shop.total_wait_time + " Mins"
-                : response.shop.total_wait_time + " Min";
-
-            const favBtn = document.querySelector(
-              'button[onclick="addFav(this)"]'
-            );
-            const favImg = document.getElementById("fav");
-            const favText = document.querySelector(".fav");
-
-            if (favBtn) {
-              favBtn.setAttribute("data-shop-id", sid);
-            }
-
-            if (response.is_favorited) {
-              favImg.src = "./public/images/web/saved.png";
-              favText.innerText = "Favorited";
-              favBtn.disabled = true;
-              favBtn.classList.remove("bg-yellow-400", "hover:bg-yellow-500");
-              favBtn.classList.add("bg-gray-400", "cursor-not-allowed");
-            } else {
-              favImg.src = "./public/images/web/save.png";
-              favText.innerText = "Favorite";
-              favBtn.disabled = false;
-              favBtn.classList.remove("bg-gray-400", "cursor-not-allowed");
-              favBtn.classList.add("bg-yellow-400", "hover:bg-yellow-500");
-            }
-
-            servicesDiv.innerHTML = "";
-            servicesDiv.classList.remove("hidden");
-
-            if (response.services && response.services.length > 0) {
-              response.services.forEach((service) => {
-                servicesDiv.innerHTML += `
-                  <div class="border rounded-md w-full border-gray-500 flex flex-col sm:flex-row sm:justify-between sm:items-center px-3 py-3 mb-3 gap-2">
-                    <div>
-                      <p class="font-medium">${service.services_name}</p>
-                      <p class="text-sm text-gray-400">${service.duration} mins</p>
-                    </div>
-                    <p class="font-semibold text-yellow-400">Rs. ${service.price}</p>
-                  </div>
-                `;
-              });
-            } else {
-              servicesDiv.innerHTML =
-                "<p class='text-center mb-2 text-2xl text-gray-400'>No services available.</p>";
-            }
-
-            const reviewsDiv =
-              document.getElementsByClassName("reviewsDetails")[0];
-            reviewsDiv.innerHTML = "";
-            reviewsDiv.classList.add("hidden");
-
-            if (response.reviews && response.reviews.length > 0) {
-              response.reviews.forEach((review) => {
-                reviewsDiv.innerHTML += `
-                  <div class="border rounded-md w-full border-gray-500
-  flex flex-col px-3 py-3 mb-3 gap-1">
-
-                  <div class="flex items-center gap-3">
-                    <img src="./public/images/web/profile.png" alt="user icon" class="w-10 h-10 rounded-full"/>
-                     <div>
-                      <p class="font-medium">${review.name}</p>
-                      <p class="text-sm text-gray-400 mb-2">${review.date}</p>
-                     </div>
-                  </div>
-                    <p>${review.review_text}</p>
-                  </div>
-                `;
-              });
-            } else {
-              reviewsDiv.innerHTML =
-                "<p class='text-center mb-2 text-2xl text-gray-400'>No reviews available.</p>";
-            }
-          }
-        } catch (e) {
-          console.error("JSON error:", xhr.responseText);
-        }
-      }
-    };
-
-    xhr.send();
-  }
-
-  // review add
-
-  function review() {
-    const reviewtxt = document.querySelector(".reviewtxt");
-    let txt = reviewtxt.value.trim();
-    if (!txt) {
-      reviewtxt.placeholder = "Enter Review First";
-      return;
-    }
-
-    if (!sid) {
-      alert("No shop selected");
-      return;
-    }
-
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", "shops.php", true);
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4 && xhr.status === 200) {
-        try {
-          const response = JSON.parse(xhr.responseText);
-
-          if (response.status === "success") {
-            alert("Review posted successfully!");
-            reviewtxt.value = "";
-
-            const viewBtn = document.querySelector(`button[data-sid="${sid}"]`);
-            if (viewBtn) {
-              view(viewBtn);
-            }
-          } else {
-            alert(response.message || "Failed to post review");
-          }
-        } catch (e) {
-          console.error("Error:", xhr.responseText);
-          alert("An error occurred");
-        }
-      }
-    };
-
-    xhr.send(
-      "action=add_review&sid=" +
-        encodeURIComponent(sid) +
-        "&review=" +
-        encodeURIComponent(reviewText)
-    );
-  }
-
-  //
-  // dom loaded
 });
+
+// View details button
+function view(sid) {
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", "shopdetails.php?sid=" + sid);
+
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      document.body.insertAdjacentHTML("beforeend", xhr.responseText);
+    }
+  };
+
+  xhr.send();
+}
+
+document.addEventListener("click", function (e) {
+  const overlay = document.getElementById("shopOverlay");
+  const modal = document.getElementById("shopModal");
+  const fav = document.getElementById("fav");
+
+  if (!overlay || !modal) return;
+
+  if (e.target === overlay) {
+    // alert("ok");
+    overlay?.remove();
+  }
+});
+
+function toggleTab(btn) {
+  const btnServices = document.getElementsByClassName("services")[0];
+  const btnReviews = document.getElementsByClassName("reviews")[0];
+
+  if (btn === "services") {
+    btnServices.classList.add("bg-white", "text-black");
+    btnServices.classList.remove("text-gray-600");
+
+    document
+      .getElementsByClassName("servicesDetails")[0]
+      .classList.remove("hidden");
+    document
+      .getElementsByClassName("reviewsDetails")[0]
+      .classList.add("hidden");
+
+    btnReviews.classList.remove("bg-white", "text-black");
+    btnReviews.classList.add("text-gray-600");
+  } else if (btn === "reviews") {
+    btnReviews.classList.add("bg-white", "text-black");
+    btnReviews.classList.remove("text-gray-600");
+
+    document
+      .getElementsByClassName("servicesDetails")[0]
+      .classList.add("hidden");
+    document
+      .getElementsByClassName("reviewsDetails")[0]
+      .classList.remove("hidden");
+
+    btnServices.classList.remove("bg-white", "text-black");
+    btnServices.classList.add("text-gray-600");
+  }
+}
+
+function addfav(sid) {
+  alert(sid);
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", "addfavorite.php", true);
+  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      const res = JSON.parse(xhr.responseText);
+      if (res.status === "success") {
+        alert("Added to favorites");
+      } else {
+        alert(res.message || "Already in favorites");
+      }
+    }
+  };
+  xhr.send("sid=" + sid);
+}

@@ -62,119 +62,6 @@ if ($search) {
 }
 
 
-
-if (isset($_GET['sid'])) {
-    $sid = (int) $_GET['sid'];
-
-    $shopQry = "
-        SELECT 
-            users.firstN,
-            queue.current_queue,
-            queue.total_wait_time,
-            COUNT(review.rid) AS total_reviews
-        FROM shop
-        JOIN users ON shop.uid = users.uid
-        LEFT JOIN queue ON shop.sid = queue.sid
-        LEFT JOIN review ON shop.sid = review.sid
-        WHERE shop.sid = $sid
-        GROUP BY 
-            users.firstN,
-            queue.current_queue,
-            queue.total_wait_time
-    ";
-
-    $shopResult = mysqli_query($conn, $shopQry);
-    $shopData = mysqli_fetch_assoc($shopResult);
-
-
-    $servicesQry = "
-        SELECT 
-            services.services_name,
-            shop_services.price,
-            shop_services.duration
-        FROM shop_services
-        JOIN services ON shop_services.services_id = services.services_id
-        WHERE shop_services.sid = $sid
-    ";
-
-    $servicesResult = mysqli_query($conn, $servicesQry);
-
-    $services = [];
-    while ($row = mysqli_fetch_assoc($servicesResult)) {
-        $services[] = $row;
-    }
-
-    $reviewsQry = "
-        SELECT 
-            users.firstN,
-            review.review,
-            review.date_added
-        FROM review
-        JOIN users ON review.uid = users.uid
-        WHERE review.sid = $sid
-        ORDER BY review.date_added DESC
-    ";
-
-    $reviewsResult = mysqli_query($conn, $reviewsQry);
-
-    $reviews = [];
-    while ($row = mysqli_fetch_assoc($reviewsResult)) {
-        $reviews[] = [
-            'name' => $row['firstN'],
-            'review_text' => $row['review'],
-            'date' => date('M d, Y', strtotime($row['date_added']))
-        ];
-    }
-
-    echo json_encode([
-        'status' => 'success',
-        'shop' => $shopData,
-        'services' => $services,
-        'reviews' => $reviews
-    ]);
-    exit;
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sid'], $uid)) {
-
-    $sid = (int) $_POST['sid'];
-
-    $favQry = "INSERT INTO favorites (uid, sid) VALUES ($uid, $sid)";
-
-    if (mysqli_query($conn, $favQry)) {
-        echo json_encode(['status' => 'success']);
-    } else {
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Already added to favorites'
-        ]);
-    }
-    exit;
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $action = $_POST['action'] ?? '';
-
-    if ($action === 'add_review') {
-
-        $sid = $_POST['sid'] ?? null;
-        $review = trim($_POST['review'] ?? '');
-
-
-        $sql = "INSERT INTO review (uid, sid, review) VALUES ('$uid', '$sid', '$review')";
-
-        if ($conn->query($sql)) {
-            echo json_encode(['status' => 'success']);
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'Failed to post review']);
-        }
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Invalid action']);
-    }
-}
-
-
 mysqli_close($conn);
 ?>
 
@@ -251,11 +138,8 @@ mysqli_close($conn);
                                     </div>
                                 </div>
 
-                                <button onclick="view(this)" class="w-[96%] text-xs sm:text-sm font-semibold rounded-md bg-[#f8f9fa] border py-2 
-       group-hover:bg-yellow-400 group-hover:shadow-md mt-3 mb-5 transition-all" data-sid="<?php echo $rows['sid']; ?>"
-                                    data-name="<?php echo htmlspecialchars($rows['sname']); ?>"
-                                    data-address="<?php echo htmlspecialchars($rows['saddress']); ?>"
-                                    data-photo="<?php echo $rows['photo']; ?>" data-status="<?php echo $rows['status']; ?>">
+                                <button onclick="view(<?php echo $rows['sid']; ?>)" class="w-[96%] text-xs sm:text-sm font-semibold rounded-md bg-[#f8f9fa] border py-2 
+           group-hover:bg-yellow-400 group-hover:shadow-md mt-3 mb-5 transition-all">
                                     View Details
                                 </button>
 
@@ -440,12 +324,8 @@ mysqli_close($conn);
                             </div>
                         </div>
 
-                        <button onclick="view(this)" class="w-[96%] text-xs sm:text-sm font-semibold rounded-md bg-[#f8f9fa] border py-2 
-           group-hover:bg-yellow-400 group-hover:shadow-md mt-3 mb-5 transition-all"
-                            data-sid="<?php echo $rows['sid']; ?>"
-                            data-name="<?php echo htmlspecialchars($rows['sname']); ?>"
-                            data-address="<?php echo htmlspecialchars($rows['saddress']); ?>"
-                            data-photo="<?php echo $rows['photo']; ?>" data-status="<?php echo $rows['status']; ?>">
+                        <button onclick="view(<?php echo $rows['sid']; ?>)" class="w-[96%] text-xs sm:text-sm font-semibold rounded-md bg-[#f8f9fa] border py-2 
+           group-hover:bg-yellow-400 group-hover:shadow-md mt-3 mb-5 transition-all">
                             View Details
                         </button>
                     </div>
@@ -453,9 +333,8 @@ mysqli_close($conn);
                 <?php endforeach ?>
             </div>
 
-            <!-- // sorting and filtering here using js  -->
-
         </div>
+        <!-- // sorting and filtering here using js  -->
 
         <script>
             const allShops = <?php echo json_encode($Ashops); ?>;
@@ -562,12 +441,7 @@ mysqli_close($conn);
                     </div>
                 </div>
                 
-                <button onclick="view(this)" class="w-[96%] text-xs sm:text-sm font-semibold rounded-md bg-[#f8f9fa] border py-2 group-hover:bg-yellow-400 group-hover:shadow-md mt-3 mb-5 transition-all mx-auto block"
-                    data-sid="${shop.sid}"
-                    data-name="${shop.sname}"
-                    data-address="${shop.saddress}"
-                    data-photo="${shop.photo}"
-                    data-status="${shop.status}">
+                <button onclick="view(${shop.sid})" class="w-[96%] text-xs sm:text-sm font-semibold rounded-md bg-[#f8f9fa] border py-2 group-hover:bg-yellow-400 group-hover:shadow-md mt-3 mb-5 transition-all mx-auto block">
                     View Details
                 </button>
             </div>
@@ -582,128 +456,8 @@ mysqli_close($conn);
                     }
                 }
             });
-
-
-            document.addEventListener("click", (event) => {
-                const showD = document.getElementsByClassName("showD")[0];
-
-                const clickedInsideModal = showD.contains(event.target);
-                const clickedButton = event.target.closest('button[onclick^="view"]');
-
-                if (!clickedInsideModal && !clickedButton) {
-                    if (!showD.classList.contains("hidden")) {
-                        showD.classList.add("opacity-0", "scale-x-0");
-                        setTimeout(() => {
-                            showD.classList.add("hidden");
-                        }, 500);
-                    }
-                }
-            });
         </script>
 
     </div>
     </div>
 </section>
-
-
-<div class="showD hidden bg-white rounded-lg shadow-lg border-2 border-yellow-300 fixed z-[9999]
-top-[50%] left-1/2 -translate-x-1/2 -translate-y-1/2
-w-[95vw] sm:w-[90vw] md:w-[70vw] lg:w-[50vw]
-max-h-[70vh] overflow-y-auto
-transition-all duration-500 ease-out opacity-0 scale-x-0">
-
-    <div id="shopBg" class="relative flex flex-col items-start justify-end p-5 pb-2 sm:p-4 min-h-[300px] bg-white">
-
-        <div class="absolute top-3 right-3 sm:top-4 sm:right-4">
-            <span id="status"
-                class="bg-opacity-70 px-2 sm:px-3 font-semibold rounded-full inline-flex items-center py-1 text-[10px] sm:text-xs cursor-pointer bg-yellow-400 text-yellow-900 hover:bg-yellow-500 transition-colors">
-
-            </span>
-        </div>
-
-        <h1 id="sname" class="text-3xl sm:text-4xl md:text-5xl font-semibold leading-tight text-black mb-3">
-        </h1>
-        <div class="flex items-center justify-start gap-2 mt-2">
-            <img class="h-5 w-5" src="./public/images/web/shop-location.png" alt="">
-            <p id="saddress" class="text-base sm:text-lg md:text-xl text-gray-600 font-light">
-
-            </p>
-        </div>
-
-        <div class="flex flex-wrap items-center justify-between w-full gap-7 mt-3 text-sm sm:text-md text-gray-700">
-            <div class="flex gap-1.5 sm:gap-2 items-center">
-                <img src="./public/images/web/user.png" class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" alt="">
-                <p class="text-sm sm:text-md text-gray-500">
-                    Queue:
-                    <span id="queue" class="ml-1 text-black font-semibold"></span>
-                </p>
-            </div>
-
-            <div class="flex gap-1.5 sm:gap-2 items-center">
-                <img src="./public/images/web/time.png" class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" alt="">
-                <p class="text-sm sm:text-md text-gray-500">
-                    Est. wait:
-                    <span id="wait" class=" ml-1 text-black font-semibold"></span>
-                </p>
-            </div>
-
-            <div class="flex gap-1.5 sm:gap-2 items-center">
-                <img src="./public/images/web/review.png" class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" alt="">
-                <p class="text-sm sm:text-md text-gray-500">
-
-                    <span id="review" class=" ml-1 text-black font-semibold"></span>
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <div class="p-4 sm:p-6 border-t border-gray-200 flex gap-2 flex-wrap">
-        <?php if ($_SESSION['user']->type === "customer"): ?>
-            <button onclick="addFav(this)"
-                class="px-4 flex items-center gap-2 py-2 hover:-translate-y-1 bg-yellow-400  hover:bg-yellow-500 text-gray-700 font-medium rounded-lg transition-colors text-sm">
-                <img id="fav" src="./public/images/web/save.png" class="w-3 h-3" alt="">
-                <span class="fav">Favorite</span>
-            </button>
-        <?php endif ?>
-        <button
-            class="px-4 py-2 border-2 border-gray-300 hover:-translate-y-1 hover:border-yellow-500 text-gray-700 font-medium rounded-lg transition-colors text-sm">
-            Share
-        </button>
-        <button
-            class="px-4 flex items-center gap-1 py-2 border-2 hover:-translate-y-1 border-gray-300 hover:border-yellow-500 text-gray-700 font-medium rounded-lg transition-colors text-sm">
-            <img src="./public/images/web/report.png" class="w-4 h-4" alt="">
-            Report
-        </button>
-    </div>
-
-    <hr class="mx-3 h-11 border-gray-300">
-    <?php if ($_SESSION['user']->type === "customer"): ?>
-        <div class="flex items-center gap-3 justify-between border-2 border-gray-300 rounded-md shadow-sm -mt-3 mx-auto mb-4
-w-[96%]  text-sm sm:text-base">
-            <input class="reviewtxt text-base text-gray-400 h-full w-full py-3 px-2 outline-none"
-                placeholder="Comment....." />
-            <p onclick="review()"
-                class="reviewpost cursor-pointer bg-yellow-400 hover:bg-yellow-500 hover:shadow-md py-1.5 px-5 my-1 mx-2 rounded-md">
-                Post
-            </p>
-        </div>
-    <?php endif ?>
-
-    <div class="mx-auto mb-5 py-1 rounded-md shadow-sm bg-[#F1F4F9]
-w-[96%] flex gap-2 sm:gap-6 justify-around text-sm sm:text-base">
-
-        <button class="services text-center px-5 md:px-24 py-1 bg-white text-black" onclick="toggleTab('services')">
-            Services
-        </button>
-        <button class="reviews text-center px-5 md:px-24 py-1" onclick="toggleTab('reviews')">
-            Reviews
-        </button>
-    </div>
-
-    <div class="servicesDetails hidden px-4 max-h-[40vh] overflow-y-auto"></div>
-    <div class="reviewsDetails hidden px-4 max-h-[40vh] overflow-y-auto"></div>
-
-
-
-</div>
-</div>

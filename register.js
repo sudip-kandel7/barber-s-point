@@ -53,11 +53,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // div hide and show
 
-  let select = document.getElementById("select");
-  let barberinfo = document.getElementById("barberinfo");
+  const select = document.getElementById("select");
+  const barberinfo = document.getElementById("barberinfo");
   const shopName = document.querySelector('input[name="sname"]');
-  const shopAddress = document.querySelector('input[name="address"]');
+  const shopAddress = document.querySelector('input[name="saddress"]');
   const shopPhotos = document.querySelector('input[name="photos"]');
+  const shopBarber = document.querySelector('input[name="sbarber"]');
 
   select.addEventListener("change", () => {
     if (select.value === "barber") {
@@ -66,16 +67,19 @@ document.addEventListener("DOMContentLoaded", () => {
       shopName.setAttribute("required", "required");
       shopAddress.setAttribute("required", "required");
       shopPhotos.setAttribute("required", "required");
+      shopBarber.setAttribute("required", "required");
     } else {
       barberinfo.classList.add("hidden");
       barberinfo.classList.remove("block");
       shopName.removeAttribute("required");
       shopAddress.removeAttribute("required");
       shopPhotos.removeAttribute("required");
+      shopBarber.removeAttribute("required");
 
       shopName.value = "";
       shopAddress.value = "";
       shopPhotos.value = "";
+      shopBarber.value = "";
     }
   });
 
@@ -95,8 +99,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const err = document.querySelector(`p.${name}`);
 
-      const hasNumberOrSymbol = /[^a-zA-Z\s]/.test(value);
-      const wordCount = value.split(/\s+/).filter(Boolean).length;
+      // const hasNumberOrSymbol = /[^a-zA-Z\s]/.test(value);
+      // const wordCount = value.split(/\s+/).filter(Boolean).length;
 
       let pass1 = document.querySelector('input[name="password"]');
       let pass2 = document.querySelector('input[name="cPassword"]');
@@ -104,12 +108,6 @@ document.addEventListener("DOMContentLoaded", () => {
       let p2 = document.getElementsByClassName("cPassword")[0];
 
       // validate shop info in registation form
-
-      if (name === "pType") {
-        if (value === "barber")
-          document.getElementsByClassName("photos").required = true;
-        else document.getElementsByClassName("photos").required = false;
-      }
 
       if (name === "firstN" || name === "add") {
         if (value === "") {
@@ -148,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (length < 3) {
           err.innerText = `${label} must be at least 3 characters.`;
-        } else if (length > 10) {
+        } else if (length > 15) {
           err.innerText = `${label} must be 10 characters or less.`;
         } else {
           err.innerText = "";
