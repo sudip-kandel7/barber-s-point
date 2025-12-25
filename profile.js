@@ -37,27 +37,21 @@ function changer(btn, wch) {
   let review = document.getElementById("review" + rid);
 
   if (wch === "edit") {
-    let img = document.getElementsByClassName("srce")[0];
-    let spne = document.getElementsByClassName("edit")[0];
+    // alert("ok");
+    let img = document.getElementById("scrE" + rid);
+    let spnE = document.getElementById("edit" + rid);
 
-    if (spne.innerText === "Edit") {
-      spne.innerText = "Save";
+    if (spnE.innerText === "Edit") {
+      spnE.innerText = "Save";
       img.src = "./public/images/web/check.png";
       review.disabled = false;
       review.focus();
     } else {
       let newReview = review.value;
       let xhr = new XMLHttpRequest();
-      xhr.open(
-        "GET",
-        "profile.php?review=" +
-          encodeURIComponent(newReview) +
-          "&rid=" +
-          encodeURIComponent(rid),
-        true
-      );
+      xhr.open("GET", "profile.php?review=" + newReview + "&rid=" + rid, true);
 
-      xhr.onreadystatechange = function () {
+      xhr.onload = function () {
         if (xhr.readyState === 4) {
           if (xhr.status === 200) {
             try {
@@ -66,10 +60,7 @@ function changer(btn, wch) {
               if (response.status === "success") {
                 console.log("Review updated successfully");
               } else {
-                console.error(
-                  "Server error:",
-                  response.message || "Unknown error"
-                );
+                console.error("Server error:", response.message);
               }
             } catch (e) {
               console.error("Invalid JSON response:", xhr.responseText);
@@ -82,14 +73,14 @@ function changer(btn, wch) {
 
       xhr.send();
 
-      spne.innerText = "Edit";
+      spnE.innerText = "Edit";
       review.disabled = true;
       img.src = "./public/images/web/edit.png";
     }
   } else if (wch === "delete") {
     let rid = btn.dataset.rid;
     let xhr = new XMLHttpRequest();
-    xhr.open("GET", "profile.php?rid=" + encodeURIComponent(rid), true);
+    xhr.open("GET", "profile.php?rid=" + rid, true);
 
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4) {
@@ -155,7 +146,7 @@ function toggleTab(btn) {
 // view details button to show overaly
 
 function viewf(sid) {
-  alert(sid);
+  // alert(sid);
   const xhr = new XMLHttpRequest();
   xhr.open("GET", "shopdetails.php?sid=" + sid);
   xhr.onload = function () {
@@ -183,7 +174,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const editp = document.getElementById("editp");
 
   editp.addEventListener("click", () => {
-    // alert("ok");
     profileD.classList.remove("hidden");
   });
 
@@ -214,3 +204,52 @@ document.addEventListener("click", function (e) {
     overlayp?.remove();
   }
 });
+
+// delete from favorite
+
+function removefav(sid) {
+  alert(sid);
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", "profile.php", true);
+  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      const res = JSON.parse(xhr.responseText);
+      if (res.status === "success") {
+        alert("removed");
+      } else {
+        alert(res.message || "not removed");
+      }
+    }
+  };
+  xhr.send("sid=" + sid);
+}
+
+function review(sid) {
+  alert(sid);
+  let reviewD = document.getElementsByClassName("reviewD")[0];
+  let reviewtxt = document.getElementsByClassName("reviewtxt")[0];
+
+  if (reviewtxt.value.trim().length === 0) {
+    reviewD.classList.remove("border-gray-400");
+    reviewD.classList.add("border-red-500");
+    reviewtxt.focus();
+    return;
+  }
+
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", "add_review.php", true);
+  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      const res = JSON.parse(xhr.responseText);
+      if (res.status === "success") {
+        alert("added");
+        reviewtxt.value = "";
+      } else {
+        alert(res.message || "not added");
+      }
+    }
+  };
+  xhr.send("sid=" + sid + "&reviewtxt=" + reviewtxt.value);
+}
