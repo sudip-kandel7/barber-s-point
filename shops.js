@@ -69,6 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // View details button
 function view(sid) {
+  alert(sid);
   const xhr = new XMLHttpRequest();
   xhr.open("GET", "shopdetails.php?sid=" + sid);
 
@@ -133,15 +134,21 @@ function addfav(sid) {
   const xhr = new XMLHttpRequest();
   xhr.open("POST", "addfavorite.php", true);
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-  xhr.onload = function () {
+  xhr.onreadystatechange = function () {
     if (xhr.status === 200) {
       const res = JSON.parse(xhr.responseText);
       if (res.status === "success") {
-        if (favImg) favimg.src = "./public/images/web/saved.png";
+        if (favimg) favimg.src = "./public/images/web/saved.png";
       } else {
         alert(res.message || "Already in favorites");
       }
     }
   };
   xhr.send("sid=" + sid);
+}
+
+// book appointment
+
+function bookapp(sid) {
+  alert(sid);
 }

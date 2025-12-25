@@ -6,7 +6,7 @@ session_start();
 include 'header.php';
 
 if (isset($_POST['login'])) {
-    $conn = new mysqli("localhost", "root", "", "trypoint");
+    $conn = new mysqli("localhost", "root", "", "barber_point");
     if ($conn->connect_error) die("Connection failed: " . $conn->connect_error);
 
     $type = $_POST['type'];
@@ -23,7 +23,7 @@ if (isset($_POST['login'])) {
         if ($password === $row['passwrd']) {
 
             $sidResult = mysqli_fetch_assoc(mysqli_query($conn, "SELECT sid FROM shop WHERE uid = '$uid'"));
-            $sid = $sidResult['sid'] ?? null;
+            $sid = $sidResult['sid'];
 
             if ($type === "customer") {
                 $user = new User($email, $type, $uid);

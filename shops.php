@@ -9,7 +9,7 @@ ini_set('display_errors', 1);
 
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-$conn = new mysqli("localhost", "root", "", "trypoint");
+$conn = new mysqli("localhost", "root", "", "barber_point");
 
 
 $uid = null;

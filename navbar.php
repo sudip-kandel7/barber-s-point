@@ -55,7 +55,7 @@ include 'sessionCheck.php';
             <?php else: ?>
 
                 <?php
-                $conn = new mysqli("localhost", "root", "", "trypoint");
+                $conn = new mysqli("localhost", "root", "", "barber_point");
                 if ($conn->connect_error) {
                     die("Connection failed: " . $conn->connect_error);
                 }
@@ -63,7 +63,7 @@ include 'sessionCheck.php';
                 $stmt = "SELECT * FROM users WHERE email = '$email'";
                 $result = mysqli_query($conn, $stmt);
                 $row = mysqli_fetch_assoc($result);
-                $firstN = ucfirst(strtolower($row['firstN']));
+                $name = ucfirst(strtolower($row['name']));
                 $type = ucfirst(strtolower($row['type']));
                 ?>
 
@@ -79,7 +79,7 @@ include 'sessionCheck.php';
                                 <li>
                                     <a
                                         class="block text-lg font-medium py-2 bg-white text-gray-800 rounded-md shadow-md hover:shadow-lg hover:text-white hover:bg-yellow-400 hover:scale-105 transition-all duration-300">
-                                        <p><?php echo $firstN; ?></p>
+                                        <p><?php echo $name; ?></p>
                                         <p class="text-gray-500 font-light"><?php echo $type; ?></p>
                                     </a>
                                 </li>
@@ -182,7 +182,7 @@ include 'sessionCheck.php';
                         <li>
                             <a
                                 class="block text-lg font-medium py-2 bg-white text-gray-800 rounded-md shadow-md hover:shadow-lg hover:text-white hover:bg-yellow-400 hover:scale-105 transition-all duration-300">
-                                <p><?php echo $firstN; ?></p>
+                                <p><?php echo $name; ?></p>
                                 <p class="text-gray-500 font-light"><?php echo $type; ?></p>
                             </a>
                         </li>

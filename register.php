@@ -7,9 +7,9 @@ ini_set('display_errors', 1);
 session_start();
 
 if (isset($_POST['create'])) {
-    $conn = new mysqli("localhost", "root", "", "trypoint");
+    $conn = new mysqli("localhost", "root", "", "barber_point");
     $type = $_POST['pType'];
-    $firstN = $_POST['firstN'];
+    $name = $_POST['firstN'];
     $add = $_POST['add'];
     $email = $_POST['email'];
     $phone = $_POST['number'];
@@ -17,7 +17,8 @@ if (isset($_POST['create'])) {
 
     if ($type === "barber") {
         $sName = $_POST['sname'];
-        $sAddress = $_POST['address'];
+        $sAddress = $_POST['saddress'];
+        $barbers = $_POST['sbarber'];
         $defaultServices = [];
         $customServices = [];
 
@@ -66,16 +67,15 @@ if (isset($_POST['create'])) {
         $fullPath = $targetDir . $uImageName;
 
         if (move_uploaded_file($tmpImage, $fullPath)) {
-            $stmt1 = "INSERT INTO users (type, firstN, address, email, phone, passwrd)
-VALUES ('$type', '$firstN', '$add', '$email', '$phone', '$password')";
+            $stmt1 = "INSERT INTO users (type, name, address, email, phone, passwrd)
+VALUES ('$type', '$name', '$add', '$email', '$phone', '$password')";
 
             if (mysqli_query($conn, $stmt1)) {
                 $uid = mysqli_insert_id($conn);
-                $status = "active";
 
 
-                $stmt2 = "INSERT INTO shop (sname, saddress, photo, uid,status)
-                VALUES ('$sName', '$sAddress', '$fullPath', '$uid','$status')";
+                $stmt2 = "INSERT INTO shop (sname, saddress, photo, total_barbers, uid)
+                VALUES ('$sName', '$sAddress', '$fullPath', '$barbers', '$uid')";
 
                 if (mysqli_query($conn, $stmt2)) {
                     $sid = mysqli_insert_id($conn);
@@ -161,8 +161,8 @@ VALUES ('$type', '$firstN', '$add', '$email', '$phone', '$password')";
             echo "Failed to upload image.";
         }
     } else {
-        $stmt = "INSERT INTO users (type, firstN, address, email, phone, passwrd)
-    VALUES ('$type', '$firstN', '$add', '$email', '$phone', '$password')";
+        $stmt = "INSERT INTO users (type, name, address, email, phone, passwrd)
+    VALUES ('$type', '$name', '$add', '$email', '$phone', '$password')";
 
         if (mysqli_query($conn, $stmt)) {
 

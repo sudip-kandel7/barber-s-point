@@ -2,13 +2,13 @@
 
 include 'sessionCheck.php';
 
-$conn = new mysqli("localhost", "root", "", "trypoint");
+$conn = new mysqli("localhost", "root", "", "barber_point");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sid'])) {
     $sid = (int)$_POST['sid'];
     $uid = $_SESSION['user']->uid;
 
-    echo $sid;
+    // echo $sid;
 
     $qry1 = "SELECT * FROM favorites WHERE uid=$uid AND sid=$sid";
     $result = mysqli_query($conn, $qry1);
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sid'])) {
     if (mysqli_query($conn, $qry2)) {
         echo json_encode(['status' => 'success']);
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Failed']);
+        echo json_encode(['status' => 'error']);
     }
     exit;
 }

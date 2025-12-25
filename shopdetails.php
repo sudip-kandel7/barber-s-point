@@ -3,7 +3,7 @@ session_start();
 
 include 'sessionCheck.php';
 
-$conn = new mysqli("localhost", "root", "", "trypoint");
+$conn = new mysqli("localhost", "root", "", "barber_point");
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -153,9 +153,9 @@ mysqli_close($conn);
                     <span class="fav">Favorite</span>
                 </button>
             <?php endif ?>
-            <button
+            <button onclick="bookapp(<?php echo $sid ?>)"
                 class="px-4 py-2 hover:-translate-y-1 bg-[#22c55e] text-white  font-medium rounded-lg transition-colors text-sm">
-                Book
+                Book Appointment
             </button>
             <button
                 class="px-4 flex items-center gap-1 py-2 text-white bg-red-400 hover:bg-red-500 hover:-translate-y-1 bg-red-5000 font-medium rounded-lg transition-colors text-sm">

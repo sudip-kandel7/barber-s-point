@@ -8,7 +8,7 @@ session_start();
 include 'header.php';
 
 if (isset($_POST['login'])) {
-    $conn = new mysqli("localhost", "root", "", "trypoint");
+    $conn = new mysqli("localhost", "root", "", "barber_point");
     if ($conn->connect_error) die("Connection failed: " . $conn->connect_error);
 
     $email = $_POST['email'];

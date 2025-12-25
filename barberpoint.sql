@@ -3,7 +3,7 @@ create DATABASE barber_point;
 --  Users table 
 CREATE TABLE users (
     uid INT PRIMARY KEY AUTO_INCREMENT,
-    type ENUM('customer', 'shop', 'admin') NOT NULL DEFAULT 'customer',
+    type ENUM('customer', 'barber', 'admin') NOT NULL DEFAULT 'customer',
     name VARCHAR(50) NOT NULL,
     address VARCHAR(255),
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -54,7 +54,7 @@ CREATE TABLE services (
 CREATE TABLE shop_services (
     sid INT NOT NULL,
     services_id INT NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
+    price INT NOT NULL,
     duration INT NOT NULL,
     PRIMARY KEY (sid, services_id),
     FOREIGN KEY (sid) REFERENCES shop(sid) ON DELETE CASCADE,
@@ -71,10 +71,17 @@ CREATE TABLE favorites (
 );
 -- queue table 
 CREATE TABLE queue (
-    qid INT PRIMARY KEY AUTO_INCREMENT,
+    sid INT PRIMARY KEY,
+    current_queue INT NOT NULL DEFAULT 0,
+    total_wait_time TIME NOT NULL DEFAULT '00:00:00',
+    FOREIGN KEY(sid) REFERENCES shop(sid)
+);
+-- booking table
+CREATE TABLE booking (
+    bid INT PRIMARY KEY AUTO_INCREMENT,
     uid INT NOT NULL,
     sid INT NOT NULL,
-    queue_number INT NOT NULL,
+    booking_number INT NOT NULL,
     status ENUM(
         'waiting',
         'in_service',
@@ -86,14 +93,15 @@ CREATE TABLE queue (
     joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     service_started_at DATETIME NULL,
     completed_at DATETIME NULL,
-    UNIQUE (uid, sid, status) FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE,
+    UNIQUE (uid, sid, status),
+    FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE,
     FOREIGN KEY (sid) REFERENCES shop(sid) ON DELETE CASCADE,
     INDEX idx_shop_status (sid, status),
     INDEX idx_user (uid)
 );
--- Queue services
-CREATE TABLE queue_services (
-    qid INT NOT NULL,
+-- booking services
+CREATE TABLE booking_services (
+    bid INT NOT NULL,
     services_id INT NOT NULL,
     PRIMARY KEY (qid, services_id),
     FOREIGN KEY (qid) REFERENCES queue(qid) ON DELETE CASCADE,

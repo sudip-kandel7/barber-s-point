@@ -5,7 +5,7 @@ if (isset($_POST['email'])) {
 
     $email = $_POST['email'];
 
-    $conn = new mysqli("localhost", "root", "", "trypoint");
+    $conn = new mysqli("localhost", "root", "", "barber_point");
 
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);

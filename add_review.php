@@ -1,7 +1,7 @@
 <?php
 include 'sessionCheck.php';
 
-$conn = new mysqli("localhost", "root", "", "trypoint");
+$conn = new mysqli("localhost", "root", "", "barber_point");
 
 
 if (!isset($_POST['sid']) && !isset($_POST['reviewtxt'])) {

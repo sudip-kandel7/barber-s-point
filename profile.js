@@ -89,12 +89,20 @@ function changer(btn, wch) {
             const response = JSON.parse(xhr.responseText);
 
             if (response.status === "success") {
-              location.reload();
+              const card = document.getElementById("review-shop-" + rid);
+              card?.remove();
+
+              const container = document.querySelector(".r");
+              if (container && container.children.length === 0) {
+                document.getElementById("reviewD").innerHTML = `
+      <div class="text-center py-16">
+        <img src="./public/images/web/empty.png" class="w-24 h-24 mx-auto mb-4 opacity-50" alt="">
+        <p class="text-gray-500 text-lg">You haven't written any reviews yet</p>
+        <p class="text-gray-400 text-sm mt-2">Visit a shop and share your experience!</p>
+      </div>`;
+              }
             } else {
-              console.error(
-                "Server error:",
-                response.message || "Unknown error"
-              );
+              console.error(response.message);
             }
           } catch (e) {
             console.error("Invalid JSON response:", xhr.responseText);
@@ -208,7 +216,7 @@ document.addEventListener("click", function (e) {
 // delete from favorite
 
 function removefav(sid) {
-  alert(sid);
+  // alert(sid);
   const xhr = new XMLHttpRequest();
   xhr.open("POST", "profile.php", true);
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -216,9 +224,19 @@ function removefav(sid) {
     if (xhr.status === 200) {
       const res = JSON.parse(xhr.responseText);
       if (res.status === "success") {
-        alert("removed");
+        const card = document.getElementById("fav-shop-" + sid);
+        card?.remove();
+        const favContainer = document.querySelector("#favD .grid");
+        if (favContainer && favContainer.children.length === 0) {
+          document.querySelector("#favD").innerHTML = `
+            <div class="text-center py-16">
+                <img src="./public/images/web/empty.png" class="w-24 h-24 mx-auto mb-4 opacity-50" alt="">
+                <p class="text-gray-500 text-lg">You haven no favorite shops yet</p>
+                <p class="text-gray-400 text-sm mt-2">Visit a shop and add to your favorite!</p>
+            </div>`;
+        }
       } else {
-        alert(res.message || "not removed");
+        alert(res.message || "Not removed");
       }
     }
   };
@@ -226,7 +244,7 @@ function removefav(sid) {
 }
 
 function review(sid) {
-  alert(sid);
+  // alert(sid);
   let reviewD = document.getElementsByClassName("reviewD")[0];
   let reviewtxt = document.getElementsByClassName("reviewtxt")[0];
 
