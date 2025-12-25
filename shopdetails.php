@@ -1,3 +1,80 @@
+<?php
+session_start();
+
+include 'sessionCheck.php';
+
+$conn = new mysqli("localhost", "root", "", "trypoint");
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+if (!isset($_GET['sid'])) {
+    exit;
+}
+
+
+
+$sid = (int) $_GET['sid'];
+$uid = $_SESSION['user']->uid;
+
+$result = mysqli_query($conn, "SELECT * FROM favorites WHERE uid = '$uid' AND sid = '$sid'");
+
+if (mysqli_num_rows($result) > 0) {
+    $favimg = "./public/images/web/saved.png";
+} else {
+    $favimg = "./public/images/web/save.png";
+}
+
+$shopQry = "
+    SELECT 
+        shop.sname,
+        shop.saddress,
+        shop.status,
+        shop.photo,
+        queue.current_queue,
+        queue.total_wait_time,
+        COUNT(review.rid) AS total_reviews
+    FROM shop
+    LEFT JOIN queue ON shop.sid = queue.sid
+    LEFT JOIN review ON shop.sid = review.sid
+    WHERE shop.sid = $sid
+    GROUP BY 
+        shop.sname,
+        shop.saddress,
+        shop.status,
+        shop.photo,
+        queue.current_queue,
+        queue.total_wait_time
+";
+$shopResult = mysqli_query($conn, $shopQry);
+$shopData = mysqli_fetch_assoc($shopResult);
+
+$servicesQry = "
+    SELECT 
+        services.services_name,
+        shop_services.price,
+        shop_services.duration
+    FROM shop_services
+    JOIN services ON shop_services.services_id = services.services_id
+    WHERE shop_services.sid = $sid
+";
+$servicesResult = mysqli_query($conn, $servicesQry);
+
+$reviewsQry = "
+    SELECT 
+        users.firstN,
+        review.review,
+        review.date_added
+    FROM review
+    JOIN users ON review.uid = users.uid
+    WHERE review.sid = $sid
+    ORDER BY review.date_added DESC
+";
+$reviewsResult = mysqli_query($conn, $reviewsQry);
+
+mysqli_close($conn);
+?>
+
 <div id="shopOverlay" class="fixed inset-0 bg-black/60 z-[9998] flex items-center justify-center">
 
     <div id="shopModal" class="bg-white rounded-lg shadow-xl
@@ -7,10 +84,12 @@
              0">
 
         <div id="shopBg" class="relative flex flex-col items-start justify-end
-         p-5 pb-2 sm:p-4 min-h-[300px]
-         bg-cover bg-center bg-no-repeat" style="   
-  background: url('<?php $shopData ?>') center/cover no-repeat;   
-">
+     p-5 pb-2 sm:p-4 min-h-[300px]" style="
+        background: 
+          linear-gradient(to right, rgba(255,255,255,0.9), rgba(255,255,255,0.9)),
+          url('<?php echo $shopData['photo']; ?>') center/cover no-repeat;
+     ">
+
 
             <div class="absolute top-3 right-3 sm:top-4 sm:right-4">
                 <span id="status"
@@ -34,7 +113,7 @@
                     <img src="./public/images/web/user.png" class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" alt="">
                     <p class="text-sm sm:text-md text-gray-500">
                         Queue:
-                        <span id="queue" class="ml-1 text-yellow-400 font-semibold">
+                        <span id="queue" class="ml-1 text-yellow-500 font-semibold">
                             <?php $queue = $shopData['current_queue'] ?? 0;
                             echo $queue . ' ' . ($queue == 1 ? 'Person' : 'People'); ?>
                             People</span>
@@ -45,7 +124,7 @@
                     <img src="./public/images/web/time.png" class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" alt="">
                     <p class="text-sm sm:text-md text-gray-500">
                         Est. wait:
-                        <span class="ml-1 font-semibold">
+                        <span class="ml-1 text-yellow-500 font-semibold">
                             <?php $mins = $shopData['total_wait_time'] ?? 0;
                             echo $mins . ' ' . ($mins == 1 ? 'Minute' : 'Minutes'); ?>
                         </span>
@@ -56,7 +135,7 @@
                 <div class="flex gap-1.5 sm:gap-2 items-center">
                     <img src="./public/images/web/review.png" class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" alt="">
                     <p class="text-sm sm:text-md text-gray-500">
-                        <span class="ml-1 text-yellow-400 font-semibold">
+                        <span class="ml-1 text-yellow-500 font-semibold">
                             <?php $reviews = $shopData['total_reviews'] ?? 0;
                             echo $reviews . ' ' . ($reviews == 1 ? 'Review' : 'Reviews'); ?>
                         </span>
@@ -70,7 +149,7 @@
             <?php if ($_SESSION['user']->type === "customer"): ?>
                 <button id="fav" onclick="addfav(<?php echo $sid ?>)"
                     class="px-4 flex items-center gap-2 text-white py-2 hover:-translate-y-1 bg-yellow-400  hover:bg-yellow-500 font-medium rounded-lg transition-colors text-sm">
-                    <img id="favimg" src="./public/images/web/save.png" class="w-3 h-3" alt="">
+                    <img id="favimg" src="<?php echo $favimg ?>" class="w-3 h-3" alt="">
                     <span class="fav">Favorite</span>
                 </button>
             <?php endif ?>
@@ -88,11 +167,10 @@
         <hr class="mx-3 h-11 border-gray-300">
         <?php if (isset($_SESSION['user']) && $_SESSION['user']->type === "customer"): ?>
 
-            <div class="flex items-center gap-3 justify-between border-2 border-gray-300 rounded-md shadow-sm -mt-3 mx-auto mb-4
+            <div class="reviewD flex items-center gap-3 justify-between border-2 border-gray-400 rounded-md shadow-sm -mt-3 mx-auto mb-4
     w-[96%]  text-sm sm:text-base">
-                <input class="reviewtxt text-base text-gray-400 h-full w-full py-3 px-2 outline-none"
-                    placeholder="Comment....." />
-                <p onclick="review()"
+                <input class="reviewtxt text-base h-full w-full py-3 px-2 outline-none" placeholder="Comment....." />
+                <p onclick="review(<?php echo $sid ?>)"
                     class="reviewpost cursor-pointer bg-yellow-400 hover:bg-yellow-500 hover:shadow-md py-1.5 px-5 my-1 mx-2 rounded-md">
                     Post
                 </p>
@@ -110,7 +188,7 @@ w-[96%] flex gap-2 sm:gap-6 justify-around text-sm sm:text-base">
             </button>
         </div>
 
-        <div class="servicesDetails hidden px-4 max-h-[40vh] overflow-y-auto">
+        <div class="servicesDetails px-4 max-h-[40vh] overflow-y-auto">
 
             <?php if (mysqli_num_rows($servicesResult) > 0):
                 while ($rows = mysqli_fetch_assoc($servicesResult)) {
@@ -122,7 +200,7 @@ w-[96%] flex gap-2 sm:gap-6 justify-around text-sm sm:text-base">
                             <p class="font-medium"><?php echo  $rows['services_name'] ?></p>
                             <p class="text-sm text-gray-400"><?php echo $rows['duration'] ?> mins</p>
                         </div>
-                        <p class="font-semibold text-yellow-400">Rs. <?php echo $rows['price'] ?> ?? 0 </p>
+                        <p class="font-semibold text-yellow-400">Rs. <?php echo $rows['price'] ?> </p>
                     </div>
                 <?php }
             else:
@@ -130,7 +208,7 @@ w-[96%] flex gap-2 sm:gap-6 justify-around text-sm sm:text-base">
                 <p class='text-center mb-2 text-2xl text-gray-400'>No services available.</p>
             <?php endif ?>
         </div>
-        <div class="reviewsDetails hidden px-4 max-h-[40vh] overflow-y-auto">
+        <div class="reviewsDetails hidden px-4 min-h-[5vh]">
             <?php if (mysqli_num_rows($reviewsResult) > 0): ?>
                 <?php while ($rows = mysqli_fetch_assoc($reviewsResult)): ?>
                     <div class="border rounded-md w-full border-gray-500 flex flex-col px-3 py-3 mb-3 gap-1">
@@ -138,7 +216,10 @@ w-[96%] flex gap-2 sm:gap-6 justify-around text-sm sm:text-base">
                             <img src="./public/images/web/profile.png" class="w-10 h-10 rounded-full" />
                             <div>
                                 <p class="font-medium"><?php echo $rows['firstN']; ?></p>
-                                <p class="text-sm text-gray-400 mb-2"><?php echo $rows['date_added']; ?></p>
+                                <p class="text-sm text-gray-400 mb-2"><?php
+                                                                        $datetime = $rows['date_added'];
+                                                                        echo date("M d, Y | g:i A", strtotime($datetime));
+                                                                        ?></p>
                             </div>
                         </div>
                         <p><?php echo $rows['review']; ?></p>

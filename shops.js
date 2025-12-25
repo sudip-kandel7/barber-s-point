@@ -128,7 +128,8 @@ function toggleTab(btn) {
 }
 
 function addfav(sid) {
-  alert(sid);
+  // alert(sid);
+  const favimg = document.getElementById("favimg");
   const xhr = new XMLHttpRequest();
   xhr.open("POST", "addfavorite.php", true);
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -136,7 +137,7 @@ function addfav(sid) {
     if (xhr.status === 200) {
       const res = JSON.parse(xhr.responseText);
       if (res.status === "success") {
-        alert("Added to favorites");
+        if (favImg) favimg.src = "./public/images/web/saved.png";
       } else {
         alert(res.message || "Already in favorites");
       }
