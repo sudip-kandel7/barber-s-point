@@ -14,7 +14,7 @@ $uid = $_SESSION['user']->uid;
 
 
 
-$qry = "SELECT firstN, email, phone, address FROM users WHERE users.uid = $uid";
+$qry = "SELECT name, email, phone, address FROM users WHERE users.uid = $uid";
 $result = mysqli_query($conn, $qry);
 $userData = mysqli_fetch_assoc($result);
 
@@ -39,7 +39,7 @@ mysqli_close($conn);
                 <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
                     Full Name
                 </label>
-                <input name="name" type="text" value="<?php echo $userData['firstN'] ?>"
+                <input name="name" type="text" value="<?php echo $userData['name'] ?>"
                     class="w-full rounded-lg border-2 border-gray-300 px-3 py-2 focus:outline-none focus:border-yellow-400" />
                 <p class="name text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
             </div>
@@ -75,7 +75,7 @@ mysqli_close($conn);
         </form>
 
         <div class="flex justify-end gap-3 mt-6">
-            <button class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100">
+            <button id="cancel" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100">
                 Cancel
             </button>
             <button

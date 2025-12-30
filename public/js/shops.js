@@ -69,9 +69,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // View details button
 function view(sid) {
-  alert(sid);
+  // alert(sid);
   const xhr = new XMLHttpRequest();
   xhr.open("GET", "shopdetails.php?sid=" + sid);
+
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      // alert("ok");
+      document.body.insertAdjacentHTML("beforeend", xhr.responseText);
+    }
+  };
+
+  xhr.send();
+}
+
+// book appointment
+
+function bookapp(sid) {
+  // alert(sid);
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", "book_services.php?sid=" + sid);
 
   xhr.onload = function () {
     if (xhr.status === 200) {
@@ -82,16 +99,16 @@ function view(sid) {
   xhr.send();
 }
 
+// remove view detail overlay or book overlay
 document.addEventListener("click", function (e) {
-  const overlay = document.getElementById("shopOverlay");
-  const modal = document.getElementById("shopModal");
-  const fav = document.getElementById("fav");
+  if (e.target && e.target.id === "shopOverlay") {
+    e.target.remove();
+    return;
+  }
 
-  if (!overlay || !modal) return;
-
-  if (e.target === overlay) {
-    // alert("ok");
-    overlay?.remove();
+  if (e.target && e.target.id === "bookOverlay") {
+    e.target.remove();
+    return;
   }
 });
 
@@ -147,8 +164,60 @@ function addfav(sid) {
   xhr.send("sid=" + sid);
 }
 
-// book appointment
+// check if any checkbox clicked also changed total dur and price
 
-function bookapp(sid) {
-  alert(sid);
+function booking(sid, price, duration) {
+  // alert(sid + " " + price + " " + duration);
+
+  price = parseInt(price);
+  duration = parseInt(duration);
+
+  const boxes = document.querySelectorAll(".checkboxes");
+  const btn = document.getElementById("bookbtn");
+  let dur = document.getElementById("duration");
+  let p = document.getElementById("price");
+
+  let currentD = parseInt(dur.innerText);
+  let currentP = parseInt(p.innerText);
+
+  const checkbox = event.target;
+  if (checkbox.checked) {
+    currentD += duration;
+    currentP += price;
+  } else {
+    currentD -= duration;
+    currentP -= price;
+  }
+
+  dur.innerText = currentD;
+  p.innerText = currentP;
+
+  let anyChecked;
+  boxes.forEach((box) => {
+    if (box.checked) {
+      anyChecked = true;
+    }
+
+    if (anyChecked) {
+      btn.disabled = false;
+      btn.innerText = "Confirm Booking";
+      btn.classList.remove("bg-gray-200", "text-gray-500");
+      btn.classList.add("bg-green-500", "text-white");
+    } else {
+      btn.disabled = true;
+      btn.innerText = "Select at least one service";
+      btn.classList.remove("bg-green-500", "text-white");
+      btn.classList.add("bg-gray-200", "text-gray-500");
+    }
+  });
+  anyChecked = false;
+}
+
+function adding() {
+  const boxes = document.querySelectorAll(".checkboxes");
+  const selected = [];
+  boxes.forEach((box) => {
+    if (box.checked) {
+    }
+  });
 }

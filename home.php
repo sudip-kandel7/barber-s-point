@@ -50,7 +50,7 @@
                 <div class="p-3 flex flex-col">
                     <div class="flex items-center justify-center gap-1 mb-2">
                         <p class="text-2xl font-bold text-yellow-500">50</p>
-                        <img src="./public/images/web/cross.png" alt="" class="w-4 h-4">
+                        <img src="./public/images/web/cross.png" alt="" class="w-5 h-5">
                     </div>
                     <div class="flex items-center justify-center gap-2">
                         <img src="./public/images/web/shop.png" alt="" class="w-5 h-5">
@@ -61,7 +61,7 @@
                 <div class="p-3 flex flex-col">
                     <div class="flex items-center justify-center gap-1 mb-2">
                         <p class="text-2xl font-bold text-yellow-500">1000</p>
-                        <img src="./public/images/web/cross.png" alt="" class="w-4 h-4">
+                        <img src="./public/images/web/cross.png" alt="" class="w-5 h-5">
                     </div>
                     <div class="flex items-center justify-center gap-2">
                         <img src="./public/images/web/heart.png" alt="" class="w-5 h-5">

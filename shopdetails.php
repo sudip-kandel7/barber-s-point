@@ -3,6 +3,8 @@ session_start();
 
 include 'sessionCheck.php';
 
+// echo "this is me";
+
 $conn = new mysqli("localhost", "root", "", "barber_point");
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -11,8 +13,6 @@ if ($conn->connect_error) {
 if (!isset($_GET['sid'])) {
     exit;
 }
-
-
 
 $sid = (int) $_GET['sid'];
 $uid = $_SESSION['user']->uid;
@@ -62,7 +62,7 @@ $servicesResult = mysqli_query($conn, $servicesQry);
 
 $reviewsQry = "
     SELECT 
-        users.firstN,
+        users.name,
         review.review,
         review.date_added
     FROM review

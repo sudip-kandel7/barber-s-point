@@ -430,6 +430,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <p>${name}</p>
       <ul class="flex gap-1 items-center text-sm text-gray-500">
         <li>${duration} mins</li>
+        <input type="number" name="customSNames[]" value="${name}" />
         <li class="bg-gray-500 w-1 h-1 rounded-full"></li>
         <li>Rs.${price}</li>
       </ul>

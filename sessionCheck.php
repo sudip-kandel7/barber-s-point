@@ -19,6 +19,3 @@ if (isset($_COOKIE['user'])) {
         return;
     }
 }
-
-// header("Location: login.php");
-// exit;

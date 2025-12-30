@@ -165,31 +165,6 @@ function viewf(sid) {
   xhr.send();
 }
 
-document.addEventListener("click", function (e) {
-  const overlay = document.getElementById("shopOverlay");
-  const modal = document.getElementById("shopModal");
-  const fav = document.getElementById("fav");
-
-  if (!overlay || !modal) return;
-
-  if (e.target === overlay) {
-    overlay?.remove();
-  }
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-  const profileD = document.getElementById("overlayp");
-  const editp = document.getElementById("editp");
-
-  editp.addEventListener("click", () => {
-    profileD.classList.remove("hidden");
-  });
-
-  profileD.addEventListener("click", () => {
-    profileD.classList.add("hidden");
-  });
-});
-
 // profile overaly
 function viewp() {
   const xhr = new XMLHttpRequest();
@@ -201,14 +176,14 @@ function viewp() {
   };
   xhr.send();
 }
-
+// remove overlay if clicked ouside the modal or cancel button
 document.addEventListener("click", function (e) {
   const overlayp = document.getElementById("overlayp");
-  const modal = document.getElementById("profileModal");
+  const cancel = document.getElementById("cancel");
 
-  if (!overlayp || !modal) return;
+  if (!overlayp) return;
 
-  if (e.target === overlayp) {
+  if (e.target === overlayp || e.target === cancel) {
     overlayp?.remove();
   }
 });
@@ -271,3 +246,12 @@ function review(sid) {
   };
   xhr.send("sid=" + sid + "&reviewtxt=" + reviewtxt.value);
 }
+
+// edited user info validate
+
+let updateform = document.getElementsByClassName("updateform")[0];
+
+updateform.addEventListener("input", (e) => {
+  if (e.target.name === "name") {
+  }
+});

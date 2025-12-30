@@ -12,6 +12,7 @@ if (isset($_POST['login'])) {
     $type = $_POST['type'];
     $email = $_POST['lemail'];
     $password = $_POST['lpassword'];
+    $secure = md5($password);
 
     $stmt1 = "SELECT uid, passwrd FROM users WHERE email = '$email' AND type = '$type'";
     $result = mysqli_query($conn, $stmt1);
@@ -20,7 +21,7 @@ if (isset($_POST['login'])) {
         $row = mysqli_fetch_assoc($result);
         $uid = $row['uid'];
 
-        if ($password === $row['passwrd']) {
+        if ($secure === $row['passwrd']) {
 
             $sidResult = mysqli_fetch_assoc(mysqli_query($conn, "SELECT sid FROM shop WHERE uid = '$uid'"));
             $sid = $sidResult['sid'];

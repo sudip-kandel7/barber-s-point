@@ -103,7 +103,7 @@ CREATE TABLE booking (
 CREATE TABLE booking_services (
     bid INT NOT NULL,
     services_id INT NOT NULL,
-    PRIMARY KEY (qid, services_id),
-    FOREIGN KEY (qid) REFERENCES queue(qid) ON DELETE CASCADE,
+    PRIMARY KEY (bid, services_id),
+    FOREIGN KEY (bid) REFERENCES booking(bid) ON DELETE CASCADE,
     FOREIGN KEY (services_id) REFERENCES services(services_id) ON DELETE CASCADE
 );

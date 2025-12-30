@@ -68,11 +68,11 @@ $user = $_SESSION['user'];
 
 $qry = "
 SELECT 
-    users.firstN,
+    users.name,
     users.email,
     users.phone,
     users.address,
-    users.added_date,
+    users.created_at,
     COUNT(review.rid) AS total_reviews
 FROM users 
 LEFT JOIN review ON review.uid = users.uid

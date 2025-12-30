@@ -14,12 +14,13 @@ if (isset($_POST['create'])) {
     $email = $_POST['email'];
     $phone = $_POST['number'];
     $password = $_POST['password'];
+    $secure = md5($password);
 
     if ($type === "barber") {
         $sName = $_POST['sname'];
         $sAddress = $_POST['saddress'];
         $barbers = $_POST['sbarber'];
-        $defaultServices = [];
+        $selectedServices = [];
         $customServices = [];
 
         if (!empty($_POST['defaultServices'])) {
@@ -46,7 +47,7 @@ if (isset($_POST['create'])) {
             for ($i = 0; $i < count($names); $i++) {
                 if (!empty($names[$i])) {
                     $customServices[] = [
-                        "name" => $row['services_name'],
+                        "name" => $names[$i],
                         "price" => $prices[$i],
                         "duration" => $durations[$i]
                     ];
@@ -68,7 +69,7 @@ if (isset($_POST['create'])) {
 
         if (move_uploaded_file($tmpImage, $fullPath)) {
             $stmt1 = "INSERT INTO users (type, name, address, email, phone, passwrd)
-VALUES ('$type', '$name', '$add', '$email', '$phone', '$password')";
+VALUES ('$type', '$name', '$add', '$email', '$phone', '$secure')";
 
             if (mysqli_query($conn, $stmt1)) {
                 $uid = mysqli_insert_id($conn);
@@ -162,7 +163,7 @@ VALUES ('$type', '$name', '$add', '$email', '$phone', '$password')";
         }
     } else {
         $stmt = "INSERT INTO users (type, name, address, email, phone, passwrd)
-    VALUES ('$type', '$name', '$add', '$email', '$phone', '$password')";
+    VALUES ('$type', '$name', '$add', '$email', '$phone', '$secure')";
 
         if (mysqli_query($conn, $stmt)) {
 
@@ -183,10 +184,8 @@ VALUES ('$type', '$name', '$add', '$email', '$phone', '$password')";
 }
 
 
-
+include 'header.php';
 ?>
-
-<?php include 'header.php'; ?>
 
 <style>
     body {
@@ -313,12 +312,16 @@ VALUES ('$type', '$name', '$add', '$email', '$phone', '$password')";
 
 
                         <div>
-                            <p class="font-medium mb-2">Services Offered</p>
+                            <p class="font-medium mb-2">Services Offered <span class="text-red-600">*</span></p>
+                            <p class="text-sm text-gray-600 mb-3 bg-yellow-50  p-2 rounded">
+                                ⚠️ You must select at least one default service OR add a custom service
+                            </p>
+
                             <p class="font-medium mb-1.5">Default Services</p>
 
                             <div class="bg-white flex flex-col gap-2 p-3 rounded-md shadow-md">
                                 <?php
-                                $conn = new mysqli("localhost", "root", "", "trypoint");
+                                $conn = new mysqli("localhost", "root", "", "barber_point");
                                 if ($conn->connect_error) {
                                     die("Connection failed: " . $conn->connect_error);
                                 }
@@ -423,8 +426,8 @@ VALUES ('$type', '$name', '$add', '$email', '$phone', '$password')";
                         <span class="text-yellow-500 hover:text-yellow-600 hover:underline">Sign in here</span>
                     </a>
                 </div>
+            </form>
         </div>
-        </form>
 
 
         <a href="/barber-s-point" class="flex gap-2 mt-4 items-center group cursor-pointer">
@@ -433,7 +436,6 @@ VALUES ('$type', '$name', '$add', '$email', '$phone', '$password')";
                 alt="arrow to home" id="photos">
             <p class="text-gray-500 group-hover:text-yellow-400">Back to Home</p>
         </a>
-    </div>
     </div>
 </section>
 
