@@ -75,7 +75,7 @@ $reviewsResult = mysqli_query($conn, $reviewsQry);
 mysqli_close($conn);
 ?>
 
-<div id="shopOverlay" class="fixed inset-0 bg-black/60 z-[9998] flex items-center justify-center">
+<div id="shopOverlay" class="fixed inset-0 bg-black/60 z-[9997] flex items-center justify-center">
 
     <div id="shopModal" class="bg-white rounded-lg shadow-xl
               max-w-4xl w-full mx-4

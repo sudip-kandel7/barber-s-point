@@ -234,7 +234,7 @@ function review(sid) {
   xhr.open("POST", "add_review.php", true);
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
   xhr.onload = function () {
-    if (xhr.status === 200) {
+    if (xhr.readyState == 4 && xhr.status === 200) {
       const res = JSON.parse(xhr.responseText);
       if (res.status === "success") {
         alert("added");
@@ -249,9 +249,11 @@ function review(sid) {
 
 // edited user info validate
 
-let updateform = document.getElementsByClassName("updateform")[0];
+let updateform = document.getElementsById("updateform");
 
-updateform.addEventListener("input", (e) => {
-  if (e.target.name === "name") {
-  }
+updateform.addEventListener("keyup", (e) => {
+  console.log(e.target);
+  // const err = document.querySelectorAll("p.name");
+  // if (e.target.name === "name") {
+  // }
 });

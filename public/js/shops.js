@@ -103,6 +103,7 @@ function bookapp(sid) {
 document.addEventListener("click", function (e) {
   if (e.target && e.target.id === "shopOverlay") {
     e.target.remove();
+    window.location.reload();
     return;
   }
 
@@ -201,23 +202,106 @@ function booking(sid, price, duration) {
     if (anyChecked) {
       btn.disabled = false;
       btn.innerText = "Confirm Booking";
-      btn.classList.remove("bg-gray-200", "text-gray-500");
-      btn.classList.add("bg-green-500", "text-white");
+      btn.classList.remove(
+        "bg-gray-200",
+        "text-gray-500",
+        "hover:cursor-not-allowed"
+      );
+      btn.classList.add("bg-green-500", "text-white", "hover:cursor-pointer");
     } else {
       btn.disabled = true;
       btn.innerText = "Select at least one service";
-      btn.classList.remove("bg-green-500", "text-white");
-      btn.classList.add("bg-gray-200", "text-gray-500");
+      btn.classList.remove(
+        "bg-green-500",
+        "text-white",
+        "hover-cursor-pointer"
+      );
+      btn.classList.add(
+        "bg-gray-200",
+        "text-gray-500",
+        "hover:cursor-not-allowed"
+      );
     }
   });
   anyChecked = false;
 }
 
-function adding() {
+function adding(sid) {
   const boxes = document.querySelectorAll(".checkboxes");
   const selected = [];
+  let totalD = 0,
+    totalP = 0;
   boxes.forEach((box) => {
     if (box.checked) {
+      totalD += parseInt(box.dataset.duration);
+      totalP += parseInt(box.dataset.price);
+      selected.push({
+        serviceId: box.dataset.serviceId,
+        serviceName: box.dataset.serviceName,
+        price: parseInt(box.dataset.price),
+        duration: parseInt(box.dataset.duration),
+      });
     }
   });
+
+  console.log({
+    shopId: sid,
+    services: selected,
+    totalPrice: totalP,
+    totalDuration: totalD,
+  });
+
+  // insert to db now
+
+  xhr = new XMLHttpRequest();
+
+  xhr.open("POST", "update_queue.php", true);
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState == 4 && xhr.status === 200) {
+      const res = JSON.parse(xhr.responseText);
+      const bookOverlay = document.getElementById("bookOverlay");
+      if (res.status === "good") {
+        // alert(res.msg);
+        showPopup("already");
+        bookOverlay.remove();
+      }
+      if (res.status === "success") {
+        // alert(res.msg);
+        showPopup("booked");
+        bookOverlay.remove();
+      }
+      if (res.status === "err") {
+        // alert(res.msg);
+        showPopup("error");
+        bookOverlay.remove();
+      }
+      if (res.status === "not") {
+        showPopup("login");
+        bookOverlay.remove();
+      }
+    }
+  };
+  xhr.send(
+    JSON.stringify({
+      sid: sid,
+      selected: selected,
+      totalDuration: totalD,
+      totalPrice: totalP,
+    })
+  );
+}
+
+function showPopup(type) {
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", "pop_up.php?txt=" + type, true);
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      document.body.insertAdjacentHTML("beforeend", xhr.responseText);
+      setTimeout(() => {
+        const popup = document.getElementById("popUpOverlay");
+        popup.remove();
+      }, 2000);
+    }
+  };
+  xhr.send();
 }

@@ -4,8 +4,8 @@ include 'sessionCheck.php';
 
 
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
 
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
@@ -69,97 +69,97 @@ mysqli_close($conn);
     <div class="pt-7 flex flex-col items-center max-w-[1400px] w-full text-center mx-auto px-4 sm:px-6 lg:px-8">
 
         <?php if ($search): ?>
-        <div class="w-full">
-            <div class="mb-6 text-start">
-                <p class="text-2xl sm:text-3xl lg:text-4xl font-semibold">Search Results</p>
-                <p class="text-sm sm:text-base md:text-lg text-gray-500 font-semilight mt-2">
-                    Found <?php echo count($Sshops); ?> shop<?php echo count($Sshops) !== 1 ? 's' : ''; ?>
-                    matching "<?php echo $search; ?>"
-                </p>
-            </div>
+            <div class="w-full">
+                <div class="mb-6 text-start">
+                    <p class="text-2xl sm:text-3xl lg:text-4xl font-semibold">Search Results</p>
+                    <p class="text-sm sm:text-base md:text-lg text-gray-500 font-semilight mt-2">
+                        Found <?php echo count($Sshops); ?> shop<?php echo count($Sshops) !== 1 ? 's' : ''; ?>
+                        matching "<?php echo $search; ?>"
+                    </p>
+                </div>
 
-            <?php if (count($Sshops) > 0): ?>
+                <?php if (count($Sshops) > 0): ?>
 
-            <div class="w-full mt-3 sm:mt-4 p-2 sm:p-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-                <?php foreach ($Sshops as $rows):
+                    <div class="w-full mt-3 sm:mt-4 p-2 sm:p-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+                        <?php foreach ($Sshops as $rows):
                             $status = strtolower(trim($rows['status']));
                             $statusColor = ($status === "open" || $status === "active") ? "green" : "red";
                         ?>
-                <div
-                    class="w-full max-w-[450px] mx-auto relative bg-white shadow-md rounded-lg hover:-translate-y-1 hover:shadow-xl transition-all group">
+                            <div
+                                class="w-full max-w-[450px] mx-auto relative bg-white shadow-md rounded-lg hover:-translate-y-1 hover:shadow-xl transition-all group">
 
-                    <img src="<?php echo $rows['photo']; ?>" alt="<?php echo $rows['sname']; ?>"
-                        class="w-full h-48 sm:h-56 object-cover rounded-t-lg">
+                                <img src="<?php echo $rows['photo']; ?>" alt="<?php echo $rows['sname']; ?>"
+                                    class="w-full h-48 sm:h-56 object-cover rounded-t-lg">
 
-                    <p
-                        class="bg-opacity-70 px-2 sm:px-2.5 font-semibold absolute top-2 sm:top-3 right-2 sm:right-3 rounded-full 
+                                <p
+                                    class="bg-opacity-70 px-2 sm:px-2.5 font-semibold absolute top-2 sm:top-3 right-2 sm:right-3 rounded-full 
                      inline-flex items-center py-0.5 text-[10px] sm:text-xs cursor-pointer bg-yellow-400 group-hover:bg-<?php echo $statusColor; ?>-500">
-                        <?php echo ucfirst($rows['status']); ?>
-                    </p>
-
-                    <div class="px-3 sm:px-4 py-3">
-
-                        <p
-                            class="text-base sm:text-lg font-semibold text-start pl-2 sm:pl-3 group-hover:text-yellow-400 truncate">
-                            <?php echo $rows['sname']; ?>
-                        </p>
-
-                        <div class="flex items-center gap-1 mt-1">
-                            <img src="./public/images/web/shop-location.png" class="w-4 h-4 flex-shrink-0" alt="">
-                            <p class="text-xs sm:text-sm text-gray-500 truncate">
-                                <?php echo $rows['saddress']; ?>
-                            </p>
-                        </div>
-
-                        <div class="flex flex-col sm:flex-row justify-between gap-2 sm:gap-0 mt-3">
-
-                            <div class="flex gap-1.5 sm:gap-2 items-center">
-                                <img src="./public/images/web/user.png" class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0"
-                                    alt="">
-                                <p class="text-xs sm:text-sm text-gray-500">
-                                    Queue:
-                                    <span class="text-yellow-400 font-semibold">
-                                        <?php echo $rows['current_queue']; ?> People
-                                    </span>
+                                    <?php echo ucfirst($rows['status']); ?>
                                 </p>
-                            </div>
 
-                            <div class="flex gap-1.5 sm:gap-2 items-center">
-                                <img src="./public/images/web/time.png" class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0"
-                                    alt="">
-                                <p class="text-xs sm:text-sm text-gray-500">
-                                    Est. wait:
-                                    <span class="text-yellow-400 font-semibold">
-                                        <?php echo $rows['total_wait_time']; ?> min
-                                    </span>
-                                </p>
-                            </div>
+                                <div class="px-3 sm:px-4 py-3">
 
-                        </div>
-                    </div>
+                                    <p
+                                        class="text-base sm:text-lg font-semibold text-start pl-2 sm:pl-3 group-hover:text-yellow-400 truncate">
+                                        <?php echo $rows['sname']; ?>
+                                    </p>
 
-                    <button onclick="view(<?php echo $rows['sid']; ?>)" class="w-[96%] text-xs sm:text-sm font-semibold rounded-md bg-[#f8f9fa] border py-2 
+                                    <div class="flex items-center gap-1 mt-1">
+                                        <img src="./public/images/web/shop-location.png" class="w-4 h-4 flex-shrink-0" alt="">
+                                        <p class="text-xs sm:text-sm text-gray-500 truncate">
+                                            <?php echo $rows['saddress']; ?>
+                                        </p>
+                                    </div>
+
+                                    <div class="flex flex-col sm:flex-row justify-between gap-2 sm:gap-0 mt-3">
+
+                                        <div class="flex gap-1.5 sm:gap-2 items-center">
+                                            <img src="./public/images/web/user.png" class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0"
+                                                alt="">
+                                            <p class="text-xs sm:text-sm text-gray-500">
+                                                Queue:
+                                                <span class="text-yellow-400 font-semibold">
+                                                    <?php echo $rows['current_queue']; ?> People
+                                                </span>
+                                            </p>
+                                        </div>
+
+                                        <div class="flex gap-1.5 sm:gap-2 items-center">
+                                            <img src="./public/images/web/time.png" class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0"
+                                                alt="">
+                                            <p class="text-xs sm:text-sm text-gray-500">
+                                                Est. wait:
+                                                <span class="text-yellow-400 font-semibold">
+                                                    <?php echo $rows['total_wait_time']; ?> min
+                                                </span>
+                                            </p>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <button onclick="view(<?php echo $rows['sid']; ?>)" class="w-[96%] text-xs sm:text-sm font-semibold rounded-md bg-[#f8f9fa] border py-2 
            group-hover:bg-yellow-400 group-hover:shadow-md mt-3 mb-5 transition-all">
-                        View Details
-                    </button>
+                                    View Details
+                                </button>
 
 
-                </div>
+                            </div>
 
-                <?php endforeach ?>
+                        <?php endforeach ?>
+                    </div>
+                <?php elseif (count($Sshops) == 0): ?>
+                    <div class="bg-white rounded-lg p-4 text-center border border-gray-200 w-full">
+                        <p class="text-gray-600 text-xl">No shops found matching your search.</p>
+                    </div>
+                <?php endif; ?>
+
+                <a href="/barber-s-point/"
+                    class="inline-block mt-4 font-semibold text-sm bg-gray-200 px-4 py-2 rounded-md shadow-md hover:bg-gray-300">
+                    ← Back to all shops
+                </a>
+
             </div>
-            <?php elseif (count($Sshops) == 0): ?>
-            <div class="bg-white rounded-lg p-4 text-center border border-gray-200 w-full">
-                <p class="text-gray-600 text-xl">No shops found matching your search.</p>
-            </div>
-            <?php endif; ?>
-
-            <a href="/barber-s-point/"
-                class="inline-block mt-4 font-semibold text-sm bg-gray-200 px-4 py-2 rounded-md shadow-md hover:bg-gray-300">
-                ← Back to all shops
-            </a>
-
-        </div>
         <?php endif; ?>
 
         <!-- all shops  -->
@@ -272,64 +272,65 @@ mysqli_close($conn);
                     $status = strtolower(trim($rows['status']));
                     $statusColor = ($status === "open" || $status === "active") ? "green" : "red";
                 ?>
-                <div
-                    class="w-full max-w-[450px] mx-auto relative bg-white shadow-md rounded-lg hover:-translate-y-1 hover:shadow-xl transition-all group">
+                    <div
+                        class="w-full max-w-[450px] mx-auto relative bg-white shadow-md rounded-lg hover:-translate-y-1 hover:shadow-xl transition-all group">
 
-                    <img src="<?php echo $rows['photo']; ?>" alt="<?php echo $rows['sname']; ?>"
-                        class="w-full h-48 sm:h-56 object-cover rounded-t-lg">
-
-                    <p
-                        class="bg-opacity-70 px-2 sm:px-2.5 font-semibold absolute top-2 sm:top-3 right-2 sm:right-3 rounded-full 
-                     inline-flex items-center py-0.5 text-[10px] sm:text-xs cursor-pointer bg-yellow-400 group-hover:bg-<?php echo $statusColor; ?>-500">
-                        <?php echo ucfirst($rows['status']); ?>
-                    </p>
-
-                    <div class="px-3 sm:px-4 py-3">
+                        <img src="<?php echo $rows['photo']; ?>" alt="<?php echo $rows['sname']; ?>"
+                            class="w-full h-48 sm:h-56 object-cover rounded-t-lg">
 
                         <p
-                            class="text-base sm:text-lg font-semibold text-start pl-2 sm:pl-3 group-hover:text-yellow-400 truncate">
-                            <?php echo $rows['sname']; ?>
+                            class="bg-opacity-70 px-2 sm:px-2.5 font-semibold absolute top-2 sm:top-3 right-2 sm:right-3 rounded-full 
+                     inline-flex items-center py-0.5 text-[10px] sm:text-xs cursor-pointer bg-yellow-400 group-hover:bg-<?php echo $statusColor; ?>-500">
+                            <?php echo ucfirst($rows['status']); ?>
                         </p>
 
-                        <div class="flex items-center gap-1 mt-1">
-                            <img src="./public/images/web/shop-location.png" class="w-4 h-4 flex-shrink-0" alt="">
-                            <p class="text-xs sm:text-sm text-gray-500 truncate">
-                                <?php echo $rows['saddress']; ?>
+                        <div class="px-3 sm:px-4 py-3">
+
+                            <p
+                                class="text-base sm:text-lg font-semibold text-start pl-2 sm:pl-3 group-hover:text-yellow-400 truncate">
+                                <?php echo $rows['sname']; ?>
                             </p>
-                        </div>
 
-                        <div class="flex flex-col sm:flex-row justify-between gap-2 sm:gap-0 mt-3">
-
-                            <div class="flex gap-1.5 sm:gap-2 items-center">
-                                <img src="./public/images/web/user.png" class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0"
-                                    alt="">
-                                <p class="text-xs sm:text-sm text-gray-500">
-                                    Queue:
-                                    <span class="text-yellow-400 font-semibold">
-                                        <?php echo $rows['current_queue']; ?> People
-                                    </span>
+                            <div class="flex items-center gap-1 mt-1">
+                                <img src="./public/images/web/shop-location.png" class="w-4 h-4 flex-shrink-0" alt="">
+                                <p class="text-xs sm:text-sm text-gray-500 truncate">
+                                    <?php echo $rows['saddress']; ?>
                                 </p>
                             </div>
 
-                            <div class="flex gap-1.5 sm:gap-2 items-center">
-                                <img src="./public/images/web/time.png" class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0"
-                                    alt="">
-                                <p class="text-xs sm:text-sm text-gray-500">
-                                    Est. wait:
-                                    <span class="text-yellow-400 font-semibold">
-                                        <?php echo $rows['total_wait_time']; ?> Min
-                                    </span>
-                                </p>
+                            <div class="flex md:flex-col lg:flex-row justify-between gap-2 sm:gap-0 md:gap-2 mt-3">
+
+                                <div class="flex gap-1.5 sm:gap-2 items-center">
+                                    <img src="./public/images/web/user.png" class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0"
+                                        alt="">
+                                    <p class="text-xs sm:text-sm text-gray-500">
+                                        Queue:
+                                        <span class="text-yellow-400 font-semibold">
+                                            <?php echo $rows['current_queue'] ?? 0; ?> People
+                                        </span>
+                                    </p>
+                                </div>
+
+                                <div class="flex gap-1.5 sm:gap-2 items-center">
+                                    <img src="./public/images/web/time.png" class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0"
+                                        alt="">
+                                    <p class="text-xs sm:text-sm text-gray-500">
+                                        Est. wait:
+                                        <span class="text-yellow-400 font-semibold">
+                                            <?php echo isset($rows['total_wait_time']) ? substr($rows['total_wait_time'], 0, 5) : '0'; ?>
+                                            Min
+                                        </span>
+                                    </p>
+                                </div>
+
                             </div>
-
                         </div>
-                    </div>
 
-                    <button onclick="view(<?php echo $rows['sid']; ?>)" class="w-[96%] text-xs sm:text-sm font-semibold rounded-md bg-[#f8f9fa] border py-2 
+                        <button onclick="view(<?php echo $rows['sid']; ?>)" class="w-[96%] text-xs sm:text-sm font-semibold rounded-md bg-[#f8f9fa] border py-2 
            group-hover:bg-yellow-400 group-hover:shadow-md mt-3 mb-5 transition-all">
-                        View Details
-                    </button>
-                </div>
+                            View Details
+                        </button>
+                    </div>
 
 
                 <?php endforeach ?>
@@ -339,70 +340,70 @@ mysqli_close($conn);
         <!-- // sorting and filtering here using js  -->
 
         <script>
-        const allShops = <?php echo json_encode($Ashops); ?>;
+            const allShops = <?php echo json_encode($Ashops); ?>;
 
-        document.addEventListener('DOMContentLoaded', () => {
+            document.addEventListener('DOMContentLoaded', () => {
 
-            const filterOptions = document.querySelectorAll('.fOption');
+                const filterOptions = document.querySelectorAll('.fOption');
 
-            filterOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    const filterText = option.querySelector('p')
-                        .innerText;
-                    applyFilter(filterText);
-                });
-            });
-
-            const sortOptions = document.querySelectorAll('.sOption');
-
-            sortOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    const sortText = option.querySelector('p')
-                        .innerText;
-                    applySort(sortText);
-                });
-            });
-
-            function applyFilter(filterType) {
-                let filtered = allShops;
-
-                if (filterType === 'Open Now') {
-                    filtered = allShops.filter(shop => {
-                        const status = shop.status.toLowerCase();
-                        return status === 'open' || status === 'active';
+                filterOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        const filterText = option.querySelector('p')
+                            .innerText;
+                        applyFilter(filterText);
                     });
-                } else if (filterType === 'No Wait') {
-                    filtered = allShops.filter(shop => shop.current_queue == 0);
+                });
+
+                const sortOptions = document.querySelectorAll('.sOption');
+
+                sortOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        const sortText = option.querySelector('p')
+                            .innerText;
+                        applySort(sortText);
+                    });
+                });
+
+                function applyFilter(filterType) {
+                    let filtered = allShops;
+
+                    if (filterType === 'Open Now') {
+                        filtered = allShops.filter(shop => {
+                            const status = shop.status.toLowerCase();
+                            return status === 'open' || status === 'active';
+                        });
+                    } else if (filterType === 'No Wait') {
+                        filtered = allShops.filter(shop => shop.current_queue == 0);
+                    }
+
+                    showShops(filtered);
                 }
 
-                showShops(filtered);
-            }
+                function applySort(sortType) {
+                    let sorted = [...allShops];
 
-            function applySort(sortType) {
-                let sorted = [...allShops];
+                    if (sortType === 'Queue') {
+                        sorted.sort((a, b) => a.current_queue - b.current_queue);
+                    } else if (sortType === 'Wait Time') {
+                        sorted.sort((a, b) => {
+                            const timeA = parseInt(a.total_wait_time) || 0;
+                            const timeB = parseInt(b.total_wait_time) || 0;
+                            return timeA - timeB;
+                        });
+                    }
 
-                if (sortType === 'Queue') {
-                    sorted.sort((a, b) => a.current_queue - b.current_queue);
-                } else if (sortType === 'Wait Time') {
-                    sorted.sort((a, b) => {
-                        const timeA = parseInt(a.total_wait_time) || 0;
-                        const timeB = parseInt(b.total_wait_time) || 0;
-                        return timeA - timeB;
-                    });
+                    showShops(sorted);
                 }
 
-                showShops(sorted);
-            }
+                function showShops(shops) {
+                    const container = document.getElementById('allshops');
 
-            function showShops(shops) {
-                const container = document.getElementById('allshops');
+                    container.innerHTML = '';
 
-                container.innerHTML = '';
+                    shops.forEach(shop => {
+                        const statusColor = (shop.status.toLowerCase() === 'open') ? 'green' : 'red';
 
-                shops.forEach(shop => {
-                    const statusColor = (shop.status.toLowerCase() === 'open') ? 'green' : 'red';
-
-                    const shopHTML = `
+                        const shopHTML = `
             <div class="w-full max-w-[450px] mx-auto relative bg-white shadow-md rounded-lg hover:-translate-y-1 hover:shadow-xl transition-all group">
                 <img src="${shop.photo}" alt="${shop.sname}" class="w-full h-48 sm:h-56 object-cover rounded-t-lg">
                 
@@ -443,15 +444,15 @@ mysqli_close($conn);
             </div>
         `;
 
-                    container.innerHTML += shopHTML;
-                });
+                        container.innerHTML += shopHTML;
+                    });
 
-                const countText = document.querySelector('.flex-shrink-0.ml-auto p');
-                if (countText) {
-                    countText.textContent = `Showing ${shops.length} of ${allShops.length} shops`;
+                    const countText = document.querySelector('.flex-shrink-0.ml-auto p');
+                    if (countText) {
+                        countText.textContent = `Showing ${shops.length} of ${allShops.length} shops`;
+                    }
                 }
-            }
-        });
+            });
         </script>
 
     </div>

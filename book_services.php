@@ -31,7 +31,7 @@ WHERE shop_services.sid = '$sid';
 
 ?>
 
-<div id="bookOverlay" class="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center">
+<div id="bookOverlay" class="fixed inset-0 bg-black/60 z-[9998] flex items-center justify-center">
 
     <div id="bookModal" class="bg-white rounded-lg shadow-xl
               max-w-2xl w-full mx-4 
@@ -56,7 +56,9 @@ WHERE shop_services.sid = '$sid';
                         <div class="flex items-center gap-3">
                             <input type="checkbox"
                                 onclick="booking(<?php echo $sid ?>, <?php echo $row['price'] ?>, <?php echo $row['duration'] ?>)"
-                                class="checkboxes w-5 h-5">
+                                class="checkboxes w-5 h-5" data-service-id="<?php echo $row['services_id'] ?>"
+                                data-service-name="<?php echo $row['services_name'] ?>"
+                                data-price="<?php echo $row['price'] ?>" data-duration="<?php echo $row['duration'] ?>">
                             <div class="">
                                 <p class="font-medium"><?php echo $row['services_name'] ?></p>
                                 <p class="text-sm text-gray-400"><?php echo $row['duration'] ?> mins</p>
@@ -80,7 +82,7 @@ WHERE shop_services.sid = '$sid';
                 </div>
             </div>
 
-            <button id="bookbtn" onclick="adding()" disabled
+            <button id="bookbtn" onclick="adding(<?php echo $sid ?>)" disabled
                 class="rounded-md bg-gray-200 w-full hover:cursor-not-allowed mt-4 py-2.5 text-md text-gray-500 font-semibold">Select
                 at
                 least

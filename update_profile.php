@@ -33,10 +33,10 @@ mysqli_close($conn);
         <h2 class="text-xl font-semibold text-gray-900">Edit Profile</h2>
         <p class="text-sm text-gray-500 mb-6">Update your profile information</p>
 
-        <form class="updateform space-y-4">
+        <form id="updateform" class="space-y-4">
 
             <div>
-                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
+                <label for="pname" class="block text-sm font-medium text-gray-700 mb-1">
                     Full Name
                 </label>
                 <input name="name" type="text" value="<?php echo $userData['name'] ?>"

@@ -124,7 +124,7 @@ $result3 = mysqli_query($conn, $qry3);
 
 
 <section class="">
-    <div class="bg-[#F1F4F9] min-h-screen w-full pt-12 px-5 flex flex-col items-center ">
+    <div class="bg-[#F1F4F9] min-h-screen w-full px-5 py-5 flex flex-col items-center ">
 
         <div
             class="w-full bg-white rounded-lg shadow-md max-w-6xl p-4 md:p-8 flex items-center justify-between mt-6 mb-4">
