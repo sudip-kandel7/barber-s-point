@@ -146,23 +146,37 @@ function toggleTab(btn) {
   }
 }
 
-function addfav(sid) {
-  // alert(sid);
+function addfav(btn) {
   const favimg = document.getElementById("favimg");
+  let sid = btn.dataset.sid;
+  let saved = btn.dataset.saved === "true";
+  console.log(sid);
+  console.log(saved);
+  console.log(typeof saved);
+
   const xhr = new XMLHttpRequest();
   xhr.open("POST", "addfavorite.php", true);
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-  xhr.onreadystatechange = function () {
+
+  xhr.onload = function () {
     if (xhr.status === 200) {
       const res = JSON.parse(xhr.responseText);
+
       if (res.status === "success") {
-        if (favimg) favimg.src = "./public/images/web/saved.png";
+        if (!saved) {
+          favimg.src = "./public/images/web/saved.png";
+          btn.dataset.saved = "true";
+        } else {
+          favimg.src = "./public/images/web/save.png";
+          btn.dataset.saved = "false";
+        }
       } else {
-        alert(res.message || "Already in favorites");
+        alert(res.msg);
       }
     }
   };
-  xhr.send("sid=" + sid);
+
+  xhr.send("sid=" + sid + "&status=" + saved);
 }
 
 // check if any checkbox clicked also changed total dur and price
@@ -225,6 +239,8 @@ function booking(sid, price, duration) {
   });
   anyChecked = false;
 }
+
+// booking
 
 function adding(sid) {
   const boxes = document.querySelectorAll(".checkboxes");

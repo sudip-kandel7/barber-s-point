@@ -64,8 +64,9 @@ include 'navbar.php';
 
 
 $user = $_SESSION['user'];
+$uid = $user->uid;
 
-
+// qry to select user info 
 $qry = "
 SELECT 
     users.name,
@@ -80,13 +81,13 @@ WHERE users.email = '{$user->email}'
 GROUP BY users.uid
 ";
 
-
-
 $result = mysqli_query($conn, $qry);
 
 $rows = mysqli_fetch_assoc($result);
 
-$qry2 = "SELECT 
+// qry to select review of a user
+$qry2 = " 
+SELECT 
     review.rid,
     review.review,
     review.date_added,
@@ -101,6 +102,7 @@ WHERE review.uid = (SELECT uid FROM users WHERE email = '{$user->email}')";
 $result2 = mysqli_query($conn, $qry2);
 $rows2 = mysqli_fetch_all($result2, MYSQLI_ASSOC);
 
+// qry to select fav shop of a user
 $qry3 = "SELECT 
     shop.sname,
     shop.saddress,
@@ -117,6 +119,46 @@ WHERE favorites.uid = (SELECT uid FROM users WHERE email = '{$user->email}');
 
 $result3 = mysqli_query($conn, $qry3);
 
+// qry to select booking info of a user
+$qry4 = "SELECT 
+    booking.bid,
+    booking.booking_number,
+    booking.status,
+    booking.total_duration,
+    booking.total_price,
+    booking.joined_at,
+    booking.service_started_at,
+    booking.completed_at,
+    shop.sid,
+    shop.sname,
+    shop.saddress,
+    shop.photo,
+    queue.current_queue,
+    queue.total_wait_time
+FROM booking 
+LEFT JOIN shop ON booking.sid = shop.sid
+LEFT JOIN queue ON queue.sid = shop.sid 
+WHERE booking.uid = '$uid'
+ORDER BY booking.joined_at DESC";
+
+$result4 = mysqli_query($conn, $qry4);
+
+function getBookingServices($conn, $bid)
+{
+    $qry5 = "SELECT 
+        services.services_name,
+        shop_services.duration,
+        shop_services.price
+    FROM booking_services
+    JOIN services ON booking_services.services_id = services.services_id
+    JOIN booking ON booking_services.bid = booking.bid
+    JOIN shop_services ON shop_services.services_id = services.services_id 
+        AND shop_services.sid = booking.sid
+    WHERE booking_services.bid = '$bid'";
+
+    $result = mysqli_query($conn, $qry5);
+    return mysqli_fetch_all($result, MYSQLI_ASSOC);
+}
 
 
 
@@ -132,13 +174,11 @@ $result3 = mysqli_query($conn, $qry3);
                 <img src="./public/images/web/profile.png" class="w-24 h-24" alt="">
                 <div>
                     <div>
-                        <h2 class="text-3xl font-bold"><?php echo $rows['firstN']; ?></h2>
+                        <h2 class="text-3xl font-bold"><?php echo $rows['name']; ?></h2>
                         <div class="flex gap-2 mt-2 items-center">
                             <img src="./public/images/web/calendar.png" class=" w-4 h-4" alt="">
-                            <span class="text-gray-500 text-md">Member since <?php
-                                                                                echo date("F j, Y", strtotime($row['added_date']));
-
-                                                                                ?>
+                            <span class="text-gray-500 text-md">Member since
+                                <?php echo date("M j, Y", strtotime($rows['created_at'])); ?>
                             </span>
                         </div>
                     </div>
@@ -152,7 +192,7 @@ $result3 = mysqli_query($conn, $qry3);
                 </div>
             </div>
             <div onclick="viewp()"
-                class="flex items-center justify-center  whitespace-nowrap border hover:cursor-pointer hover:border-none hover:translate-x-0.5 hover:-translate-y-0.5 hover:bg-yellow-300 text-sm bprder-gray-200 rounded-md font-medium  h-10 px-4 py-2 gap-2">
+                class="flex items-center justify-center  whitespace-nowrap border hover:cursor-pointer hover:border-none hover:translate-x-0.5 hover:-translate-y-0.5 hover:bg-yellow-300 text-sm border-gray-200 rounded-md font-medium  h-10 px-4 py-2 gap-2">
                 <img src="./public/images/web/edit.png" class="w-4 h-4" alt="">
                 <span>Edit Profile</span>
             </div>
@@ -186,19 +226,221 @@ $result3 = mysqli_query($conn, $qry3);
 
     </div>
 
-    <div class="bg-[#c7d8f3] w-full rounded-t-lg py-0.5 shadow-md max-w-6xl flex items-center justify-evenly">
-        <button onclick="toggleDiv('review')" id="myreview" class="flex items-center justify-center text-black bg-[#f1f5f9] rounded-md whitespace-nowrap px-36 py-1 text-sm
+    <div class="bg-[#c7d8f3] w-full rounded-t-lg py-0.5 px-1 shadow-md max-w-6xl flex items-center justify-evenly">
+        <button onclick="toggleDiv('booking')" id="mybooking" class="flex items-center justify-center text-black bg-[#f1f5f9] rounded-md whitespace-nowrap px-32 py-1 text-sm
             font-medium gap-2 hover:cursor-pointer">
-            <img id="imgr" src=" ./public/images/web/timeB.png" class="w-6 h-6" alt="">
+            <img id="imgb" src=" ./public/images/web/bookingB.png" class="w-6 h-6" alt="">
+            <span>My Booking</span>
+        </button>
+        <button onclick="toggleDiv('review')" id="myreview" class="flex items-center justify-center text-gray-500 rounded-md whitespace-nowrap px-32 py-1 text-sm
+            font-medium gap-2 hover:cursor-pointer">
+            <img id="imgr" src=" ./public/images/web/time.png" class="w-6 h-6" alt="">
             <span>My Reviews</span>
         </button>
-        <button onclick="toggleDiv('fav')" id="myfav" class="flex items-center justify-center text-gray-500 whitespace-nowrap rounded-md px-36 py-1 text-sm
+        <button onclick="toggleDiv('fav')" id="myfav" class="flex items-center justify-center text-gray-500 whitespace-nowrap rounded-md px-32 py-1 text-sm
             font-semibold gap-2 hover:cursor-pointer">
             <img id="imgf" src=" ./public/images/web/favoriteG.png" class="w-6 h-6" alt="">
             <span>Favorite Shops</span>
         </button>
     </div>
-    <div id="reviewD" class=" w-full max-w-6xl mt-1 p-4 md:p-8 bg-white rounded-lg shadow-md">
+
+    <!-- div to show booking of a user  -->
+
+    <div id="bookingD" class="w-full max-w-6xl mt-1 p-4 md:p-8 bg-white rounded-lg shadow-md">
+        <?php if (mysqli_num_rows($result4) > 0): ?>
+            <h2 class="text-2xl font-bold mb-4">My Bookings</h2>
+
+            <?php
+            $activeBookings = [];
+            $completedBookings = [];
+
+            while ($booking = mysqli_fetch_assoc($result4)) {
+                if ($booking['status'] == 'waiting' || $booking['status'] == 'in_service') {
+                    $activeBookings[] = $booking;
+                } else {
+                    $historyBookings[] = $booking;
+                }
+            }
+            ?>
+
+            <?php if (count($activeBookings) > 0): ?>
+                <h3 class="text-xl font-semibold mb-4">Active Bookings</h3>
+                <?php foreach ($activeBookings as $booking):
+                    $services = getBookingServices($conn, $booking['bid']);
+                ?>
+                    <div id="<?php echo $booking['bid'] ?>"
+                        class="border rounded-lg border-<?php echo $booking['status'] == 'in_service' ? 'green' : 'yellow'; ?>-300  w-full mb-4 transition-all duration-300 hover:shadow-md">
+                        <div class="bg-gray-50 px-4 py-3 flex items-center justify-between border-b">
+                            <div class="flex items-center gap-3">
+                                <img src="<?php echo $booking['photo']; ?>" alt="image of shop"
+                                    class="w-12 h-12 rounded-lg object-cover border-2 <?php echo $booking['status'] == 'in_service' ? 'border-green-300' : 'border-yellow-300' ?>" />
+                                <div>
+                                    <p class="font-semibold text-gray-900"><?php echo $booking['sname']; ?></p>
+                                    <p class="text-sm text-gray-500"><?php echo $booking['saddress']; ?></p>
+                                </div>
+                            </div>
+                            <span
+                                class="px-3 py-1 rounded-full text-xs font-semibold <?php echo $booking['status'] == 'in_service' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'; ?>">
+                                <?php echo ucfirst($booking['status']); ?>
+                            </span>
+                        </div>
+
+                        <div class="px-4 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="flex items-center gap-2">
+                                <img src="./public/images/web/ticket.png" class="w-5 h-5" alt="">
+                                <div>
+                                    <p class="text-xs text-gray-500">Booking Number</p>
+                                    <p class="font-bold text-lg text-yellow-600">#<?php echo $booking['booking_number']; ?></p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <img src="./public/images/web/timeB.png" class="w-5 h-5" alt="">
+                                <div>
+                                    <p class="text-xs text-gray-500">Est. Wait Time</p>
+                                    <p class="font-semibold">
+                                        <?php
+                                        if ($booking['status'] == 'in_service') {
+                                            echo 0;
+                                        } else {
+                                            // Calculate actual wait time based on position in queue
+                                            $queuePosition = $booking['booking_number'];
+                                            $currentQueue = $booking['current_queue'];
+
+                                            if ($queuePosition == 1) {
+                                                echo 0;
+                                            } else {
+                                                $qry_ahead = "SELECT SUM(total_duration) as wait_time 
+                                  FROM booking 
+                                  WHERE sid = {$booking['sid']} 
+                                  AND booking_number < $queuePosition 
+                                  AND status = 'waiting'";
+                                                $result_ahead = mysqli_query($conn, $qry_ahead);
+                                                $row_ahead = mysqli_fetch_assoc($result_ahead);
+                                                echo $row_ahead['wait_time'] ?? 0;
+                                            }
+                                        }
+                                        ?> min
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <img src="./public/images/web/user.png" class="w-5 h-5" alt="">
+                                <div>
+                                    <p class="text-xs text-gray-500">Ahead of You</p>
+                                    <p class="font-semibold">
+                                        <?php echo max(0, $booking['current_queue'] - $booking['booking_number']); ?> people</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="px-4 pb-4">
+                            <p class="text-sm font-semibold text-gray-700 mb-2">Selected Services:</p>
+                            <div class="space-y-2">
+                                <?php foreach ($services as $service): ?>
+                                    <div class="flex justify-between items-center bg-gray-50 px-3 py-2 rounded">
+                                        <span class="text-sm"><?php echo $service['services_name']; ?>
+                                            (<?php echo $service['duration']; ?> min)</span>
+                                        <span class="text-sm font-semibold">Rs. <?php echo $service['price']; ?></span>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+
+                            <div class="mt-3 pt-3 border-t flex justify-between items-center">
+                                <span class="font-semibold">Total Price:</span>
+                                <span class="text-lg font-bold text-yellow-600">Rs. <?php echo $booking['total_price']; ?></span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm text-gray-500">
+                                <span>Duration: <?php echo $booking['total_duration']; ?> min</span>
+                                <span class="text-sm">Joined at:
+                                    <?php echo date("M d, Y | g:i A", strtotime($booking['joined_at'])); ?></span>
+                            </div>
+                        </div>
+
+                        <?php if ($booking['status'] == 'waiting'): ?>
+                            <div class="px-4 pb-4">
+                                <button
+                                    onclick="cancelBooking(<?php echo $booking['bid']; ?>,<?php echo $booking['sid'] ?>,<?php echo $booking['total_duration']; ?>)"
+                                    class="w-full flex items-center justify-center gap-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 rounded-md transition-colors">
+                                    <img src="./public/images/web/cancel.png" class="w-6 h-6" alt=""> Cancel Booking
+                                </button>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ($booking['status'] == 'in_service'): ?>
+                            <div class="px-4 pb-4">
+                                <div class="bg-green-50 border border-green-200 rounded-md p-3 flex items-center gap-2">
+                                    <img src="./public/images/web/correct.png" class="w-6 h-6" />
+                                    <span class="text-sm text-green-700 font-medium">Your service is now in progress</span>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+
+            <?php if (count($historyBookings) > 0): ?>
+                <h3 class="text-xl font-semibold mb-4 mt-8">Booking History</h3>
+                <?php foreach ($historyBookings as $booking):
+                    $services = getBookingServices($conn, $booking['bid']);
+                ?>
+                    <div class="border rounded-lg border-gray-200 w-full mb-4  transition-all duration-300 hover:shadow-md">
+                        <div class="bg-gray-50 px-4 py-3 flex items-center justify-between gap-3 border-b">
+                            <div class="flex gap-3 items-center">
+                                <img src="<?php echo $booking['photo']; ?>" alt="shop"
+                                    class="w-12 h-12 rounded-lg object-cover border-2 border-gray-300" />
+                                <div>
+                                    <p class="font-semibold text-gray-900"><?php echo $booking['sname']; ?></p>
+                                    <p class="text-sm text-gray-500"><?php echo $booking['saddress']; ?></p>
+                                </div>
+                            </div>
+                            <span
+                                class="px-3 py-1 rounded-full text-xs font-semibold <?php echo $booking['status'] == 'completed' ? 'bg-gray-100 text-gray-800' : 'bg-red-100 text-red-800'; ?>">
+                                <?php echo ucfirst($booking['status']); ?>
+                            </span>
+                        </div>
+
+                        <div class="px-4 py-4">
+                            <div class="flex justify-between mb-3">
+                                <span class="text-sm text-gray-500">Booking #<?php echo $booking['booking_number']; ?></span>
+                                <span class="text-sm text-gray-500">
+                                    <?php
+                                    $date = $booking['status'] == 'completed' ? $booking['completed_at'] : $booking['joined_at'];
+                                    echo date("M d, Y | g:i A", strtotime($date));
+                                    ?>
+                                </span>
+                            </div>
+
+                            <div class="space-y-1 mb-3">
+                                <?php foreach ($services as $service): ?>
+                                    <div class="flex justify-between text-sm">
+                                        <span><?php echo $service['services_name']; ?></span>
+                                        <span>Rs. <?php echo $service['price']; ?></span>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+
+                            <div class="pt-2 border-t flex justify-between font-semibold">
+                                <span>Total:</span>
+                                <span>Rs. <?php echo $booking['total_price']; ?></span>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+
+        <?php else: ?>
+            <div class="text-center py-16">
+                <img src="./public/images/web/empty.png" class="w-24 h-24 mx-auto mb-4 opacity-50" alt="">
+                <p class="text-gray-500 text-lg">You haven't made any booking yet</p>
+                <p class="text-gray-400 text-sm mt-2">Visit a shop and book any service!</p>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <!-- // my reviews  -->
+    <div id="reviewD" class="w-full max-w-6xl mt-1 p-4 md:p-8 bg-white rounded-lg shadow-md hidden">
         <?php if (mysqli_num_rows($result2) > 0): ?>
             <h2 class="text-2xl font-bold mb-6">My Reviews</h2>
             <div class="r">
@@ -330,14 +572,9 @@ $result3 = mysqli_query($conn, $qry3);
                                 </div>
                             </div>
 
-                            <button onclick="viewf('<?php echo $rows3['sid']; ?>')" class="w-[96%] text-xs sm:text-sm font-semibold rounded-md bg-[#f8f9fa] border py-2 
-   group-hover:bg-yellow-400 group-hover:text-white group-hover:shadow-md mx-2 mt-3  transition-all">
+                            <button onclick="viewf('<?php echo $rows3['sid']; ?>')"
+                                class="w-[96%] text-xs sm:text-sm font-semibold rounded-md bg-[#f8f9fa] border py-2 mb-4  group-hover:bg-yellow-400 group-hover:text-white group-hover:shadow-md mx-2 mt-3  transition-all">
                                 View Details
-                            </button>
-
-                            <button onclick="removefav('<?php echo $rows3['sid']; ?>')" class="w-[96%] text-xs sm:text-sm font-semibold rounded-md bg-[#f8f9fa] border py-2 
-hover:bg-red-500 hover:text-white hover:shadow-md mx-2 mt-3 mb-5 transition-all">
-                                Remove Favorite
                             </button>
 
                         </div>

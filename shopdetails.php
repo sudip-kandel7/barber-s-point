@@ -21,8 +21,10 @@ $result = mysqli_query($conn, "SELECT * FROM favorites WHERE uid = '$uid' AND si
 
 if (mysqli_num_rows($result) > 0) {
     $favimg = "./public/images/web/saved.png";
+    $saved = true;
 } else {
     $favimg = "./public/images/web/save.png";
+    $saved = false;
 }
 
 $shopQry = "
@@ -147,11 +149,13 @@ mysqli_close($conn);
 
         <div class="p-4 sm:p-6 border-t border-gray-200 flex gap-2 flex-wrap">
             <?php if ($_SESSION['user']->type === "customer"): ?>
-                <button id="fav" onclick="addfav(<?php echo $sid ?>)"
-                    class="px-4 flex items-center gap-2 text-white py-2 hover:-translate-y-1 bg-yellow-400  hover:bg-yellow-500 font-medium rounded-lg transition-colors text-sm">
+                <button id="fav" onclick="addfav(this)" data-sid="<?php echo $sid ?>"
+                    data-saved="<?php echo $saved ? 'true' : 'false'; ?>"
+                    class="px-4 flex items-center gap-2 text-white py-2 bg-yellow-400 rounded-lg">
                     <img id="favimg" src="<?php echo $favimg ?>" class="w-3 h-3" alt="">
-                    <span class="fav">Favorite</span>
+                    <span>Favorite</span>
                 </button>
+
             <?php endif ?>
             <button onclick="bookapp(<?php echo $sid ?>)"
                 class="px-4 py-2 hover:-translate-y-1 bg-[#22c55e] text-white  font-medium rounded-lg transition-colors text-sm">
@@ -161,7 +165,8 @@ mysqli_close($conn);
                 class="px-4 flex items-center gap-1 py-2 text-white bg-red-400 hover:bg-red-500 hover:-translate-y-1 bg-red-5000 font-medium rounded-lg transition-colors text-sm">
                 <img src="./public/images/web/report.png" class="w-4 h-4" alt="">
                 Report
-            </button>
+            </button>`
+
         </div>
 
         <hr class="mx-3 h-11 border-gray-300">
@@ -192,7 +197,6 @@ w-[96%] flex gap-2 sm:gap-6 justify-around text-sm sm:text-base">
 
             <?php if (mysqli_num_rows($servicesResult) > 0):
                 while ($rows = mysqli_fetch_assoc($servicesResult)) {
-
             ?>
                     <div
                         class="border rounded-md w-full border-gray-500 flex flex-col sm:flex-row sm:justify-between sm:items-center px-3 py-3 mb-3 gap-2">

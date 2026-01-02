@@ -10,8 +10,11 @@ if ($txt === "already") {
     $msg = "Failed booking!";
 } else if ($txt === "login") {
     $msg = "Login!";
+} else if ($txt === "updated") {
+    $msg = "Info Updated";
+} else if ($txt === "notupdated") {
+    $msg = "Not Updated";
 }
-
 ?>
 
 <div id="popUpOverlay" class="fixed inset-0 z-[9999] flex items-end pb-9 justify-center bg-transparent">

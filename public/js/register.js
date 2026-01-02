@@ -153,25 +153,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      if (name === "number") {
-        if (value === "") {
-          err.innerText = "";
-        } else {
-          let e = value.slice(2);
-          if (!value.startsWith("98") && !value.startsWith("97")) {
-            err.innerText = "Phone number must start with 98 or 97.";
-          } else if (/\D/.test(value)) {
-            err.innerText = "Phone number must contain only digits.";
-          } else if (value.length != 10) {
-            err.innerText = "Phone number must be exactly 10 digits.";
-          } else if (/^(\d)\1*$/.test(e)) {
-            err.innerText = "The remaining part has repeated digits.";
-          } else {
-            err.innerText = "";
-          }
-        }
-      }
-
       if (name === "password") {
         if (value === "") {
           err.innerText = "";

@@ -1,33 +1,59 @@
 function toggleDiv(btn) {
+  let btnb = document.getElementById("mybooking");
   let btnr = document.getElementById("myreview");
   let btnf = document.getElementById("myfav");
+  let imgb = document.getElementById("imgb");
   let imgr = document.getElementById("imgr");
   let imgf = document.getElementById("imgf");
+  let bookingD = document.getElementById("bookingD");
   let reviewD = document.getElementById("reviewD");
   let favD = document.getElementById("favD");
 
-  if (btn === "review") {
-    btnr.classList.add("text-black", "bg-[#f1f5f9]");
-    btnr.classList.remove("text-gray-500");
-    imgr.src = "./public/images/web/timeB.png";
-
-    reviewD.classList.remove("hidden");
-    favD.classList.add("hidden");
-
-    btnf.classList.remove("text-black", "bg-[#f1f5f9]");
-    btnf.classList.add("text-gray-500");
-    imgf.src = "./public/images/web/favoriteG.png";
-  } else if (btn === "fav") {
+  if (btn === "booking") {
     btnr.classList.remove("text-black", "bg-[#f1f5f9]");
     btnr.classList.add("text-gray-500");
     imgr.src = "./public/images/web/time.png";
     reviewD.classList.add("hidden");
 
-    favD.classList.remove("hidden");
+    btnf.classList.remove("text-black", "bg-[#f1f5f9]");
+    btnf.classList.add("text-gray-500");
+    imgf.src = "./public/images/web/favoriteG.png";
+    favD.classList.add("hidden");
 
-    btnf.classList.add("text-black", "bg-[#f1f5f9]");
+    btnb.classList.remove("text-gray-500");
+    btnb.classList.add("text-black", "bg-[#f1f5f9]");
+    imgb.src = "./public/images/web/bookingB.png";
+    bookingD.classList.remove("hidden");
+  } else if (btn === "review") {
+    btnb.classList.remove("text-black", "bg-[#f1f5f9]");
+    btnb.classList.add("text-gray-500");
+    imgb.src = "./public/images/web/bookingG.png";
+    bookingD.classList.add("hidden");
+
+    btnf.classList.remove("text-black", "bg-[#f1f5f9]");
+    btnf.classList.add("text-gray-500");
+    imgf.src = "./public/images/web/favoriteG.png";
+    favD.classList.add("hidden");
+
+    btnr.classList.remove("text-gray-500");
+    btnr.classList.add("text-black", "bg-[#f1f5f9]");
+    imgr.src = "./public/images/web/timeB.png";
+    reviewD.classList.remove("hidden");
+  } else if (btn === "fav") {
+    btnb.classList.remove("text-black", "bg-[#f1f5f9]");
+    btnb.classList.add("text-gray-500");
+    imgb.src = "./public/images/web/bookingG.png";
+    bookingD.classList.add("hidden");
+
+    btnr.classList.remove("text-black", "bg-[#f1f5f9]");
+    btnr.classList.add("text-gray-500");
+    imgr.src = "./public/images/web/time.png";
+    reviewD.classList.add("hidden");
+
     btnf.classList.remove("text-gray-500");
+    btnf.classList.add("text-black", "bg-[#f1f5f9]");
     imgf.src = "./public/images/web/favoriteB.png";
+    favD.classList.remove("hidden");
   }
 }
 
@@ -185,38 +211,9 @@ document.addEventListener("click", function (e) {
 
   if (e.target === overlayp || e.target === cancel) {
     overlayp?.remove();
+    window.location.reload();
   }
 });
-
-// delete from favorite
-
-function removefav(sid) {
-  // alert(sid);
-  const xhr = new XMLHttpRequest();
-  xhr.open("POST", "profile.php", true);
-  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-  xhr.onload = function () {
-    if (xhr.status === 200) {
-      const res = JSON.parse(xhr.responseText);
-      if (res.status === "success") {
-        const card = document.getElementById("fav-shop-" + sid);
-        card?.remove();
-        const favContainer = document.querySelector("#favD .grid");
-        if (favContainer && favContainer.children.length === 0) {
-          document.querySelector("#favD").innerHTML = `
-            <div class="text-center py-16">
-                <img src="./public/images/web/empty.png" class="w-24 h-24 mx-auto mb-4 opacity-50" alt="">
-                <p class="text-gray-500 text-lg">You haven no favorite shops yet</p>
-                <p class="text-gray-400 text-sm mt-2">Visit a shop and add to your favorite!</p>
-            </div>`;
-        }
-      } else {
-        alert(res.message || "Not removed");
-      }
-    }
-  };
-  xhr.send("sid=" + sid);
-}
 
 function review(sid) {
   // alert(sid);
@@ -249,11 +246,226 @@ function review(sid) {
 
 // edited user info validate
 
-let updateform = document.getElementsById("updateform");
+// error check before form submitting
+function checkErrors() {
+  const saveBtn = document.querySelector('button[name="save"]');
+  const errorMessages = document.querySelectorAll("p.text-red-600");
+  let hasError = false;
 
-updateform.addEventListener("keyup", (e) => {
-  console.log(e.target);
-  // const err = document.querySelectorAll("p.name");
-  // if (e.target.name === "name") {
-  // }
+  errorMessages.forEach((p) => {
+    if (p.innerText.trim() !== "") {
+      hasError = true;
+    }
+  });
+
+  if (saveBtn) {
+    saveBtn.disabled = hasError;
+
+    if (hasError) {
+      saveBtn.className =
+        "px-4 py-2 rounded-lg flex justify-center items-center gap-2 bg-gray-200 text-black font-semibold cursor-not-allowed hover:bg-gray-300 opacity-60";
+    } else {
+      saveBtn.className =
+        "px-4 py-2 rounded-lg flex items-center justify-center gap-2 bg-yellow-300 text-white font-semibold cursor-pointer hover:bg-yellow-400 ";
+    }
+  }
+}
+function validate(wch, val) {
+  const value = val.value.trim();
+  const err = document.querySelector(`p.${wch}`);
+
+  if (wch === "name") {
+    if (value === "") {
+      err.innerText = "";
+      return;
+    }
+
+    if (!/^[A-Za-z][A-Za-z\s]*$/.test(value)) {
+      err.innerText =
+        "Name must contain only letters and must not start with space.";
+    } else {
+      err.innerText = "";
+    }
+    checkErrors();
+  } else if (wch === "email") {
+    if (value === "") {
+      err.innerText = "";
+      return;
+    }
+
+    if (!/^[a-zA-Z][\w.-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
+      err.innerText = "Please enter a valid email address.";
+      return;
+    }
+
+    const x = new XMLHttpRequest();
+    x.open("POST", "emailCheck.php", true);
+    x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    x.onload = function () {
+      if (x.status === 200 && x.readyState === 4) {
+        const response = x.responseText.trim();
+
+        if (response === "exists") {
+          err.innerText = "Email already exists!";
+          val.style.border = "2px solid red";
+        } else {
+          err.innerText = "";
+          val.style.border = "";
+        }
+      }
+    };
+
+    x.send("email=" + value);
+    checkErrors();
+  } else if (wch === "phone") {
+    if (value === "") {
+      err.innerText = "";
+      return;
+    }
+
+    let e = value.slice(2);
+
+    if (/\D/.test(value)) {
+      err.innerText = "Phone number must contain only digits.";
+    } else if (!value.startsWith("98") && !value.startsWith("97")) {
+      err.innerText = "Phone number must start with 98 or 97.";
+    } else if (value.length !== 10) {
+      err.innerText = "Phone number must be exactly 10 digits.";
+    } else if (/^(\d)\1*$/.test(e)) {
+      err.innerText = "The remaining part has repeated digits.";
+    } else {
+      err.innerText = "";
+    }
+    checkErrors();
+  } else if (wch === "address") {
+    if (value === "") {
+      err.innerText = "";
+      return;
+    }
+
+    if (/^[\d,-]/.test(value)) {
+      err.innerText = "Address cannot start with number, '-' or ','.";
+      return;
+    }
+
+    if (!/^[A-Za-z0-9\s,.-]+$/.test(value)) {
+      err.innerText = "Address contains invalid characters.";
+      return;
+    }
+
+    const digitCount = (value.match(/\d/g) || []).length;
+    if (digitCount > 2) {
+      err.innerText = "Address can contain at most 2 numbers.";
+      return;
+    }
+
+    const length = value.replace(/\s+/g, "").length;
+
+    if (length < 3) {
+      err.innerText = "Address must be at least 3 characters.";
+    } else if (length > 25) {
+      err.innerText = "Address must be 25 characters or less.";
+    } else {
+      err.innerText = "";
+    }
+    checkErrors();
+  }
+}
+
+// update form submit function
+// let overlayp = document.getElementById("overlayp");
+
+document.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const formData = new FormData(e.target);
+
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", "update_profile.php", true);
+
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      const resp = JSON.parse(xhr.responseText);
+      if (resp.status === "success") {
+        showPopup("updated");
+      } else if (resp.status === "error") {
+        overlayp.remove();
+        showPopup("notupdated");
+      }
+    }
+  };
+
+  xhr.send(formData);
 });
+
+// ajax to call pop up php file
+
+function showPopup(type) {
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", "pop_up.php?txt=" + type, true);
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      document.body.insertAdjacentHTML("beforeend", xhr.responseText);
+      setTimeout(() => {
+        const popup = document.getElementById("popUpOverlay");
+        popup.remove();
+      }, 400);
+    }
+  };
+  xhr.send();
+}
+
+// cancel booking by a user
+
+function cancelBooking(bid, sid, totalD) {
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", "cancel_booking.php", true);
+  xhr.setRequestHeader("Content-Type", "application/json");
+
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4) {
+      console.log("Status:", xhr.status); // Debug
+      console.log("Response:", xhr.responseText); // Debug
+
+      if (xhr.status === 200) {
+        try {
+          const resp = JSON.parse(xhr.responseText);
+          console.log("Parsed response:", resp); // Debug
+
+          if (resp.status === "success") {
+            alert("Booking cancelled successfully!");
+
+            // Remove the booking card from DOM
+            const bookingCard = document.getElementById(bid);
+            if (bookingCard) {
+              bookingCard.remove();
+            }
+
+            // Reload the page to refresh data
+            window.location.reload();
+          } else {
+            alert(
+              "Error: " +
+                (resp.msg || resp.message || "Could not cancel booking")
+            );
+          }
+        } catch (e) {
+          console.error("JSON Parse Error:", e);
+          console.error("Response was:", xhr.responseText);
+          alert("Error: Invalid response from server");
+        }
+      } else {
+        alert("HTTP Error: " + xhr.status);
+      }
+    }
+  };
+
+  xhr.send(
+    JSON.stringify({
+      bid: bid,
+      sid: sid,
+      totalD: totalD,
+    })
+  );
+}

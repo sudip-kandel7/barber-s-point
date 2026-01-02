@@ -77,6 +77,28 @@ CREATE TABLE queue (
     FOREIGN KEY(sid) REFERENCES shop(sid)
 );
 -- booking table
+-- CREATE TABLE booking (
+--     bid INT PRIMARY KEY AUTO_INCREMENT,
+--     uid INT NOT NULL,
+--     sid INT NOT NULL,
+--     booking_number INT NOT NULL,
+--     status ENUM(
+--         'waiting',
+--         'in_service',
+--         'completed',
+--         'cancelled'
+--     ) DEFAULT 'waiting',
+--     total_duration INT NOT NULL,
+--     total_price DECIMAL(10, 2) NOT NULL,
+--     joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+--     service_started_at DATETIME NULL,
+--     completed_at DATETIME NULL,
+--     UNIQUE (uid, sid, status),
+--     FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE,
+--     FOREIGN KEY (sid) REFERENCES shop(sid) ON DELETE CASCADE,
+--     INDEX idx_shop_status (sid, status),
+--     INDEX idx_user (uid)
+-- );
 CREATE TABLE booking (
     bid INT PRIMARY KEY AUTO_INCREMENT,
     uid INT NOT NULL,
@@ -93,9 +115,15 @@ CREATE TABLE booking (
     joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     service_started_at DATETIME NULL,
     completed_at DATETIME NULL,
-    UNIQUE (uid, sid, status),
+    active_uid_sid INT GENERATED ALWAYS AS (
+        CASE
+            WHEN status IN ('waiting', 'in_service') THEN 1
+            ELSE NULL
+        END
+    ) STORED,
     FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE,
     FOREIGN KEY (sid) REFERENCES shop(sid) ON DELETE CASCADE,
+    UNIQUE (uid, sid, active_uid_sid),
     INDEX idx_shop_status (sid, status),
     INDEX idx_user (uid)
 );

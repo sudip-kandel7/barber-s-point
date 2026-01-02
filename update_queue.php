@@ -22,13 +22,7 @@ $totalPrice = (int) $data['totalPrice'];
 $selected = $data['selected'];
 
 
-$qry1 = "
-SELECT bid 
-FROM booking 
-WHERE uid = $uid 
-  AND sid = $sid 
-  AND status = 'waiting'
-";
+$qry1 = "SELECT bid FROM booking WHERE uid = $uid AND sid = $sid AND status = 'waiting'";
 
 $result1 = mysqli_query($conn, $qry1);
 
@@ -37,24 +31,14 @@ if (mysqli_num_rows($result1) > 0) {
     exit;
 }
 
-
 $qry2 = "SELECT current_queue, total_wait_time FROM queue WHERE sid = $sid";
 $result2 = mysqli_query($conn, $qry2);
 $row2 = mysqli_fetch_assoc($result2);
 
-if ($row2) {
-    $newQ = $row2['current_queue'] + 1;
-} else {
-    $newQ = 1;
-}
+$newQ = $row2 ? $row2['current_queue'] + 1 : 1;
 
-
-$qry3 = "
-INSERT INTO booking 
-(uid, sid, booking_number, total_duration, total_price, status)
-VALUES 
-($uid, $sid, $newQ, $totalDuration, $totalPrice, 'waiting')
-";
+$qry3 = "INSERT INTO booking (uid, sid, booking_number, total_duration, total_price, status)
+         VALUES ($uid, $sid, $newQ, $totalDuration, $totalPrice, 'waiting')";
 
 if (!mysqli_query($conn, $qry3)) {
     echo json_encode(['status' => 'err', 'msg' => 'Booking failed']);
@@ -63,20 +47,20 @@ if (!mysqli_query($conn, $qry3)) {
 
 $bid = mysqli_insert_id($conn);
 
-
 foreach ($selected as $service) {
     $services_id = (int) $service['serviceId'];
-
-    $qry4 = "INSERT INTO booking_services (bid, services_id) VALUES ($bid, $services_id) ";
-
+    $qry4 = "INSERT INTO booking_services (bid, services_id) VALUES ($bid, $services_id)";
     mysqli_query($conn, $qry4);
 }
 
-
 if ($row2) {
-    $qry5 = "UPDATE queue SET current_queue = $newQ, total_wait_time = ADDTIME(total_wait_time,SEC_TO_TIME($totalDuration * 60))WHERE sid = $sid";
+    $qry5 = "UPDATE queue 
+             SET current_queue = $newQ, 
+                 total_wait_time = SEC_TO_TIME(TIME_TO_SEC(total_wait_time) + ($totalDuration * 60))
+             WHERE sid = $sid";
 } else {
-    $qry5 = "INSERT INTO queue (sid, current_queue, total_wait_time) VALUES ($sid, $newQ, SEC_TO_TIME($totalDuration * 60))";
+    $qry5 = "INSERT INTO queue (sid, current_queue, total_wait_time) 
+             VALUES ($sid, $newQ, SEC_TO_TIME($totalDuration * 60))";
 }
 
 mysqli_query($conn, $qry5);
