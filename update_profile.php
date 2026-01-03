@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
 
 include 'sessionCheck.php';
 
@@ -15,37 +18,38 @@ $result = mysqli_query($conn, $qry);
 $userData = mysqli_fetch_assoc($result);
 
 
+
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $name = $_POST['name'];
-    $phone = $_POST['phone'];
-    $email = $_POST['email'];
-    $address = $_POST['address'];
+    ob_start();
+    ob_clean();
+    header('Content-Type: application/json');
 
+    $name = trim($_POST['name']);
+    $phone = trim($_POST['phone']);
+    $email = trim($_POST['email']);
+    $address = trim($_POST['address']);
 
-    $qry1 = "UPDATE users SET name = '$name', phone = '$phone', email = '$email' , address = '$address' WHERE uid = $uid";
+    $qry1 = "UPDATE users SET name = '$name', phone = '$phone', email = '$email', address = '$address' WHERE uid = $uid";
 
     if (mysqli_query($conn, $qry1)) {
-        $_SESSION['user'] = new User($email, $_SESSION['user']->type, $_SESSION['user']->uid, $_SESSION['user']->sid);
+        $_SESSION['user']->email = $email;
         echo json_encode(['status' => 'success', 'msg' => 'updated']);
+        mysqli_close($conn);
         exit;
     } else {
         echo json_encode(['status' => 'error', 'msg' => 'notupdated']);
+        mysqli_close($conn);
         exit;
     }
 }
-
-
 
 mysqli_close($conn);
 ?>
 
 <div id="overlayp" class="fixed flex items-center justify-center inset-0 bg-black/60 z-50">
 
-    <div id="profileModal" class="bg-white w-full max-w-md rounded-xl shadow-xl px-6 py-4
-           ">
-
-
-
+    <div id="profileModal" class="bg-white w-full max-w-md rounded-xl shadow-xl px-6 py-4">
         <h2 class="text-xl font-semibold text-gray-900">Edit Profile</h2>
         <p class="text-sm text-gray-500 mb-6">Update your profile information</p>
 
@@ -56,7 +60,7 @@ mysqli_close($conn);
                     Full Name
                 </label>
                 <input onkeyup="validate('name',this)" name="name" type="text" value="<?php echo $userData['name'] ?>"
-                    class="w-full rounded-lg border-2 border-gray-300 px-3 py-2 focus:outline-none focus:border-yellow-400" />
+                    class="w-full rounded-lg border-2 border-gray-300 px-3 py-2 focus:outline-none focus:border-yellow-400">
                 <p class="name text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
             </div>
 
@@ -66,7 +70,7 @@ mysqli_close($conn);
                 </label>
                 <input oninput="validate('email',this)" name="email" type="email"
                     value="<?php echo $userData['email'] ?>"
-                    class="w-full rounded-lg border-2 border-gray-300 px-3 py-2 focus:border-yellow-400" />
+                    class="w-full rounded-lg border-2 border-gray-300 px-3 py-2 focus:border-yellow-400">
                 <p class="email text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
             </div>
 
@@ -76,7 +80,7 @@ mysqli_close($conn);
                 </label>
                 <input onkeyup="validate('phone',this)" name="phone" type="text"
                     value="<?php echo $userData['phone'] ?>"
-                    class="w-full rounded-lg border-2 border-gray-300 px-3 py-2 focus:outline-none focus:border-yellow-400" />
+                    class="w-full rounded-lg border-2 border-gray-300 px-3 py-2 focus:outline-none focus:border-yellow-400">
                 <p class="phone text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
             </div>
 
@@ -86,7 +90,7 @@ mysqli_close($conn);
                 </label>
                 <input onkeyup="validate('address',this)" name="address" type="text"
                     value="<?php echo $userData['address'] ?>"
-                    class="w-full rounded-lg border-2 border-gray-300 px-3 py-2 focus:outline-none  focus:border-yellow-400" />
+                    class="w-full rounded-lg border-2 border-gray-300 px-3 py-2 focus:outline-none  focus:border-yellow-400">
                 <p class="address text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
             </div>
 

@@ -14,7 +14,7 @@ if (isset($_COOKIE['user'])) {
             $cookieData['email'],
             $cookieData['type'],
             $cookieData['uid'],
-            $cookieData['sid']
+            $cookieData['sid'] ?? null
         );
         return;
     }
