@@ -159,11 +159,7 @@ function getBookingServices($conn, $bid)
     $result = mysqli_query($conn, $qry5);
     return mysqli_fetch_all($result, MYSQLI_ASSOC);
 }
-
-
-
 ?>
-
 
 <section class="">
     <div class="bg-[#F1F4F9] min-h-screen w-full px-5 py-5 flex flex-col items-center ">
@@ -600,8 +596,5 @@ function getBookingServices($conn, $bid)
 
     </div>
 </section>
-
-
-
 
 <?php include 'footer.php' ?>

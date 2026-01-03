@@ -194,7 +194,7 @@ function viewf(sid) {
 // profile overaly
 function viewp() {
   const xhr = new XMLHttpRequest();
-  xhr.open("GET", "update_profile.php");
+  xhr.open("GET", "profile_form.php");
   xhr.onload = function () {
     if (xhr.status === 200) {
       document.body.insertAdjacentHTML("beforeend", xhr.responseText);
@@ -376,27 +376,71 @@ function validate(wch, val) {
 // update form submit function
 // let overlayp = document.getElementById("overlayp");
 
-document.addEventListener("submit", (e) => {
-  e.preventDefault();
+// let updateform = document.getElementById("updateform");
+// updateform.addEventListener("submit", (e) => {
+//   e.preventDefault();
 
-  const formData = new FormData(e.target);
+//   const formData = new FormData(e.target);
+//   const xhr = new XMLHttpRequest();
+//   xhr.open("POST", "update_profile.php", true);
 
-  const xhr = new XMLHttpRequest();
-  xhr.open("POST", "update_profile.php", true);
+//   xhr.onreadystatechange = function () {
+//     if (xhr.readyState === 4 && xhr.status === 200) {
+//       const resp = JSON.parse(xhr.responseText);
+//       if (resp.status === "success") {
+//         showPopup("updated");
+//       } else if (resp.status === "error") {
+//         overlayp.remove();
+//         showPopup("notupdated");
+//       }
+//     }
+//   };
 
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState === 4 && xhr.status === 200) {
-      const resp = JSON.parse(xhr.responseText);
-      if (resp.status === "success") {
-        showPopup("updated");
-      } else if (resp.status === "error") {
-        overlayp.remove();
-        showPopup("notupdated");
+//   xhr.send(formData);
+// });
+
+document.addEventListener("submit", function (e) {
+  // Only handle if it's the updateform
+  if (e.target.id === "updateform") {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "update_profile.php", true);
+
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          try {
+            console.log("Response:", xhr.responseText);
+            const resp = JSON.parse(xhr.responseText);
+
+            if (resp.status === "success") {
+              const overlayp = document.getElementById("overlayp");
+              overlayp?.remove();
+              showPopup("updated");
+              setTimeout(() => {
+                window.location.reload();
+              }, 500);
+            } else if (resp.status === "error") {
+              const overlayp = document.getElementById("overlayp");
+              overlayp?.remove();
+              showPopup("notupdated");
+            }
+          } catch (e) {
+            console.error("JSON Parse Error:", e);
+            console.error("Response was:", xhr.responseText);
+            alert("Error: " + xhr.responseText);
+          }
+        } else {
+          console.error("HTTP Error:", xhr.status);
+          alert("HTTP Error: " + xhr.status);
+        }
       }
-    }
-  };
+    };
 
-  xhr.send(formData);
+    xhr.send(formData);
+  }
 });
 
 // ajax to call pop up php file
@@ -425,24 +469,22 @@ function cancelBooking(bid, sid, totalD) {
 
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
-      console.log("Status:", xhr.status); // Debug
-      console.log("Response:", xhr.responseText); // Debug
+      console.log("Status:", xhr.status);
+      console.log("Response:", xhr.responseText);
 
       if (xhr.status === 200) {
         try {
           const resp = JSON.parse(xhr.responseText);
-          console.log("Parsed response:", resp); // Debug
+          console.log("Parsed response:", resp);
 
           if (resp.status === "success") {
             alert("Booking cancelled successfully!");
 
-            // Remove the booking card from DOM
             const bookingCard = document.getElementById(bid);
             if (bookingCard) {
               bookingCard.remove();
             }
 
-            // Reload the page to refresh data
             window.location.reload();
           } else {
             alert(
