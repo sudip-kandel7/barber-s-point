@@ -400,7 +400,6 @@ function validate(wch, val) {
 // });
 
 document.addEventListener("submit", function (e) {
-  // Only handle if it's the updateform
   if (e.target.id === "updateform") {
     e.preventDefault();
 
