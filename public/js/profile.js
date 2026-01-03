@@ -1,3 +1,5 @@
+console.log("✅ profile.js loaded!");
+
 function toggleDiv(btn) {
   let btnb = document.getElementById("mybooking");
   let btnr = document.getElementById("myreview");
@@ -194,7 +196,7 @@ function viewf(sid) {
 // profile overaly
 function viewp() {
   const xhr = new XMLHttpRequest();
-  xhr.open("GET", "profile_form.php");
+  xhr.open("GET", "update_profile.php");
   xhr.onload = function () {
     if (xhr.status === 200) {
       document.body.insertAdjacentHTML("beforeend", xhr.responseText);
