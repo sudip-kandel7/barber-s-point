@@ -115,7 +115,7 @@ mysqli_close($conn);
                     <img src="./public/images/web/user.png" class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" alt="">
                     <p class="text-sm sm:text-md text-gray-500">
                         Queue:
-                        <span id="queue" class="ml-1 text-yellow-500 font-semibold">
+                        <span id="queue" class="ml-1 text-yellow-400 font-semibold">
                             <?php $queue = $shopData['current_queue'] ?? 0;
                             echo $queue . ' ' . ($queue == 1 ? 'Person' : 'People'); ?>
                             People</span>
@@ -126,7 +126,7 @@ mysqli_close($conn);
                     <img src="./public/images/web/time.png" class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" alt="">
                     <p class="text-sm sm:text-md text-gray-500">
                         Est. wait:
-                        <span class="ml-1 text-yellow-500 font-semibold">
+                        <span class="ml-1 text-yellow-400 font-semibold">
                             <?php $mins = $shopData['total_wait_time'] ?? 0;
                             echo $mins . ' ' . ($mins == 1 ? 'Minute' : 'Minutes'); ?>
                         </span>
@@ -137,7 +137,7 @@ mysqli_close($conn);
                 <div class="flex gap-1.5 sm:gap-2 items-center">
                     <img src="./public/images/web/review.png" class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" alt="">
                     <p class="text-sm sm:text-md text-gray-500">
-                        <span class="ml-1 text-yellow-500 font-semibold">
+                        <span class="ml-1 text-yellow-400 font-semibold">
                             <?php $reviews = $shopData['total_reviews'] ?? 0;
                             echo $reviews . ' ' . ($reviews == 1 ? 'Review' : 'Reviews'); ?>
                         </span>
@@ -156,16 +156,16 @@ mysqli_close($conn);
                     <span>Favorite</span>
                 </button>
 
+                <button onclick="bookapp(<?php echo $sid ?>)"
+                    class="px-4 py-2 hover:-translate-y-1 bg-[#22c55e] text-white  font-medium rounded-lg transition-colors text-sm">
+                    Book Appointment
+                </button>
+                <button
+                    class="px-4 flex items-center gap-1 py-2 text-white bg-red-400 hover:bg-red-500 hover:-translate-y-1 bg-red-5000 font-medium rounded-lg transition-colors text-sm">
+                    <img src="./public/images/web/report.png" class="w-4 h-4" alt="">
+                    Report
+                </button>
             <?php endif ?>
-            <button onclick="bookapp(<?php echo $sid ?>)"
-                class="px-4 py-2 hover:-translate-y-1 bg-[#22c55e] text-white  font-medium rounded-lg transition-colors text-sm">
-                Book Appointment
-            </button>
-            <button
-                class="px-4 flex items-center gap-1 py-2 text-white bg-red-400 hover:bg-red-500 hover:-translate-y-1 bg-red-5000 font-medium rounded-lg transition-colors text-sm">
-                <img src="./public/images/web/report.png" class="w-4 h-4" alt="">
-                Report
-            </button>`
 
         </div>
 
@@ -238,35 +238,3 @@ w-[96%] flex gap-2 sm:gap-6 justify-around text-sm sm:text-base">
     </div>
 </div>
 </div>
-
-
-<script>
-    function review(sid) {
-        // alert(sid);
-        let reviewD = document.getElementsByClassName("reviewD")[0];
-        let reviewtxt = document.getElementsByClassName("reviewtxt")[0];
-
-        if (reviewtxt.value.trim().length === 0) {
-            reviewD.classList.remove("border-gray-400");
-            reviewD.classList.add("border-red-500");
-            reviewtxt.focus();
-            return;
-        }
-
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", "add_review.php", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.onload = function() {
-            if (xhr.readyState == 4 && xhr.status === 200) {
-                const res = JSON.parse(xhr.responseText);
-                if (res.status === "success") {
-                    alert("added");
-                    reviewtxt.value = "";
-                } else {
-                    alert(res.message || "not added");
-                }
-            }
-        };
-        xhr.send("sid=" + sid + "&reviewtxt=" + reviewtxt.value);
-    }
-</script>
