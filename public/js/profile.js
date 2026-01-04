@@ -193,6 +193,58 @@ function viewf(sid) {
   xhr.send();
 }
 
+// cancel booking by a user
+
+function cancelBooking(bid, sid, totalD) {
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", "cancel_booking.php", true);
+  xhr.setRequestHeader("Content-Type", "application/json");
+
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4) {
+      console.log("Status:", xhr.status);
+      console.log("Response:", xhr.responseText);
+
+      if (xhr.status === 200) {
+        try {
+          const resp = JSON.parse(xhr.responseText);
+          console.log("Parsed response:", resp);
+
+          if (resp.status === "success") {
+            alert("Booking cancelled successfully!");
+
+            const bookingCard = document.getElementById(bid);
+            if (bookingCard) {
+              bookingCard.remove();
+            }
+
+            window.location.reload();
+          } else {
+            alert(
+              "Error: " +
+                (resp.msg || resp.message || "Could not cancel booking")
+            );
+          }
+        } catch (e) {
+          console.error("JSON Parse Error:", e);
+          console.error("Response was:", xhr.responseText);
+          alert("Error: Invalid response from server");
+        }
+      } else {
+        alert("HTTP Error: " + xhr.status);
+      }
+    }
+  };
+
+  xhr.send(
+    JSON.stringify({
+      bid: bid,
+      sid: sid,
+      totalD: totalD,
+    })
+  );
+}
+
 // profile overaly
 function viewp() {
   const xhr = new XMLHttpRequest();
@@ -200,51 +252,12 @@ function viewp() {
   xhr.onload = function () {
     if (xhr.status === 200) {
       document.body.insertAdjacentHTML("beforeend", xhr.responseText);
+      profile();
     }
   };
   xhr.send();
 }
-// remove overlay if clicked ouside the modal or cancel button
-document.addEventListener("click", function (e) {
-  const overlayp = document.getElementById("overlayp");
-  const cancel = document.getElementById("cancel");
-
-  if (!overlayp) return;
-
-  if (e.target === overlayp || e.target === cancel) {
-    overlayp?.remove();
-    window.location.reload();
-  }
-});
-
-function review(sid) {
-  // alert(sid);
-  let reviewD = document.getElementsByClassName("reviewD")[0];
-  let reviewtxt = document.getElementsByClassName("reviewtxt")[0];
-
-  if (reviewtxt.value.trim().length === 0) {
-    reviewD.classList.remove("border-gray-400");
-    reviewD.classList.add("border-red-500");
-    reviewtxt.focus();
-    return;
-  }
-
-  const xhr = new XMLHttpRequest();
-  xhr.open("POST", "add_review.php", true);
-  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-  xhr.onload = function () {
-    if (xhr.readyState == 4 && xhr.status === 200) {
-      const res = JSON.parse(xhr.responseText);
-      if (res.status === "success") {
-        alert("added");
-        reviewtxt.value = "";
-      } else {
-        alert(res.message || "not added");
-      }
-    }
-  };
-  xhr.send("sid=" + sid + "&reviewtxt=" + reviewtxt.value);
-}
+// update_profile.php js
 
 // edited user info validate
 
@@ -272,6 +285,7 @@ function checkErrors() {
     }
   }
 }
+
 function validate(wch, val) {
   const value = val.value.trim();
   const err = document.querySelector(`p.${wch}`);
@@ -375,140 +389,64 @@ function validate(wch, val) {
   }
 }
 
-// update form submit function
-// let overlayp = document.getElementById("overlayp");
+function profile() {
+  alert("ok");
 
-// let updateform = document.getElementById("updateform");
-// updateform.addEventListener("submit", (e) => {
-//   e.preventDefault();
+  // update form submit function
+  let overlayp = document.getElementById("overlayp");
 
-//   const formData = new FormData(e.target);
-//   const xhr = new XMLHttpRequest();
-//   xhr.open("POST", "update_profile.php", true);
-
-//   xhr.onreadystatechange = function () {
-//     if (xhr.readyState === 4 && xhr.status === 200) {
-//       const resp = JSON.parse(xhr.responseText);
-//       if (resp.status === "success") {
-//         showPopup("updated");
-//       } else if (resp.status === "error") {
-//         overlayp.remove();
-//         showPopup("notupdated");
-//       }
-//     }
-//   };
-
-//   xhr.send(formData);
-// });
-
-document.addEventListener("submit", function (e) {
-  if (e.target.id === "updateform") {
+  let updateform = document.getElementById("updateform");
+  updateform.addEventListener("submit", (e) => {
     e.preventDefault();
 
     const formData = new FormData(e.target);
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "update_profile.php", true);
+    xhr.open("POST", "update_profile_process.php", true);
 
     xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-          try {
-            console.log("Response:", xhr.responseText);
-            const resp = JSON.parse(xhr.responseText);
-
-            if (resp.status === "success") {
-              const overlayp = document.getElementById("overlayp");
-              overlayp?.remove();
-              showPopup("updated");
-              setTimeout(() => {
-                window.location.reload();
-              }, 500);
-            } else if (resp.status === "error") {
-              const overlayp = document.getElementById("overlayp");
-              overlayp?.remove();
-              showPopup("notupdated");
-            }
-          } catch (e) {
-            console.error("JSON Parse Error:", e);
-            console.error("Response was:", xhr.responseText);
-            alert("Error: " + xhr.responseText);
-          }
-        } else {
-          console.error("HTTP Error:", xhr.status);
-          alert("HTTP Error: " + xhr.status);
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        const resp = JSON.parse(xhr.responseText);
+        if (resp.status === "success") {
+          overlayp.remove();
+          window.location.reload();
+          showPopup("updated");
+        } else if (resp.status === "error") {
+          overlayp.remove();
+          showPopup("notupdated");
         }
       }
     };
 
     xhr.send(formData);
-  }
-});
+  });
 
-// ajax to call pop up php file
+  // ajax to call pop up php file
 
-function showPopup(type) {
-  const xhr = new XMLHttpRequest();
-  xhr.open("GET", "pop_up.php?txt=" + type, true);
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState === 4 && xhr.status === 200) {
-      document.body.insertAdjacentHTML("beforeend", xhr.responseText);
-      setTimeout(() => {
-        const popup = document.getElementById("popUpOverlay");
-        popup.remove();
-      }, 400);
-    }
-  };
-  xhr.send();
-}
-
-// cancel booking by a user
-
-function cancelBooking(bid, sid, totalD) {
-  const xhr = new XMLHttpRequest();
-  xhr.open("POST", "cancel_booking.php", true);
-  xhr.setRequestHeader("Content-Type", "application/json");
-
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState === 4) {
-      console.log("Status:", xhr.status);
-      console.log("Response:", xhr.responseText);
-
-      if (xhr.status === 200) {
-        try {
-          const resp = JSON.parse(xhr.responseText);
-          console.log("Parsed response:", resp);
-
-          if (resp.status === "success") {
-            alert("Booking cancelled successfully!");
-
-            const bookingCard = document.getElementById(bid);
-            if (bookingCard) {
-              bookingCard.remove();
-            }
-
-            window.location.reload();
-          } else {
-            alert(
-              "Error: " +
-                (resp.msg || resp.message || "Could not cancel booking")
-            );
-          }
-        } catch (e) {
-          console.error("JSON Parse Error:", e);
-          console.error("Response was:", xhr.responseText);
-          alert("Error: Invalid response from server");
-        }
-      } else {
-        alert("HTTP Error: " + xhr.status);
+  function showPopup(type) {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "pop_up.php?txt=" + type, true);
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        document.body.insertAdjacentHTML("beforeend", xhr.responseText);
+        setTimeout(() => {
+          const popup = document.getElementById("popUpOverlay");
+          popup.remove();
+        }, 400);
       }
-    }
-  };
+    };
+    xhr.send();
+  }
 
-  xhr.send(
-    JSON.stringify({
-      bid: bid,
-      sid: sid,
-      totalD: totalD,
-    })
-  );
+  // remove overlay if clicked ouside the modal or cancel button
+  document.addEventListener("click", function (e) {
+    const overlayp = document.getElementById("overlayp");
+    const cancel = document.getElementById("cancel");
+
+    if (!overlayp || !cancel) return;
+
+    if (e.target === overlayp || e.target === cancel) {
+      overlayp?.remove();
+      window.location.reload();
+    }
+  });
 }

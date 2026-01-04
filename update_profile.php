@@ -1,9 +1,11 @@
 <?php
-// error_reporting(E_ALL);
-// ini_set('display_errors', 0); 
-// ini_set('log_errors', 1);
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
 
 include 'sessionCheck.php';
+
+$conn = mysqli_connect("localhost", "root", "", "barber_point");
 
 $uid = $_SESSION['user']->uid;
 
@@ -11,25 +13,27 @@ $qry = "SELECT name, email, phone, address FROM users WHERE users.uid = $uid";
 $result = mysqli_query($conn, $qry);
 $userData = mysqli_fetch_assoc($result);
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST['name'];
-    $phone = $_POST['phone'];
-    $email = $_POST['email'];
-    $address = $_POST['address'];
+// if ($_SERVER["REQUEST_METHOD"] == "POST") {
+//     $name = $_POST['name'];
+//     $phone = $_POST['phone'];
+//     $email = $_POST['email'];
+//     $address = $_POST['address'];
 
-    $qry1 = "UPDATE users SET name = '$name', phone = '$phone', email = '$email', address = '$address' WHERE uid = $uid";
+//     $qry1 = "UPDATE users SET name = '$name', phone = '$phone', email = '$email', address = '$address' WHERE uid = $uid";
 
-    if (mysqli_query($conn, $qry1)) {
-        $_SESSION['user']->email = $email;
-        echo json_encode(['status' => 'success', 'msg' => 'updated']);
-        mysqli_close($conn);
-        exit;
-    } else {
-        echo json_encode(['status' => 'error', 'msg' => 'Database error: ' . mysqli_error($conn)]);
-        mysqli_close($conn);
-        exit;
-    }
-}
+//     if (mysqli_query($conn, $qry1)) {
+//         $_SESSION['user']->email = $email;
+//         echo json_encode(['status' => 'success', 'msg' => 'updated']);
+//         mysqli_close($conn);
+//         exit;
+//     } else {
+//         echo json_encode(['status' => 'error', 'msg' => 'Database error: ' . mysqli_error($conn)]);
+//         mysqli_close($conn);
+//         exit;
+//     }
+// }
+
+mysqli_close($conn);
 
 ?>
 
@@ -39,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <h2 class="text-xl font-semibold text-gray-900">Edit Profile</h2>
         <p class="text-sm text-gray-500 mb-6">Update your profile information</p>
 
-        <form id="updateform" class="space-y-4" method="POST" action="update_profile.php">
+        <form id="updateform" class="space-y-4" method="POST">
 
             <div>
                 <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
@@ -81,7 +85,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <div class="flex justify-end gap-3 mt-10">
-                <button id="cancel" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100">
+                <button id="cancel" type="button"
+                    class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100">
                     Cancel
                 </button>
                 <button name="save" type="submit"

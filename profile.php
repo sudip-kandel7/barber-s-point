@@ -1,7 +1,7 @@
 <?php
-include 'sessionCheck.php';
-// error_reporting(E_ALL);
-// ini_set('display_errors', 1);
+// include 'sessionCheck.php';
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 $conn = new mysqli("localhost", "root", "", "barber_point");
 
@@ -254,7 +254,7 @@ function getBookingServices($conn, $bid)
                 if ($booking['status'] == 'waiting' || $booking['status'] == 'in_service') {
                     $activeBookings[] = $booking;
                 } else {
-                    $historyBookings[] = $booking;
+                    $completedBookings[] = $booking;
                 }
             }
             ?>
@@ -376,12 +376,13 @@ function getBookingServices($conn, $bid)
                 <?php endforeach; ?>
             <?php endif; ?>
 
-            <?php if (count($historyBookings) > 0): ?>
+            <?php if (count($completedBookings) > 0): ?>
                 <h3 class="text-xl font-semibold mb-4 mt-8">Booking History</h3>
-                <?php foreach ($historyBookings as $booking):
+                <?php foreach ($completedBookings as $booking):
                     $services = getBookingServices($conn, $booking['bid']);
                 ?>
-                    <div class="border rounded-lg border-gray-200 w-full mb-4  transition-all duration-300 hover:shadow-md">
+                    <div
+                        class="border rounded-lg border-gray-200 w-full mb-4 opacity-75 hover:opacity-100  transition-all duration-300 hover:shadow-md">
                         <div class="bg-gray-50 px-4 py-3 flex items-center justify-between gap-3 border-b">
                             <div class="flex gap-3 items-center">
                                 <img src="<?php echo $booking['photo']; ?>" alt="shop"
@@ -430,7 +431,8 @@ function getBookingServices($conn, $bid)
             <div class="text-center py-16">
                 <img src="./public/images/web/empty.png" class="w-24 h-24 mx-auto mb-4 opacity-50" alt="">
                 <p class="text-gray-500 text-lg">You haven't made any booking yet</p>
-                <p class="text-gray-400 text-sm mt-2">Visit a shop and book any service!</p>
+                <p class="text-gray-400 text-sm mt-2"><a href="./index.php" class="text-yellow-300">Visit a
+                        shop</a> and book any service!</p>
             </div>
         <?php endif; ?>
     </div>
@@ -497,7 +499,8 @@ function getBookingServices($conn, $bid)
             <div class="text-center py-16">
                 <img src="./public/images/web/empty.png" class="w-24 h-24 mx-auto mb-4 opacity-50" alt="">
                 <p class="text-gray-500 text-lg">You haven't written any reviews yet</p>
-                <p class="text-gray-400 text-sm mt-2">Visit a shop and share your experience!</p>
+                <p class="text-gray-400 text-sm mt-2"><a href="./index.php" class="text-yellow-300">Visit a
+                        shop</a> and share your experience!</p>
             </div>
         <?php endif ?>
     </div>
@@ -587,7 +590,8 @@ function getBookingServices($conn, $bid)
             <div class="text-center py-16">
                 <img src="./public/images/web/empty.png" class="w-24 h-24 mx-auto mb-4 opacity-50" alt="">
                 <p class="text-gray-500 text-lg">You haven no favorite shops yet</p>
-                <p class="text-gray-400 text-sm mt-2">Visit a shop and add to your favorite!</p>
+                <p class="text-gray-400 text-sm mt-2"><a href="./index.php" class="text-yellow-300">Visit a
+                        shop</a> and add to your favorite!</p>
             </div>
         <?php endif ?>
 

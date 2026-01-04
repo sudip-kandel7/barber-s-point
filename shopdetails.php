@@ -238,3 +238,35 @@ w-[96%] flex gap-2 sm:gap-6 justify-around text-sm sm:text-base">
     </div>
 </div>
 </div>
+
+
+<script>
+    function review(sid) {
+        // alert(sid);
+        let reviewD = document.getElementsByClassName("reviewD")[0];
+        let reviewtxt = document.getElementsByClassName("reviewtxt")[0];
+
+        if (reviewtxt.value.trim().length === 0) {
+            reviewD.classList.remove("border-gray-400");
+            reviewD.classList.add("border-red-500");
+            reviewtxt.focus();
+            return;
+        }
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "add_review.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onload = function() {
+            if (xhr.readyState == 4 && xhr.status === 200) {
+                const res = JSON.parse(xhr.responseText);
+                if (res.status === "success") {
+                    alert("added");
+                    reviewtxt.value = "";
+                } else {
+                    alert(res.message || "not added");
+                }
+            }
+        };
+        xhr.send("sid=" + sid + "&reviewtxt=" + reviewtxt.value);
+    }
+</script>
