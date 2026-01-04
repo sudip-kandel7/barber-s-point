@@ -245,8 +245,8 @@ function booking(sid, price, duration) {
 function adding(sid) {
   const boxes = document.querySelectorAll(".checkboxes");
   const selected = [];
-  let totalD = 0,
-    totalP = 0;
+  let totalD = 0;
+  let totalP = 0;
   boxes.forEach((box) => {
     if (box.checked) {
       totalD += parseInt(box.dataset.duration);
@@ -260,12 +260,12 @@ function adding(sid) {
     }
   });
 
-  console.log({
-    shopId: sid,
-    services: selected,
-    totalPrice: totalP,
-    totalDuration: totalD,
-  });
+  // console.log({
+  //   shopId: sid,
+  //   services: selected,
+  //   totalPrice: totalP,
+  //   totalDuration: totalD,
+  // });
 
   // insert to db now
 
