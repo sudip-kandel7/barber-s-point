@@ -299,17 +299,16 @@ function getBookingServices($conn, $bid)
                                         if ($booking['status'] == 'in_service') {
                                             echo 0;
                                         } else {
-                                            // Calculate actual wait time based on position in queue
-                                            $queuePosition = $booking['booking_number'];
+                                            $queuePos = $booking['booking_number'];
                                             $currentQueue = $booking['current_queue'];
 
-                                            if ($queuePosition == 1) {
+                                            if ($queuePo == 1) {
                                                 echo 0;
                                             } else {
                                                 $qry = "SELECT SUM(total_duration) as wait_time 
                                   FROM booking 
                                   WHERE sid = {$booking['sid']} 
-                                  AND booking_number < $queuePosition 
+                                  AND booking_number < $queuePos
                                   AND status = 'waiting'";
                                                 $result_ahead = mysqli_query($conn, $qry);
                                                 $row = mysqli_fetch_assoc($result_ahead);
@@ -330,15 +329,15 @@ function getBookingServices($conn, $bid)
                                         if ($booking['status'] == 'in_service') {
                                             echo 0;
                                         } else {
-                                            $queuePosition = $booking['booking_number'];
+                                            $queuePos = $booking['booking_number'];
 
-                                            if ($queuePosition == 1) {
+                                            if ($queuePos == 1) {
                                                 echo 0;
                                             } else {
                                                 $qry_count = "SELECT COUNT(*) as people_ahead 
                                   FROM booking 
                                   WHERE sid = {$booking['sid']} 
-                                  AND booking_number < $queuePosition 
+                                  AND booking_number < $queuePos 
                                   AND status = 'waiting'";
                                                 $result_count = mysqli_query($conn, $qry_count);
                                                 $row_count = mysqli_fetch_assoc($result_count);
@@ -451,7 +450,7 @@ function getBookingServices($conn, $bid)
             <div class="text-center py-16">
                 <img src="./public/images/web/empty.png" class="w-24 h-24 mx-auto mb-4 opacity-50" alt="">
                 <p class="text-gray-500 text-lg">You haven't made any booking yet</p>
-                <p class="text-gray-400 text-sm mt-2"><a href="./index.php" class="text-yellow-300">Visit a
+                <p class="text-gray-400 text-md mt-2"><a href="./index.php" class="text-yellow-300">Visit a
                         shop</a> and book any service!</p>
             </div>
         <?php endif; ?>
@@ -519,7 +518,7 @@ function getBookingServices($conn, $bid)
             <div class="text-center py-16">
                 <img src="./public/images/web/empty.png" class="w-24 h-24 mx-auto mb-4 opacity-50" alt="">
                 <p class="text-gray-500 text-lg">You haven't written any reviews yet</p>
-                <p class="text-gray-400 text-sm mt-2"><a href="./index.php" class="text-yellow-300">Visit a
+                <p class="text-gray-400 text-md mt-2"><a href="./index.php" class="text-yellow-300">Visit a
                         shop</a> and share your experience!</p>
             </div>
         <?php endif ?>
@@ -610,7 +609,7 @@ function getBookingServices($conn, $bid)
             <div class="text-center py-16">
                 <img src="./public/images/web/empty.png" class="w-24 h-24 mx-auto mb-4 opacity-50" alt="">
                 <p class="text-gray-500 text-lg">You haven no favorite shops yet</p>
-                <p class="text-gray-400 text-sm mt-2"><a href="./index.php" class="text-yellow-300">Visit a
+                <p class="text-gray-400 text-md mt-2"><a href="./index.php" class="text-yellow-300">Visit a
                         shop</a> and add to your favorite!</p>
             </div>
         <?php endif ?>
