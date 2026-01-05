@@ -1,7 +1,6 @@
 <?php
 include 'sessionCheck.php';
 
-// Verify user is an admin
 if ($_SESSION['user']->type !== 'admin') {
     header("Location: index.php");
     exit;
@@ -12,16 +11,14 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Handle AJAX requests
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
 
-    // Approve shop
-    if (isset($_POST['action']) && $_POST['action'] === 'approve_shop') {
+    if (isset($_POST['action']) && $_POST['action'] === 'approve') {
         $sid = (int)$_POST['sid'];
         $admin_uid = $_SESSION['user']->uid;
 
-        $qry = "UPDATE shop SET status = 'open', approved_at = NOW(), approved_by = $admin_uid WHERE sid = $sid";
+        $qry = "UPDATE shop SET status = 'closed', approved_at = NOW(), approved_by = $admin_uid WHERE sid = $sid";
         if (mysqli_query($conn, $qry)) {
             echo json_encode(['status' => 'success', 'msg' => 'Shop approved']);
         } else {
@@ -30,21 +27,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Reject shop
-    if (isset($_POST['action']) && $_POST['action'] === 'reject_shop') {
+    if (isset($_POST['action']) && $_POST['action'] === 'reject') {
         $sid = (int)$_POST['sid'];
+        $result = mysqli_query($conn, "SELECT uid FROM shop WHERE sid = $sid");
+        $row = mysqli_fetch_assoc($result);
+        $uid = $row['uid'];
 
-        $qry = "UPDATE shop SET status = 'suspended' WHERE sid = $sid";
-        if (mysqli_query($conn, $qry)) {
-            echo json_encode(['status' => 'success', 'msg' => 'Shop rejected']);
+        $qry1 = "DELETE FROM shop WHERE sid = $sid";
+
+        if (mysqli_query($conn, $qry1)) {
+            $qry2 = "DELETE FROM users WHERE uid = $uid";
+            if (mysqli_query($conn, $qry2)) {
+                echo json_encode(['status' => 'success', 'msg' => 'Shop and user deleted']);
+            } else {
+                echo json_encode(['status' => 'error', 'msg' => 'Shop deleted but user deletion failed: ' . mysqli_error($conn)]);
+            }
         } else {
-            echo json_encode(['status' => 'error', 'msg' => mysqli_error($conn)]);
+            echo json_encode(['status' => 'error', 'msg' => 'Failed to delete shop: ' . mysqli_error($conn)]);
         }
         exit;
     }
 
-    // Suspend shop
-    if (isset($_POST['action']) && $_POST['action'] === 'suspend_shop') {
+    if (isset($_POST['action']) && $_POST['action'] === 'suspend') {
         $sid = (int)$_POST['sid'];
 
         $qry = "UPDATE shop SET status = 'suspended' WHERE sid = $sid";
@@ -56,12 +60,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Delete shop
-    if (isset($_POST['action']) && $_POST['action'] === 'delete_shop') {
+    if (isset($_POST['action']) && $_POST['action'] === 'unsuspend') {
         $sid = (int)$_POST['sid'];
 
-        $qry = "DELETE FROM shop WHERE sid = $sid";
+        $qry = "UPDATE shop SET status = 'closed' WHERE sid = $sid";
         if (mysqli_query($conn, $qry)) {
+            echo json_encode(['status' => 'success', 'msg' => 'Shop unsuspended']);
+        } else {
+            echo json_encode(['status' => 'error', 'msg' => mysqli_error($conn)]);
+        }
+        exit;
+    }
+
+    if (isset($_POST['action']) && $_POST['action'] === 'delete') {
+        $sid = (int)$_POST['sid'];
+        $uid = mysqli_query($conn, "SELECT uid FROM shop WHERE sid = $sid");
+
+        $qry1 = "DELETE FROM shop WHERE sid = $sid";
+        $qry2 = "DELETE FROM users WHERE uid = $uid";
+        if (mysqli_query($conn, $qry1) && mysqli_query($conn, $qry2)) {
             echo json_encode(['status' => 'success', 'msg' => 'Shop deleted']);
         } else {
             echo json_encode(['status' => 'error', 'msg' => mysqli_error($conn)]);
@@ -69,7 +86,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Delete user
+
+    if (isset($_POST['action']) && $_POST['action'] === 'suspend_user') {
+        $uid = (int)$_POST['uid'];
+
+        $qry = "UPDATE user SET status = 'suspended' WHERE uid = $uid";
+        if (mysqli_query($conn, $qry)) {
+            echo json_encode(['status' => 'success', 'msg' => 'Shop unsuspended']);
+        } else {
+            echo json_encode(['status' => 'error', 'msg' => mysqli_error($conn)]);
+        }
+        exit;
+    }
+
+    if (isset($_POST['action']) && $_POST['action'] === 'unsuspend_user') {
+        $uid = (int)$_POST['uid'];
+
+        $qry = "UPDATE user SET status = 'active' WHERE uid = $uid";
+        if (mysqli_query($conn, $qry)) {
+            echo json_encode(['status' => 'success', 'msg' => 'Shop unsuspended']);
+        } else {
+            echo json_encode(['status' => 'error', 'msg' => mysqli_error($conn)]);
+        }
+        exit;
+    }
+
     if (isset($_POST['action']) && $_POST['action'] === 'delete_user') {
         $uid = (int)$_POST['uid'];
 
@@ -77,12 +118,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (mysqli_query($conn, $qry)) {
             echo json_encode(['status' => 'success', 'msg' => 'User deleted']);
         } else {
-            echo json_encode(['status' => 'error', 'msg' => mysqli_error($conn)]);
+            echo json_encode(['status' => 'error', 'msg' => 'failed"']);
         }
         exit;
     }
 
-    // Delete review
     if (isset($_POST['action']) && $_POST['action'] === 'delete_review') {
         $rid = (int)$_POST['rid'];
 
@@ -96,38 +136,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Get statistics
-$statsQry = "SELECT 
+$qry1 = "SELECT 
     (SELECT COUNT(*) FROM users WHERE type = 'customer') as total_customers,
-    (SELECT COUNT(*) FROM users WHERE type = 'barber') as total_barbers,
     (SELECT COUNT(*) FROM shop WHERE status = 'open') as active_shops,
     (SELECT COUNT(*) FROM shop WHERE status = 'pending') as pending_shops,
-    (SELECT COUNT(*) FROM booking WHERE status = 'completed' AND DATE(completed_at) = CURDATE()) as today_bookings,
-    (SELECT SUM(total_price) FROM booking WHERE status = 'completed' AND DATE(completed_at) = CURDATE()) as today_revenue,
-    (SELECT COUNT(*) FROM review) as total_reviews,
-    (SELECT COUNT(*) FROM booking WHERE status IN ('waiting', 'in_service')) as active_bookings";
+    (SELECT COUNT(*) FROM feedback WHERE status IN ('pending')) as pending_complaints";
 
-$statsResult = mysqli_query($conn, $statsQry);
-$stats = mysqli_fetch_assoc($statsResult);
+$result1 = mysqli_query($conn, $qry1);
+$stats = mysqli_fetch_assoc($result1);
 
-// Get pending shops
-$pendingShopsQry = "SELECT 
+$qry2 = "SELECT 
     shop.*,
-    users.name as owner_name,
-    users.email as owner_email,
-    users.phone as owner_phone
+    users.name,
+    users.email,
+    users.phone
 FROM shop
 JOIN users ON shop.uid = users.uid
 WHERE shop.status = 'pending'
 ORDER BY shop.created_at DESC";
 
-$pendingShopsResult = mysqli_query($conn, $pendingShopsQry);
+$result2 = mysqli_query($conn, $qry2);
 
-// Get all shops
-$allShopsQry = "SELECT 
+$qry3 = "SELECT 
     shop.*,
-    users.name as owner_name,
-    users.email as owner_email,
+    users.name,
+    users.email,
     COUNT(DISTINCT review.rid) as total_reviews,
     queue.current_queue
 FROM shop
@@ -138,50 +171,24 @@ WHERE shop.status != 'pending'
 GROUP BY shop.sid
 ORDER BY shop.created_at DESC";
 
-$allShopsResult = mysqli_query($conn, $allShopsQry);
+$result3 = mysqli_query($conn, $qry3);
 
-// Get all users
-$allUsersQry = "SELECT 
-    users.*,
-    COUNT(DISTINCT booking.bid) as total_bookings,
-    COUNT(DISTINCT review.rid) as total_reviews,
-    COUNT(DISTINCT favorites.sid) as total_favorites
-FROM users
-LEFT JOIN booking ON users.uid = booking.uid
-LEFT JOIN review ON users.uid = review.uid
-LEFT JOIN favorites ON users.uid = favorites.uid
-WHERE users.type != 'admin'
-GROUP BY users.uid
+$qry4 = "SELECT * FROM users WHERE users.type != 'admin'
 ORDER BY users.created_at DESC";
 
-$allUsersResult = mysqli_query($conn, $allUsersQry);
+$result4 = mysqli_query($conn, $qry4);
 
-// Get all bookings
-$allBookingsQry = "SELECT 
-    booking.*,
-    users.name as customer_name,
-    users.email as customer_email,
-    shop.sname as shop_name
-FROM booking
-JOIN users ON booking.uid = users.uid
-JOIN shop ON booking.sid = shop.sid
-ORDER BY booking.joined_at DESC
-LIMIT 50";
-
-$allBookingsResult = mysqli_query($conn, $allBookingsQry);
-
-// Get recent reviews
-$recentReviewsQry = "SELECT 
+$qry5 = "SELECT 
     review.*,
-    users.name as customer_name,
-    shop.sname as shop_name
+    users.name,
+    shop.sname
 FROM review
 JOIN users ON review.uid = users.uid
 JOIN shop ON review.sid = shop.sid
 ORDER BY review.date_added DESC
 LIMIT 20";
 
-$recentReviewsResult = mysqli_query($conn, $recentReviewsQry);
+$result5 = mysqli_query($conn, $qry5);
 
 include 'header.php';
 include 'navbar.php';
@@ -190,131 +197,80 @@ include 'navbar.php';
 <section class="bg-[#F1F4F9] min-h-screen">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-        <!-- Header -->
         <div class="mb-6">
-            <h1 class="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p class="text-gray-600 mt-1">Manage your barbershop platform</p>
+            <h1 class="text-3xl font-bold text-grey-900">Admin Dashboard</h1>
+            <p class="text-gray-600 mt-1">Manage users, approve barbers, and handle compaints</p>
         </div>
 
-        <!-- Statistics Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-600">Total Customers</p>
-                        <p class="text-3xl font-bold text-blue-600"><?php echo $stats['total_customers']; ?></p>
-                    </div>
-                    <div class="bg-blue-100 p-3 rounded-full">
-                        <img src="./public/images/web/user.png" class="w-8 h-8" alt="">
-                    </div>
+            <div
+                class="rounded-lg border shadow-sm bg-white flex items-start justify-between p-6 hover:shadow-lg transition-shadow m-2 gap-2">
+                <div>
+                    <p class="text-sm font-medium">Total Customers</p>
+                    <p class="text-2xl font-bold"><?php echo $stats['total_customers']; ?></p>
                 </div>
+                <img src="./public/images/web/user.png" class="w-4 h-4" alt="">
             </div>
 
-            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-600">Total Barbers</p>
-                        <p class="text-3xl font-bold text-green-600"><?php echo $stats['total_barbers']; ?></p>
-                    </div>
-                    <div class="bg-green-100 p-3 rounded-full">
-                        <img src="./public/images/web/shop.png" class="w-8 h-8" alt="">
-                    </div>
+            <div
+                class="rounded-lg border shadow-sm bg-white flex items-start justify-between p-6 hover:shadow-lg transition-shadow m-2 gap-2">
+                <div>
+                    <p class="text-sm font-medium">Active Shops</p>
+                    <p class="text-2xl font-bold"><?php echo $stats['active_shops']; ?></p>
                 </div>
+                <img src="./public/images/web/shop1.png" class="w-5 h-5" alt="">
             </div>
 
-            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-600">Active Shops</p>
-                        <p class="text-3xl font-bold text-purple-600"><?php echo $stats['active_shops']; ?></p>
-                        <?php if ($stats['pending_shops'] > 0): ?>
-                            <p class="text-xs text-yellow-600 mt-1">
-                                <?php echo $stats['pending_shops']; ?> pending approval
-                            </p>
-                        <?php endif; ?>
-                    </div>
-                    <div class="bg-purple-100 p-3 rounded-full">
-                        <img src="./public/images/web/shop.png" class="w-8 h-8" alt="">
-                    </div>
+            <div
+                class="rounded-lg border shadow-sm bg-white flex items-start justify-between p-6 hover:shadow-lg transition-shadow m-2 gap-2">
+                <div>
+                    <p class="text-sm font-medium">Pending Approvals</p>
+                    <p class="text-2xl font-bold text-yellow-500"><?php echo $stats['pending_shops']; ?></p>
                 </div>
+                <img src="./public/images/web/report1.png" class="w-5 h-5" alt="">
             </div>
 
-            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-600">Today's Revenue</p>
-                        <p class="text-3xl font-bold text-yellow-600">
-                            Rs. <?php echo number_format($stats['today_revenue'] ?? 0); ?>
-                        </p>
-                        <p class="text-xs text-gray-500 mt-1">
-                            <?php echo $stats['today_bookings']; ?> bookings
-                        </p>
-                    </div>
-                    <div class="bg-yellow-100 p-3 rounded-full">
-                        <img src="./public/images/web/upward.png" class="w-8 h-8" alt="">
-                    </div>
+            <div
+                class="rounded-lg border shadow-sm bg-white flex items-start justify-between p-6 hover:shadow-lg transition-shadow m-2 gap-2">
+                <div>
+                    <p class="text-sm font-medium">Pending Complaints</p>
+                    <p class="text-2xl font-bold text-red-500"><?php echo $stats['pending_complaints']; ?></p>
                 </div>
+                <img src="./public/images/web/complaint.png" class="w-5 h-5" alt="">
             </div>
         </div>
 
-        <!-- Additional Stats -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <div class="bg-white rounded-lg shadow-md p-4">
-                <p class="text-sm text-gray-600">Total Reviews</p>
-                <p class="text-2xl font-bold text-gray-900"><?php echo $stats['total_reviews']; ?></p>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-4">
-                <p class="text-sm text-gray-600">Active Bookings</p>
-                <p class="text-2xl font-bold text-gray-900"><?php echo $stats['active_bookings']; ?></p>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-4">
-                <p class="text-sm text-gray-600">Pending Approvals</p>
-                <p class="text-2xl font-bold text-orange-600"><?php echo $stats['pending_shops']; ?></p>
-            </div>
-        </div>
 
-        <!-- Tabs -->
-        <div class="bg-white rounded-t-lg shadow-md">
+        <div class="bg-white rounded-t-lg shadow-md mb-0.5">
             <div class="flex border-b overflow-x-auto">
-                <button onclick="switchTab('pending')" id="tab-pending"
-                    class="tab-btn px-6 py-3 font-semibold border-b-2 border-yellow-400 text-yellow-600 whitespace-nowrap relative">
+                <button onclick="switchTab('pending')" id="Apending"
+                    class="Abtn px-6 py-3 font-semibold border-b-2 border-yellow-400 text-yellow-500 whitespace-nowrap relative">
                     Pending Approvals
-                    <?php if ($stats['pending_shops'] > 0): ?>
-                        <span
-                            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                            <?php echo $stats['pending_shops']; ?>
-                        </span>
-                    <?php endif; ?>
                 </button>
-                <button onclick="switchTab('shops')" id="tab-shops"
-                    class="tab-btn px-6 py-3 font-semibold text-gray-600 hover:text-gray-900 whitespace-nowrap">
+                <button onclick="switchTab('shops')" id="Ashops"
+                    class="Abtn px-6 py-3 font-semibold text-gray-600 hover:text-gray-900 whitespace-nowrap">
                     All Shops
                 </button>
-                <button onclick="switchTab('users')" id="tab-users"
-                    class="tab-btn px-6 py-3 font-semibold text-gray-600 hover:text-gray-900 whitespace-nowrap">
+                <button onclick="switchTab('users')" id="Ausers"
+                    class="Abtn px-6 py-3 font-semibold text-gray-600 hover:text-gray-900 whitespace-nowrap">
                     Users
                 </button>
-                <button onclick="switchTab('bookings')" id="tab-bookings"
-                    class="tab-btn px-6 py-3 font-semibold text-gray-600 hover:text-gray-900 whitespace-nowrap">
-                    Bookings
-                </button>
-                <button onclick="switchTab('reviews')" id="tab-reviews"
-                    class="tab-btn px-6 py-3 font-semibold text-gray-600 hover:text-gray-900 whitespace-nowrap">
+                <button onclick="switchTab('reviews')" id="Areviews"
+                    class="Abtn px-6 py-3 font-semibold text-gray-600 hover:text-gray-900 whitespace-nowrap">
                     Reviews
                 </button>
             </div>
         </div>
 
-        <!-- Pending Approvals Tab -->
-        <div id="content-pending" class="tab-content bg-white rounded-b-lg shadow-md p-6">
-            <?php if (mysqli_num_rows($pendingShopsResult) > 0): ?>
+        <div id="abpending" class="Acontent bg-white rounded-b-lg shadow-md p-6">
+            <?php if (mysqli_num_rows($result2) > 0): ?>
                 <h2 class="text-2xl font-bold mb-6">Pending Shop Approvals</h2>
                 <div class="space-y-4">
-                    <?php while ($shop = mysqli_fetch_assoc($pendingShopsResult)): ?>
+                    <?php while ($shop = mysqli_fetch_assoc($result2)): ?>
                         <div id="pending-shop-<?php echo $shop['sid']; ?>"
-                            class="border-2 border-yellow-300 rounded-lg p-6 hover:shadow-md transition-shadow">
+                            class="border-2 border-gray-300 rounded-lg p-6 hover:shadow-md transition-shadow">
                             <div class="flex flex-col lg:flex-row gap-6">
-                                <img src="<?php echo $shop['photo']; ?>" alt="<?php echo $shop['sname']; ?>"
+                                <img src="<?php echo $shop['photo']; ?>" alt=""
                                     class="w-full lg:w-48 h-48 object-cover rounded-lg border-2 border-yellow-400">
 
                                 <div class="flex-1">
@@ -327,7 +283,7 @@ include 'navbar.php';
                                             </p>
                                         </div>
                                         <span
-                                            class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                            class="bg-yellow-100 text-yellow-500 px-3 py-1 rounded-full text-sm font-semibold">
                                             Pending
                                         </span>
                                     </div>
@@ -335,19 +291,15 @@ include 'navbar.php';
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                         <div>
                                             <p class="text-sm text-gray-600">Owner Name</p>
-                                            <p class="font-semibold"><?php echo $shop['owner_name']; ?></p>
+                                            <p class="font-semibold"><?php echo $shop['name']; ?></p>
                                         </div>
                                         <div>
                                             <p class="text-sm text-gray-600">Email</p>
-                                            <p class="font-semibold"><?php echo $shop['owner_email']; ?></p>
+                                            <p class="font-semibold"><?php echo $shop['email']; ?></p>
                                         </div>
                                         <div>
                                             <p class="text-sm text-gray-600">Phone</p>
-                                            <p class="font-semibold"><?php echo $shop['owner_phone']; ?></p>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm text-gray-600">Total Barbers</p>
-                                            <p class="font-semibold"><?php echo $shop['total_barbers']; ?></p>
+                                            <p class="font-semibold"><?php echo $shop['phone']; ?></p>
                                         </div>
                                     </div>
 
@@ -374,33 +326,31 @@ include 'navbar.php';
             <?php endif; ?>
         </div>
 
-        <!-- All Shops Tab -->
-        <div id="content-shops" class="tab-content bg-white rounded-b-lg shadow-md p-6 hidden">
+        <div id="abshops" class="Acontent bg-white rounded-b-lg shadow-md p-6 hidden">
             <h2 class="text-2xl font-bold mb-6">All Shops</h2>
 
-            <?php if (mysqli_num_rows($allShopsResult) > 0): ?>
+            <?php if (mysqli_num_rows($result3) > 0): ?>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Shop</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Owner</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Queue</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Reviews</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Actions</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
+                                    SHOP</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
+                                    OWNER</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
+                                    STATUS</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
+                                    QUEUE</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
+                                    REVIEWS</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
+                                    ACTIONS</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             <?php
-                            mysqli_data_seek($allShopsResult, 0);
-                            while ($shop = mysqli_fetch_assoc($allShopsResult)):
+                            while ($shop = mysqli_fetch_assoc($result3)):
                             ?>
                                 <tr id="shop-row-<?php echo $shop['sid']; ?>">
                                     <td class="px-6 py-4 whitespace-nowrap">
@@ -414,13 +364,13 @@ include 'navbar.php';
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium"><?php echo $shop['owner_name']; ?></div>
-                                        <div class="text-sm text-gray-500"><?php echo $shop['owner_email']; ?></div>
+                                        <div class="text-sm font-medium"><?php echo $shop['name']; ?></div>
+                                        <div class="text-sm text-gray-500"><?php echo $shop['email']; ?></div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
+                                        <span class="px-2 py-1 text-xs font-semibold rounded-full
                                             <?php
-                                            echo $shop['status'] === 'open' ? 'bg-green-100 text-green-800' : ($shop['status'] === 'closed' ? 'bg-gray-100 text-gray-800' : 'bg-red-100 text-red-800');
+                                            echo $shop['status'] === 'open' ? 'bg-green-100 text-green-800' : ($shop['status'] === 'closed' || $shop['closing'] === 'closed' ? 'bg-gray-100 text-gray-800' : 'bg-red-100 text-red-800');
                                             ?>">
                                             <?php echo ucfirst($shop['status']); ?>
                                         </span>
@@ -435,12 +385,18 @@ include 'navbar.php';
                                         <div class="flex gap-2">
                                             <?php if ($shop['status'] !== 'suspended'): ?>
                                                 <button onclick="suspendShop(<?php echo $shop['sid']; ?>)"
-                                                    class="text-orange-600 hover:text-orange-900 font-medium">
+                                                    class="px-3 py-2 bg-yellow-400 hover:bg-yellow-500 text-black rounded-md font-medium">
                                                     Suspend
                                                 </button>
                                             <?php endif; ?>
+                                            <?php if ($shop['status'] == 'suspended'): ?>
+                                                <button onclick="unsuspendShop(<?php echo $shop['sid']; ?>)"
+                                                    class="px-3 py-2 bg-yellow-400 hover:bg-yellow-500 text-black rounded-md font-medium">
+                                                    Unsuspend
+                                                </button>
+                                            <?php endif; ?>
                                             <button onclick="deleteShop(<?php echo $shop['sid']; ?>)"
-                                                class="text-red-600 hover:text-red-900 font-medium">
+                                                class="px-3 py-2 bg-red-400 hover:bg-red-500 text-black rounded-md font-medium">
                                                 Delete
                                             </button>
                                         </div>
@@ -455,11 +411,10 @@ include 'navbar.php';
             <?php endif; ?>
         </div>
 
-        <!-- Users Tab -->
-        <div id="content-users" class="tab-content bg-white rounded-b-lg shadow-md p-6 hidden">
+        <div id="abusers" class="Acontent bg-white rounded-b-lg shadow-md p-6 hidden">
             <h2 class="text-2xl font-bold mb-6">All Users</h2>
 
-            <?php if (mysqli_num_rows($allUsersResult) > 0): ?>
+            <?php if (mysqli_num_rows($result4) > 0): ?>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
@@ -471,15 +426,12 @@ include 'navbar.php';
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Contact</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Activity</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Actions</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             <?php
-                            mysqli_data_seek($allUsersResult, 0);
-                            while ($user = mysqli_fetch_assoc($allUsersResult)):
+                            while ($user = mysqli_fetch_assoc($result4)):
                             ?>
                                 <tr id="user-row-<?php echo $user['uid']; ?>">
                                     <td class="px-6 py-4 whitespace-nowrap">
@@ -496,24 +448,32 @@ include 'navbar.php';
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span
-                                            class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
-                                            <?php echo $user['type'] === 'customer' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'; ?>">
-                                            <?php echo ucfirst($user['type']); ?>
-                                        </span>
+                                            class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-500">
+                                            <?php echo ucfirst($user['type']); ?> </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
                                         <div><?php echo $user['email']; ?></div>
                                         <div class="text-gray-500"><?php echo $user['phone']; ?></div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                        <div>Bookings: <?php echo $user['total_bookings']; ?></div>
-                                        <div>Reviews: <?php echo $user['total_reviews']; ?></div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                        <button onclick="deleteUser(<?php echo $user['uid']; ?>)"
-                                            class="text-red-600 hover:text-red-900 font-medium">
-                                            Delete
-                                        </button>
+                                        <div class="flex gap-4">
+                                            <?php if ($user['status'] !== 'suspended'): ?>
+                                                <button onclick="suspendUser(<?php echo $user['uid']; ?>)"
+                                                    class="px-3 py-2 bg-yellow-400 hover:bg-yellow-500 text-black rounded-md font-medium">
+                                                    Suspend
+                                                </button>
+                                            <?php endif; ?>
+                                            <?php if ($user['status'] == 'suspended'): ?>
+                                                <button onclick="unsuspendUser(<?php echo $user['uid']; ?>)"
+                                                    class="px-3 py-2 bg-yellow-400 hover:bg-yellow-500 text-black rounded-md font-medium">
+                                                    Unsuspend
+                                                </button>
+                                            <?php endif; ?>
+                                            <button onclick="deleteUser(<?php echo $user['uid']; ?>)"
+                                                class="px-3 py-2 bg-red-400 hover:bg-red-500 text-black rounded-md font-medium">
+                                                Delete
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>
@@ -525,85 +485,22 @@ include 'navbar.php';
             <?php endif; ?>
         </div>
 
-        <!-- Bookings Tab -->
-        <div id="content-bookings" class="tab-content bg-white rounded-b-lg shadow-md p-6 hidden">
-            <h2 class="text-2xl font-bold mb-6">Recent Bookings</h2>
-
-            <?php if (mysqli_num_rows($allBookingsResult) > 0): ?>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Booking #</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Customer</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Shop</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Price</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Date</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <?php
-                            mysqli_data_seek($allBookingsResult, 0);
-                            while ($booking = mysqli_fetch_assoc($allBookingsResult)):
-                            ?>
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap font-semibold">
-                                        #<?php echo $booking['booking_number']; ?>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="font-medium"><?php echo $booking['customer_name']; ?></div>
-                                        <div class="text-sm text-gray-500"><?php echo $booking['customer_email']; ?></div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <?php echo $booking['shop_name']; ?>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
-                                            <?php
-                                            echo $booking['status'] === 'completed' ? 'bg-green-100 text-green-800' : ($booking['status'] === 'in_service' ? 'bg-blue-100 text-blue-800' : ($booking['status'] === 'waiting' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'));
-                                            ?>">
-                                            <?php echo ucfirst($booking['status']); ?>
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap font-semibold text-yellow-600">
-                                        Rs. <?php echo $booking['total_price']; ?>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <?php echo date("M d, Y | g:i A", strtotime($booking['joined_at'])); ?>
-                                    </td>
-                                </tr>
-                            <?php endwhile; ?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php else: ?>
-                <p class="text-center text-gray-500">No bookings found</p>
-            <?php endif; ?>
-        </div>
-
         <!-- Reviews Tab -->
-        <div id="content-reviews" class="tab-content bg-white rounded-b-lg shadow-md p-6 hidden">
+        <div id="abreviews" class="Acontent bg-white rounded-b-lg shadow-md p-6 hidden">
             <h2 class="text-2xl font-bold mb-6">Recent Reviews</h2>
 
-            <?php if (mysqli_num_rows($recentReviewsResult) > 0): ?>
+            <?php if (mysqli_num_rows($result5) > 0): ?>
                 <div class="space-y-4">
-                    <?php while ($review = mysqli_fetch_assoc($recentReviewsResult)): ?>
+                    <?php while ($review = mysqli_fetch_assoc($result5)): ?>
                         <div id="review-<?php echo $review['rid']; ?>" class="border rounded-lg p-4">
                             <div class="flex items-start gap-4">
                                 <img src="./public/images/web/profile.png" class="w-12 h-12 rounded-full" alt="">
                                 <div class="flex-1">
                                     <div class="flex justify-between items-start">
                                         <div>
-                                            <p class="font-semibold"><?php echo $review['customer_name']; ?></p>
+                                            <p class="font-semibold"><?php echo $review['name']; ?></p>
                                             <p class="text-sm text-gray-600">
-                                                for <?php echo $review['shop_name']; ?>
+                                                for <?php echo $review['sname']; ?>
                                             </p>
                                             <p class="text-xs text-gray-500">
                                                 <?php echo date("M d, Y | g:i A", strtotime($review['date_added'])); ?>
@@ -627,7 +524,6 @@ include 'navbar.php';
     </div>
 </section>
 
-<script src="./public/js/admin.js"></script>
 
 <?php
 mysqli_close($conn);

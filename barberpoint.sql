@@ -4,6 +4,7 @@ create DATABASE barber_point;
 CREATE TABLE users (
     uid INT PRIMARY KEY AUTO_INCREMENT,
     type ENUM('customer', 'barber', 'admin') NOT NULL DEFAULT 'customer',
+    status ENUM('active', 'suspended') DEFAULT 'active',
     name VARCHAR(50) NOT NULL,
     address VARCHAR(255),
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -22,7 +23,13 @@ CREATE TABLE shop (
     uid INT NOT NULL,
     total_barbers INT NOT NULL DEFAULT 1,
     available_barbers INT NOT NULL DEFAULT total_barbers,
-    status ENUM('pending', 'open', 'closed', 'suspended') DEFAULT 'pending',
+    status ENUM(
+        'pending',
+        'open',
+        'closing',
+        'closed',
+        'suspended'
+    ) DEFAULT 'pending',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     approved_at DATETIME NULL,
     approved_by INT NULL,
@@ -44,6 +51,25 @@ CREATE TABLE review (
     UNIQUE (uid, sid),
     INDEX idx_shop_reviews (sid),
     INDEX idx_users_reviews (uid)
+);
+CREATE TABLE feedback (
+    fid INT PRIMARY KEY AUTO_INCREMENT,
+    uid INT NOT NULL,
+    sid INT NULL,
+    type ENUM('feedback', 'complaint') NOT NULL,
+    msg TEXT NOT NULL,
+    status ENUM('pending', 'resolved') DEFAULT 'pending',
+    responded_by INT NULL,
+    date_added DATETIME DEFAULT CURRENT_TIMESTAMP,
+    date_resolved DATETIME NULL,
+    FOREIGN KEY(uid) REFERENCES users(uid) ON DELETE CASCADE,
+    FOREIGN KEY(sid) REFERENCES shop(sid) ON DELETE CASCADE,
+    FOREIGN KEY(responded_by) REFERENCES users(uid) ON DELETE
+    SET NULL,
+        INDEX idx_type (type),
+        INDEX idx_status (status),
+        INDEX idx_shop_reviews (sid, type),
+        INDEX idx_user_feedback (uid)
 );
 -- services table
 CREATE TABLE services (
