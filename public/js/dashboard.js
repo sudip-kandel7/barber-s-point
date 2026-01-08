@@ -54,7 +54,13 @@ function rejectShop(sid) {
             const pendingList =
               document.getElementById("content-pending").children;
             if (pendingList.length <= 2) {
-              location.reload();
+              // location.reload();
+              document.getElementById(
+                "abpending"
+              ).innerHTML = `<div class="text-center py-16">
+                    <img src="./public/images/web/empty.png" class="w-24 h-24 mx-auto mb-4 opacity-50" alt="">
+                    <p class="text-gray-500 text-lg">No pending approvals</p>
+                </div>`;
             }
           }, 300);
         }
@@ -99,25 +105,37 @@ function unsuspendShop(sid) {
 }
 
 function deleteShop(sid) {
+  alert(sid);
   const xhr = new XMLHttpRequest();
   xhr.open("POST", "dashboard.php", true);
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4 && xhr.status === 200) {
-      const response = JSON.parse(xhr.responseText);
-      if (response.status === "success") {
-        const shopRow = document.getElementById("shop-row-" + sid);
-        if (shopRow) {
-          setTimeout(() => {
-            shopRow.remove();
-          }, 300);
+      try {
+        const response = JSON.parse(xhr.responseText);
+        if (response.status === "success") {
+          const shopRow = document.getElementById("shop-row-" + sid);
+          if (shopRow) {
+            setTimeout(() => {
+              shopRow.remove();
+              const shopList = document.getElementById("shopslist").children;
+              if (shopList.length < 1) {
+                // location.reload();
+                document.getElementById(
+                  "abshops"
+                ).innerHTML = `<p class="text-center text-gray-500">No shops found</p>`;
+              }
+            }, 300);
+          }
         }
+      } catch (e) {
+        console.error("JSON Parse Error:", e);
+        console.error("Response:", xhr.responseText);
       }
     }
   };
-
-  xhr.send("action=delete&sid=" + sid);
+  xhr.send("action=delete_shop&sid=" + sid);
 }
 
 function suspendUser(uid) {
@@ -134,7 +152,7 @@ function suspendUser(uid) {
     }
   };
 
-  xhr.send("action=suspend_usere&uid=" + uid);
+  xhr.send("action=suspend_user&uid=" + uid);
 }
 function unsuspendUser(uid) {
   const xhr = new XMLHttpRequest();
@@ -166,6 +184,13 @@ function deleteUser(uid) {
         if (userRow) {
           setTimeout(() => {
             userRow.remove();
+            const list = document.getElementById("userlist").children;
+            if (list.length < 1) {
+              // location.reload();
+              document.getElementById(
+                "abusers"
+              ).innerHTML = ` <p class="text-center text-gray-500">No users found</p>`;
+            }
           }, 300);
         }
       }
@@ -175,30 +200,28 @@ function deleteUser(uid) {
   xhr.send("action=delete_user&uid=" + uid);
 }
 
-// Delete review
 function deleteReview(rid) {
-  if (!confirm("Are you sure you want to delete this review?")) return;
-
   const xhr = new XMLHttpRequest();
   xhr.open("POST", "dashboard.php", true);
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-  xhr.onload = function () {
-    if (xhr.status === 200) {
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState == 4 && xhr.status === 200) {
       const response = JSON.parse(xhr.responseText);
       if (response.status === "success") {
         const reviewDiv = document.getElementById("review-" + rid);
         if (reviewDiv) {
-          reviewDiv.style.transition = "all 0.3s ease";
-          reviewDiv.style.opacity = "0";
-          reviewDiv.style.transform = "translateX(-20px)";
           setTimeout(() => {
             reviewDiv.remove();
+            const list = document.getElementById("abreviews").children;
+            if (list.length <= 2) {
+              // location.reload();
+              document.getElementById(
+                "abreviews"
+              ).innerHTML = `<p class="text-center text-gray-500">No reviews found</p>`;
+            }
           }, 300);
         }
-        showNotification("Review deleted successfully", "success");
-      } else {
-        showNotification(response.msg || "Failed to delete review", "error");
       }
     }
   };

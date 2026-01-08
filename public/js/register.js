@@ -25,40 +25,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // error check before form submitting
-
-  function checkErrors() {
-    const createBtn = document.querySelector('button[name="create"]');
-    const errorMessages = document.querySelectorAll("p.text-red-600");
-    let hasError = false;
-
-    errorMessages.forEach((p) => {
-      if (p.innerText.trim() !== "") {
-        hasError = true;
-      }
-    });
-
-    if (createBtn) {
-      createBtn.disabled = hasError;
-
-      if (hasError) {
-        createBtn.className =
-          "flex justify-center items-center border rounded-xl w-full gap-3 py-3 text-xl font-medium bg-gray-400 cursor-not-allowed opacity-60";
-      } else {
-        createBtn.className =
-          "flex justify-center items-center border bg-yellow-400 rounded-xl hover:bg-yellow-500 w-full gap-3 py-3 text-xl font-medium";
-      }
-    }
-  }
-
   // div hide and show
-
   const select = document.getElementById("select");
   const barberinfo = document.getElementById("barberinfo");
   const shopName = document.querySelector('input[name="sname"]');
   const shopAddress = document.querySelector('input[name="saddress"]');
   const shopPhotos = document.querySelector('input[name="photos"]');
-  const shopBarber = document.querySelector('input[name="sbarber"]');
 
   select.addEventListener("change", () => {
     if (select.value === "barber") {
@@ -67,24 +39,24 @@ document.addEventListener("DOMContentLoaded", () => {
       shopName.setAttribute("required", "required");
       shopAddress.setAttribute("required", "required");
       shopPhotos.setAttribute("required", "required");
-      shopBarber.setAttribute("required", "required");
+
+      validateServiceSelection();
     } else {
       barberinfo.classList.add("hidden");
       barberinfo.classList.remove("block");
       shopName.removeAttribute("required");
       shopAddress.removeAttribute("required");
       shopPhotos.removeAttribute("required");
-      shopBarber.removeAttribute("required");
 
       shopName.value = "";
       shopAddress.value = "";
       shopPhotos.value = "";
-      shopBarber.value = "";
+
+      checkErrors();
     }
   });
 
   // form validation frontend (js)
-
   let form = document.getElementById("form");
 
   if (form) {
@@ -93,14 +65,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const input = e.target;
       const name = input.name;
-      // console.log(name);
       const value = input.value.trim();
-      // console.log(value);
-
       const err = document.querySelector(`p.${name}`);
-
-      // const hasNumberOrSymbol = /[^a-zA-Z\s]/.test(value);
-      // const wordCount = value.split(/\s+/).filter(Boolean).length;
 
       let pass1 = document.querySelector('input[name="password"]');
       let pass2 = document.querySelector('input[name="cPassword"]');
@@ -108,7 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
       let p2 = document.getElementsByClassName("cPassword")[0];
 
       // validate shop info in registation form
-
       if (name === "firstN" || name === "add") {
         if (value === "") {
           err.innerText = "";
@@ -251,13 +216,34 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (name === "sname") {
-        pattern = /^[A-Za-z](?=.*[0-9]{0,4})[A-Za-z0-9]*$/;
+        pattern = /^[A-Za-z][A-Za-z ]*$/;
         if (value.length === 0) {
           err.innerText = "";
         } else if (!pattern.test(value)) {
           err.innerText = "Must start with and only contain letters!";
         } else if (value.length > 25) {
           err.innerText = "Letters must be less than 25!";
+        } else {
+          err.innerText = "";
+        }
+      }
+
+      if (name === "number") {
+        if (value === "") {
+          err.innerText = "";
+          return;
+        }
+
+        let e = value.slice(2);
+
+        if (/\D/.test(value)) {
+          err.innerText = "Phone number must contain only digits.";
+        } else if (!value.startsWith("98") && !value.startsWith("97")) {
+          err.innerText = "Phone number must start with 98 or 97.";
+        } else if (value.length !== 10) {
+          err.innerText = "Phone number must be exactly 10 digits.";
+        } else if (/^(\d)\1*$/.test(e)) {
+          err.innerText = "The remaining part has repeated digits.";
         } else {
           err.innerText = "";
         }
@@ -280,7 +266,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // check if emal already exists
+  // check if email already exists
   const emailInput = document.querySelector('input[name="email"]');
   if (emailInput) {
     emailInput.addEventListener("keypress", function (e) {
@@ -312,15 +298,13 @@ document.addEventListener("DOMContentLoaded", () => {
       x.open("POST", "emailCheck.php", true);
       x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
-      x.onload = function () {
-        if (this.status === 200) {
-          const response = this.responseText.trim();
-          console.log("Response:", response);
+      x.onreadystatechange = function () {
+        if (x.readyState === 4 && x.status === 200) {
+          const response = x.responseText.trim();
 
           if (response === "exists") {
             err.innerText = "Email already exists!";
             emailInput.style.border = "2px solid red";
-            value = "";
           }
           if (response === "available") {
             err.innerText = "";
@@ -330,88 +314,160 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       };
 
-      x.send("email=" + encodeURIComponent(value));
+      x.send("email=" + value);
     });
   }
 
   // photo validate
-
   document.getElementById("photos").addEventListener("change", function () {
     const file = this.files[0];
     const maxSize = 5 * 1024 * 1024;
 
     if (file && file.size > maxSize) {
-      // document.getElementsByClassName("photoErr").innerText =
-      //   "Size must be less than 5MB.";
       this.value = "";
     }
   });
 
-  // custom services in register form
+  // first time error check
+  checkErrors();
+});
 
-  ["customName", "customPrice", "customDuration"].forEach((id) => {
-    document.getElementById(id).addEventListener("input", () => {
-      validateCustomService();
-      checkErrors();
-    });
+// validate at least one service is selected or added (default or custom)
+function validateServiceSelection() {
+  // const select = document.getElementById("select");
+  const btn = document.getElementById("create");
+  const serviceErr = document.querySelector("#serviceErr");
+
+  // if (select.value !== "barber") {
+  //   return;
+  // }
+
+  const defaultCheckboxes = document.querySelectorAll(
+    'input[name="defaultServices[]"]'
+  );
+  let hasDefaultService = false;
+  let hasCustomServices = false;
+
+  defaultCheckboxes.forEach((checkbox) => {
+    if (checkbox.checked) {
+      hasDefaultService = true;
+    }
   });
 
-  function validateCustomService() {
-    const nameInput = document.getElementById("customName");
-    const priceInput = document.getElementById("customPrice");
-    const durationInput = document.getElementById("customDuration");
-    const el = document.getElementsByClassName("customErr")[0];
+  const customList = document.getElementById("customList");
+  hasCustomServices = customList && customList.children.length > 0;
 
-    const name = nameInput.value.trim();
-    const price = priceInput.value.trim();
-    const duration = durationInput.value.trim();
+  if (hasCustomServices || hasDefaultService) {
+    btn.disabled = false;
+    btn.classList.remove(
+      "bg-gray-400",
+      "hover:bg-gray-500",
+      "cursor-not-allowed",
+      "opacity-60"
+    );
+    btn.classList.add("bg-yellow-400", "hover:bg-yellow-500");
 
-    const serviceNpattern = /^[A-Za-z]+( [A-Za-z]+)?$/;
-
-    if (name === "" || price === "" || duration === "") {
-      el.innerText = "Please enter all fields!";
-      return false;
+    if (serviceErr) {
+      serviceErr.innerText = "";
     }
+  } else {
+    btn.classList.remove("bg-yellow-400", "hover:bg-yellow-500");
+    btn.classList.add(
+      "bg-gray-400",
+      "hover:bg-gray-500",
+      "cursor-not-allowed",
+      "opacity-60"
+    );
 
-    if (price < 0 || duration < 0) {
-      el.innerText = "Must not enter negative values!";
-      return false;
+    if (serviceErr) {
+      serviceErr.innerText =
+        "⚠️ You must select at least one default service or add a custom service";
     }
-
-    if (name.length < 3) {
-      el.innerText = "Service name must contain at least 3 letters!";
-      return false;
-    }
-
-    if (!serviceNpattern.test(name)) {
-      el.innerText = "Service name must contain only letters!";
-      return false;
-    }
-
-    el.innerText = "";
-    return true;
   }
 
-  function addCustomService() {
-    if (!validateCustomService()) {
-      checkErrors();
-      return;
+  checkErrors();
+}
+
+// error check before form submitting
+function checkErrors() {
+  const createBtn = document.querySelector('button[name="create"]');
+  const errorMessages = document.querySelectorAll("p.text-red-600");
+  let hasError = false;
+
+  errorMessages.forEach((p) => {
+    if (p.innerText.trim() !== "") {
+      hasError = true;
     }
+  });
 
-    let name = document.getElementById("customName").value.trim();
-    let price = document.getElementById("customPrice").value.trim();
-    let duration = document.getElementById("customDuration").value.trim();
+  if (createBtn) {
+    createBtn.disabled = hasError;
 
-    let div = document.createElement("div");
-    div.className =
-      "services bg-gray-200 rounded-md py-1 px-3 mb-4 flex justify-between items-center";
+    if (hasError) {
+      createBtn.className =
+        "flex justify-center items-center border rounded-xl w-full gap-3 py-3 text-xl font-medium bg-gray-400 cursor-not-allowed opacity-60";
+    } else {
+      createBtn.className =
+        "flex justify-center items-center border bg-yellow-400 rounded-xl hover:bg-yellow-500 w-full gap-3 py-3 text-xl font-medium";
+    }
+  }
+}
 
-    div.innerHTML = `
+function validateCustomService() {
+  const nameInput = document.getElementById("customName");
+  const priceInput = document.getElementById("customPrice");
+  const durationInput = document.getElementById("customDuration");
+  const el = document.getElementsByClassName("customErr")[0];
+
+  const name = nameInput.value.trim();
+  const price = priceInput.value.trim();
+  const duration = durationInput.value.trim();
+
+  const serviceNpattern = /^[A-Za-z]+( [A-Za-z]+)?$/;
+
+  if (name === "" || price === "" || duration === "") {
+    el.innerText = "Please enter all fields!";
+    return false;
+  }
+
+  if (price < 0 || duration < 0) {
+    el.innerText = "Must not enter negative values!";
+    return false;
+  }
+
+  if (name.length < 3) {
+    el.innerText = "Service name must contain at least 3 letters!";
+    return false;
+  }
+
+  if (!serviceNpattern.test(name)) {
+    el.innerText = "Service name must contain only letters!";
+    return false;
+  }
+
+  el.innerText = "";
+  return true;
+}
+
+function addCustomService() {
+  if (!validateCustomService()) {
+    checkErrors();
+    return;
+  }
+
+  let name = document.getElementById("customName").value.trim();
+  let price = document.getElementById("customPrice").value.trim();
+  let duration = document.getElementById("customDuration").value.trim();
+
+  let div = document.createElement("div");
+  div.className =
+    "services bg-gray-200 rounded-md py-1 px-3 mb-4 flex justify-between items-center";
+
+  div.innerHTML = `
     <div>
       <p>${name}</p>
       <ul class="flex gap-1 items-center text-sm text-gray-500">
         <li>${duration} mins</li>
-        <input type="number" name="customSNames[]" value="${name}" />
         <li class="bg-gray-500 w-1 h-1 rounded-full"></li>
         <li>Rs.${price}</li>
       </ul>
@@ -421,80 +477,76 @@ document.addEventListener("DOMContentLoaded", () => {
       <input type="hidden" name="customSDurations[]" value="${duration}" />
     </div>
 
-    <img src="./public/images/remove.png"
+    <img src="./public/images/web/remove.png"
          class="cursor-pointer w-4 h-4"
          onclick="removeS(this)" />
   `;
 
-    const customList = document.getElementById("customList");
-    customList.className = "bg-white p-4 mt-4 rounded-md shadow-lg";
-    customList.appendChild(div);
+  const customList = document.getElementById("customList");
+  customList.className = "bg-white p-4 mt-4 rounded-md shadow-lg";
+  customList.appendChild(div);
 
-    // Clear inputs
-    document.getElementById("customName").value = "";
-    document.getElementById("customPrice").value = "";
-    document.getElementById("customDuration").value = "";
+  // Clear inputs
+  document.getElementById("customName").value = "";
+  document.getElementById("customPrice").value = "";
+  document.getElementById("customDuration").value = "";
 
+  validateServiceSelection();
+}
+
+// remove custom service
+function removeS(ele) {
+  let customList = document.getElementById("customList");
+  let toRemove = ele.parentElement;
+  toRemove.remove();
+
+  if (customList.children.length === 0) {
+    customList.className = "";
+  }
+
+  validateServiceSelection();
+}
+
+// Event listeners for default service checkboxes
+document.querySelectorAll(".default-service").forEach((service) => {
+  const checkbox = service.querySelector("input[type='checkbox']");
+  const priceInput = service.querySelector("input[placeholder='Price (Rs.)']");
+  const durationInput = service.querySelector(
+    "input[placeholder='Duration (min)']"
+  );
+
+  const priceError = service.querySelector("p." + priceInput.classList[0]);
+  const durationError = service.querySelector(
+    "p." + durationInput.classList[0]
+  );
+
+  function validateRow() {
+    if (checkbox.checked) {
+      if (priceInput.value.trim() === "") {
+        priceError.textContent = "Enter price";
+      } else if (priceInput.value < 0) {
+        priceError.textContent = "Must be positive";
+      } else {
+        priceError.textContent = "";
+      }
+
+      if (durationInput.value.trim() === "") {
+        durationError.textContent = "Enter duration";
+      } else if (durationInput.value < 0) {
+        durationError.textContent = "Must be positive";
+      } else {
+        durationError.textContent = "";
+      }
+    } else {
+      priceError.textContent = "";
+      durationError.textContent = "";
+    }
+
+    validateServiceSelection();
     checkErrors();
   }
 
-  // remove custom service
-
-  function removeS(ele) {
-    let customList = document.getElementById("customList");
-    // alert(customList.children.length);
-    let toRemove = ele.parentElement;
-    toRemove.remove();
-
-    if (customList.children.length === 0) {
-      customList.className = "";
-    }
-  }
-  // this is for error msg of checkbox and other ( default services )
-
-  document.querySelectorAll(".default-service").forEach((service) => {
-    const checkbox = service.querySelector("input[type='checkbox']");
-    const priceInput = service.querySelector(
-      "input[placeholder='Price (Rs.)']"
-    );
-    const durationInput = service.querySelector(
-      "input[placeholder='Duration (min)']"
-    );
-
-    const priceError = service.querySelector("p." + priceInput.classList[0]);
-    const durationError = service.querySelector(
-      "p." + durationInput.classList[0]
-    );
-
-    function validateRow() {
-      if (checkbox.checked) {
-        if (priceInput.value.trim() === "") {
-          priceError.textContent = "Enter price";
-        } else if (priceInput.value < 0) {
-          priceError.textContent = "Must be positive";
-        } else {
-          priceError.textContent = "";
-        }
-
-        if (durationInput.value.trim() === "") {
-          durationError.textContent = "Enter duration";
-        } else if (durationInput.value < 0) {
-          durationError.textContent = "Must be positive";
-        } else {
-          durationError.textContent = "";
-        }
-      } else {
-        priceError.textContent = "";
-        durationError.textContent = "";
-      }
-      checkErrors();
-    }
-
-    checkbox.addEventListener("change", validateRow);
-    priceInput.addEventListener("input", validateRow);
-    durationInput.addEventListener("input", validateRow);
-  });
-
-  // first time error check
-  checkErrors();
+  checkbox.addEventListener("change", validateRow);
+  priceInput.addEventListener("input", validateRow);
+  durationInput.addEventListener("input", validateRow);
 });

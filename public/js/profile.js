@@ -111,32 +111,28 @@ function changer(btn, wch) {
     xhr.open("GET", "profile.php?rid=" + rid, true);
 
     xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-          try {
-            const response = JSON.parse(xhr.responseText);
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        try {
+          const response = JSON.parse(xhr.responseText);
 
-            if (response.status === "success") {
-              const card = document.getElementById("review-shop-" + rid);
-              card?.remove();
+          if (response.status === "success") {
+            const card = document.getElementById("review-shop-" + rid);
+            card?.remove();
 
-              const container = document.querySelector(".r");
-              if (container && container.children.length === 0) {
-                document.getElementById("reviewD").innerHTML = `
+            const container = document.querySelector(".r");
+            if (container && container.children.length === 0) {
+              document.getElementById("reviewD").innerHTML = `
       <div class="text-center py-16">
         <img src="./public/images/web/empty.png" class="w-24 h-24 mx-auto mb-4 opacity-50" alt="">
         <p class="text-gray-500 text-lg">You haven't written any reviews yet</p>
         <p class="text-gray-400 text-sm mt-2">Visit a shop and share your experience!</p>
       </div>`;
-              }
-            } else {
-              console.error(response.message);
             }
-          } catch (e) {
-            console.error("Invalid JSON response:", xhr.responseText);
+          } else {
+            console.error(response.message);
           }
-        } else {
-          console.error("HTTP error:", xhr.status);
+        } catch (e) {
+          console.error("Invalid JSON response:", xhr.responseText);
         }
       }
     };

@@ -2,7 +2,6 @@
 
 header('Content-Type: application/json');
 
-
 include 'sessionCheck.php';
 
 $conn = mysqli_connect("localhost", "root", "", "barber_point");

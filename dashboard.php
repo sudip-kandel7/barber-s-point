@@ -1,4 +1,7 @@
 <?php
+// ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+
 include 'sessionCheck.php';
 
 if ($_SESSION['user']->type !== 'admin') {
@@ -72,25 +75,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    if (isset($_POST['action']) && $_POST['action'] === 'delete') {
-        $sid = (int)$_POST['sid'];
-        $uid = mysqli_query($conn, "SELECT uid FROM shop WHERE sid = $sid");
+    if (isset($_POST['action']) && $_POST['action'] === 'delete_shop') {
+        header('Content-Type: application/json');
 
-        $qry1 = "DELETE FROM shop WHERE sid = $sid";
-        $qry2 = "DELETE FROM users WHERE uid = $uid";
-        if (mysqli_query($conn, $qry1) && mysqli_query($conn, $qry2)) {
+        $sid = (int)$_POST['sid'];
+
+        if (mysqli_query($conn, "DELETE FROM shop WHERE sid = $sid")) {
             echo json_encode(['status' => 'success', 'msg' => 'Shop deleted']);
         } else {
             echo json_encode(['status' => 'error', 'msg' => mysqli_error($conn)]);
         }
+
         exit;
     }
+
+
 
 
     if (isset($_POST['action']) && $_POST['action'] === 'suspend_user') {
         $uid = (int)$_POST['uid'];
 
-        $qry = "UPDATE user SET status = 'suspended' WHERE uid = $uid";
+        $qry = "UPDATE users SET status = 'suspended' WHERE uid = $uid";
         if (mysqli_query($conn, $qry)) {
             echo json_encode(['status' => 'success', 'msg' => 'Shop unsuspended']);
         } else {
@@ -102,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action']) && $_POST['action'] === 'unsuspend_user') {
         $uid = (int)$_POST['uid'];
 
-        $qry = "UPDATE user SET status = 'active' WHERE uid = $uid";
+        $qry = "UPDATE users SET status = 'active' WHERE uid = $uid";
         if (mysqli_query($conn, $qry)) {
             echo json_encode(['status' => 'success', 'msg' => 'Shop unsuspended']);
         } else {
@@ -194,7 +199,7 @@ include 'header.php';
 include 'navbar.php';
 ?>
 
-<section class="bg-[#F1F4F9] min-h-screen">
+<section class="bg-[#F4F4F9] min-h-screen">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
         <div class="mb-6">
@@ -348,7 +353,7 @@ include 'navbar.php';
                                     ACTIONS</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody id="shopslist" class="bg-white divide-y divide-gray-200">
                             <?php
                             while ($shop = mysqli_fetch_assoc($result3)):
                             ?>
@@ -429,7 +434,7 @@ include 'navbar.php';
                                     Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody id="userslist" class="bg-white divide-y divide-gray-200">
                             <?php
                             while ($user = mysqli_fetch_assoc($result4)):
                             ?>

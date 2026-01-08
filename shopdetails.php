@@ -149,37 +149,43 @@ mysqli_close($conn);
 
         <div class="p-4 sm:p-6 border-t border-gray-200 flex gap-2 flex-wrap">
             <?php if ($_SESSION['user']->type === "customer"): ?>
-                <button id="fav" onclick="addfav(this)" data-sid="<?php echo $sid ?>"
-                    data-saved="<?php echo $saved ? 'true' : 'false'; ?>"
-                    class="px-4 flex items-center gap-2 text-white py-2 bg-yellow-400 rounded-lg">
-                    <img id="favimg" src="<?php echo $favimg ?>" class="w-3 h-3" alt="">
-                    <span>Favorite</span>
-                </button>
 
-                <button onclick="bookapp(<?php echo $sid ?>)"
-                    class="px-4 py-2 hover:-translate-y-1 bg-[#22c55e] text-white  font-medium rounded-lg transition-colors text-sm">
-                    Book Appointment
-                </button>
-                <button
-                    class="px-4 flex items-center gap-1 py-2 text-white bg-red-400 hover:bg-red-500 hover:-translate-y-1 bg-red-5000 font-medium rounded-lg transition-colors text-sm">
-                    <img src="./public/images/web/report.png" class="w-4 h-4" alt="">
-                    Report
-                </button>
-            <?php endif ?>
+            <button id="fav" onclick="addfav(this)" data-sid="<?php echo $sid ?>"
+                data-saved="<?php echo $saved ? 'true' : 'false'; ?>"
+                class="px-4 flex items-center gap-2 text-white py-2 bg-yellow-400 rounded-lg">
+                <img id="favimg" src="<?php echo $favimg ?>" class="w-3 h-3" alt="">
+                <span>Favorite</span>
+            </button>
 
+            <?php if ($shopData["status"] !== "closed" && $shopData["status"] !== "closing"): ?>
+
+            <button onclick="bookapp(<?php echo $sid ?>)"
+                class="px-4 py-2 hover:-translate-y-1 bg-[#22c55e] text-white font-medium rounded-lg transition-colors text-sm">
+                Book Appointment
+            </button>
+
+            <?php endif; ?>
+
+            <button
+                class="px-4 flex items-center gap-1 py-2 text-white bg-red-400 hover:bg-red-500 hover:-translate-y-1 font-medium rounded-lg transition-colors text-sm">
+                <img src="./public/images/web/report.png" class="w-4 h-4" alt="">
+                Report
+            </button>
+
+            <?php endif; ?>
         </div>
 
         <hr class="mx-3 h-11 border-gray-300">
         <?php if (isset($_SESSION['user']) && $_SESSION['user']->type === "customer"): ?>
 
-            <div class="reviewD flex items-center gap-3 justify-between border-2 border-gray-400 rounded-md shadow-sm -mt-3 mx-auto mb-4
+        <div class="reviewD flex items-center gap-3 justify-between border-2 border-gray-400 rounded-md shadow-sm -mt-3 mx-auto mb-4
     w-[96%]  text-sm sm:text-base">
-                <input class="reviewtxt text-base h-full w-full py-3 px-2 outline-none" placeholder="Comment....." />
-                <p onclick="review(<?php echo $sid ?>)"
-                    class="reviewpost cursor-pointer bg-yellow-400 hover:bg-yellow-500 hover:shadow-md py-1.5 px-5 my-1 mx-2 rounded-md">
-                    Post
-                </p>
-            </div>
+            <input class="reviewtxt text-base h-full w-full py-3 px-2 outline-none" placeholder="Comment....." />
+            <p onclick="review(<?php echo $sid ?>)"
+                class="reviewpost cursor-pointer bg-yellow-400 hover:bg-yellow-500 hover:shadow-md py-1.5 px-5 my-1 mx-2 rounded-md">
+                Post
+            </p>
+        </div>
         <?php endif ?>
 
         <div class="mx-auto mb-5 py-1 rounded-md shadow-sm bg-[#F1F4F9]
@@ -198,39 +204,39 @@ w-[96%] flex gap-2 sm:gap-6 justify-around text-sm sm:text-base">
             <?php if (mysqli_num_rows($servicesResult) > 0):
                 while ($rows = mysqli_fetch_assoc($servicesResult)) {
             ?>
-                    <div
-                        class="border rounded-md w-full border-gray-500 flex flex-col sm:flex-row sm:justify-between sm:items-center px-3 py-3 mb-3 gap-2">
-                        <div>
-                            <p class="font-medium"><?php echo  $rows['services_name'] ?></p>
-                            <p class="text-sm text-gray-400"><?php echo $rows['duration'] ?> mins</p>
-                        </div>
-                        <p class="font-semibold text-yellow-400">Rs. <?php echo $rows['price'] ?> </p>
-                    </div>
-                <?php }
+            <div
+                class="border rounded-md w-full border-gray-500 flex flex-col sm:flex-row sm:justify-between sm:items-center px-3 py-3 mb-3 gap-2">
+                <div>
+                    <p class="font-medium"><?php echo  $rows['services_name'] ?></p>
+                    <p class="text-sm text-gray-400"><?php echo $rows['duration'] ?> mins</p>
+                </div>
+                <p class="font-semibold text-yellow-400">Rs. <?php echo $rows['price'] ?> </p>
+            </div>
+            <?php }
             else:
                 ?>
-                <p class='text-center mb-2 text-2xl text-gray-400'>No services available.</p>
+            <p class='text-center mb-2 text-2xl text-gray-400'>No services available.</p>
             <?php endif ?>
         </div>
         <div class="reviewsDetails hidden px-4 min-h-[5vh]">
             <?php if (mysqli_num_rows($reviewsResult) > 0): ?>
-                <?php while ($rows = mysqli_fetch_assoc($reviewsResult)): ?>
-                    <div class="border rounded-md w-full border-gray-500 flex flex-col px-3 py-3 mb-3 gap-1">
-                        <div class="flex items-center gap-3">
-                            <img src="./public/images/web/profile.png" class="w-10 h-10 rounded-full" />
-                            <div>
-                                <p class="font-medium"><?php echo $rows['firstN']; ?></p>
-                                <p class="text-sm text-gray-400 mb-2"><?php
+            <?php while ($rows = mysqli_fetch_assoc($reviewsResult)): ?>
+            <div class="border rounded-md w-full border-gray-500 flex flex-col px-3 py-3 mb-3 gap-1">
+                <div class="flex items-center gap-3">
+                    <img src="./public/images/web/profile.png" class="w-10 h-10 rounded-full" />
+                    <div>
+                        <p class="font-medium"><?php echo $rows['firstN']; ?></p>
+                        <p class="text-sm text-gray-400 mb-2"><?php
                                                                         $datetime = $rows['date_added'];
                                                                         echo date("M d, Y | g:i A", strtotime($datetime));
                                                                         ?></p>
-                            </div>
-                        </div>
-                        <p><?php echo $rows['review']; ?></p>
                     </div>
-                <?php endwhile; ?>
+                </div>
+                <p><?php echo $rows['review']; ?></p>
+            </div>
+            <?php endwhile; ?>
             <?php else: ?>
-                <p class="text-center mb-2 text-2xl text-gray-400">No reviews available.</p>
+            <p class="text-center mb-2 text-2xl text-gray-400">No reviews available.</p>
             <?php endif; ?>
 
         </div>

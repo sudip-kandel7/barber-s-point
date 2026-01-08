@@ -21,8 +21,6 @@ CREATE TABLE shop (
     saddress VARCHAR(50) NOT NULL,
     photo TEXT NOT NULL,
     uid INT NOT NULL,
-    total_barbers INT NOT NULL DEFAULT 1,
-    available_barbers INT NOT NULL DEFAULT total_barbers,
     status ENUM(
         'pending',
         'open',
@@ -100,7 +98,7 @@ CREATE TABLE queue (
     sid INT PRIMARY KEY,
     current_queue INT NOT NULL DEFAULT 0,
     total_wait_time TIME NOT NULL DEFAULT '00:00:00',
-    FOREIGN KEY(sid) REFERENCES shop(sid)
+    FOREIGN KEY(sid) REFERENCES shop(sid) ON DELETE CASCADE
 );
 -- booking table
 -- CREATE TABLE booking (

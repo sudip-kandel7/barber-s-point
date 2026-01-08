@@ -27,6 +27,13 @@ if (isset($_SESSION['user'])) {
 }
 
 
+$query  = "SELECT COUNT(sid) AS total_shops FROM shop";
+$result = mysqli_query($conn, $query);
+
+$row = mysqli_fetch_assoc($result);
+$total_shops = $row['total_shops'];
+
+
 $Aqry = "
     SELECT 
         shop.sid,
@@ -39,8 +46,10 @@ $Aqry = "
     FROM shop
     LEFT JOIN queue ON shop.sid = queue.sid
     WHERE shop.status <> 'pending'
-    ORDER BY queue.current_queue ASC 
+      AND shop.status <> 'suspended'
+    ORDER BY queue.current_queue ASC
 ";
+
 
 
 $Aresult = mysqli_query($conn, $Aqry);
@@ -239,25 +248,14 @@ mysqli_close($conn);
                                     class="w-3 h-3 sm:w-3.5 sm:h-3.5 opacity-0 check flex-shrink-0">
                                 <p class="whitespace-nowrap">Wait Time</p>
                             </div>
-                            <div
-                                class="sOption flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs md:text-sm text-gray-700 rounded-md hover:bg-yellow-300 cursor-pointer">
-                                <img src="./public/images/web/check.png"
-                                    class="w-3 h-3 sm:w-3.5 sm:h-3.5 opacity-0 check flex-shrink-0">
-                                <p class="whitespace-nowrap">Rating</p>
-                            </div>
-                            <div
-                                class="sOption flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs md:text-sm text-gray-700 rounded-md hover:bg-yellow-300 cursor-pointer">
-                                <img src="./public/images/web/check.png"
-                                    class="w-3 h-3 sm:w-3.5 sm:h-3.5 opacity-0 check flex-shrink-0">
-                                <p class="whitespace-nowrap">Distance</p>
-                            </div>
                         </div>
                     </div>
 
                 </div>
 
                 <div class="flex-shrink-0 ml-auto">
-                    <p class="text-[10px] sm:text-xs md:text-sm text-gray-500 whitespace-nowrap">Showing 7 of 7 shops
+                    <p class="text-[10px] sm:text-xs md:text-sm text-gray-500 whitespace-nowrap">Showing
+                        <?php echo count($Ashops); ?> of <?php echo $total_shops ?> shops
                     </p>
                 </div>
             </div>
@@ -273,10 +271,10 @@ mysqli_close($conn);
                     $statusColor = ($status === "open" || $status === "active") ? "green" : "red";
                 ?>
                     <div
-                        class="w-full max-w-[450px] mx-auto relative bg-white shadow-md rounded-lg hover:-translate-y-1 hover:shadow-xl transition-all group">
+                        class="w-full max-w-[500px] mx-auto relative bg-white shadow-md rounded-lg hover:-translate-y-1 hover:shadow-xl transition-all group">
 
                         <img src="<?php echo $rows['photo']; ?>" alt="<?php echo $rows['sname']; ?>"
-                            class="w-full h-48 sm:h-56 object-cover rounded-t-lg">
+                            class="w-full h-[30vh]  object-fill rounded-t-lg">
 
                         <p
                             class="bg-opacity-70 px-2 sm:px-2.5 font-semibold absolute top-2 sm:top-3 right-2 sm:right-3 rounded-full 
@@ -370,24 +368,39 @@ mysqli_close($conn);
                     if (filterType === 'Open Now') {
                         filtered = allShops.filter(shop => {
                             const status = shop.status.toLowerCase();
-                            return status === 'open' || status === 'active';
+                            return status === 'open';
                         });
-                    } else if (filterType === 'No Wait') {
-                        filtered = allShops.filter(shop => shop.current_queue == 0);
+                    } else
+                    if (filterType === 'No Wait') {
+                        filtered = allShops.filter(shop => {
+                            const waitTime = shop.total_wait_time;
+                            if (waitTime === null || waitTime === undefined) return true;
+                            if (typeof waitTime === 'string' && waitTime.includes(':')) {
+                                const parts = waitTime.split(':');
+                                return parseInt(parts[0]) === 0 && parseInt(parts[1]) === 0;
+                            }
+                            return parseInt(waitTime) === 0;
+                        });
                     }
 
                     showShops(filtered);
                 }
 
+
+
                 function applySort(sortType) {
                     let sorted = [...allShops];
 
                     if (sortType === 'Queue') {
-                        sorted.sort((a, b) => a.current_queue - b.current_queue);
+                        sorted.sort((a, b) => {
+                            const queueA = parseInt(a.current_queue) || 0;
+                            const queueB = parseInt(b.current_queue) || 0;
+                            return queueA - queueB;
+                        });
                     } else if (sortType === 'Wait Time') {
                         sorted.sort((a, b) => {
-                            const timeA = parseInt(a.total_wait_time) || 0;
-                            const timeB = parseInt(b.total_wait_time) || 0;
+                            const timeA = convertToMinutes(a.total_wait_time);
+                            const timeB = convertToMinutes(b.total_wait_time);
                             return timeA - timeB;
                         });
                     }
@@ -395,24 +408,44 @@ mysqli_close($conn);
                     showShops(sorted);
                 }
 
+                function convertToMinutes(time) {
+                    if (!time) return 0;
+                    if (typeof time === 'string' && time.includes(':')) {
+                        const parts = time.split(':');
+                        return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+                    }
+                    return parseInt(time) || 0;
+                }
+
                 function showShops(shops) {
-                    const container = document.getElementById('allshops');
+                    const container = document.getElementById('allShops');
 
                     container.innerHTML = '';
 
                     shops.forEach(shop => {
-                        const statusColor = (shop.status.toLowerCase() === 'open') ? 'green' : 'red';
+
+                        const statusLower = shop.status.toLowerCase();
+                        const statusColor = (statusLower === 'open' || statusLower === 'active') ? 'green' :
+                            'red';
+
+                        let waitTimeDisplay = '0';
+                        if (shop.total_wait_time) {
+                            const timeParts = shop.total_wait_time.split(':');
+                            const hours = parseInt(timeParts[0]) || 0;
+                            const minutes = parseInt(timeParts[1]) || 0;
+                            waitTimeDisplay = (hours * 60 + minutes).toString();
+                        }
 
                         const shopHTML = `
             <div class="w-full max-w-[450px] mx-auto relative bg-white shadow-md rounded-lg hover:-translate-y-1 hover:shadow-xl transition-all group">
                 <img src="${shop.photo}" alt="${shop.sname}" class="w-full h-48 sm:h-56 object-cover rounded-t-lg">
                 
-                <p class="bg-opacity-70 px-2 sm:px-2.5 font-semibold absolute top-2 sm:top-3 right-2 sm:right-3 rounded-full inline-flex items-center py-0.5 text-[10px] sm:text-xs cursor-pointer bg-yellow-400">
+                <p class="bg-opacity-70 px-2 sm:px-2.5 font-semibold absolute top-2 group-hover:bg-<?php $statusColor ?>-500 sm:top-3 right-2 sm:right-3 rounded-full inline-flex items-center py-0.5 text-[10px] sm:text-xs cursor-pointer bg-yellow-400">
                     ${shop.status}
                 </p>
                 
                 <div class="px-3 sm:px-4 py-3">
-                    <p class="text-base sm:text-lg font-semibold text-start pl-2 sm:pl-3 group-hover:text-yellow-400 truncate">
+                    <p class="text-base sm:text-lg font-semibold text-start pl-2 sm:pl-3 group-hover:text-yellow-400">
                         ${shop.sname}
                     </p>
                     
@@ -425,14 +458,14 @@ mysqli_close($conn);
                         <div class="flex gap-1.5 sm:gap-2 items-center">
                             <img src="./public/images/web/user.png" class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" alt="">
                             <p class="text-xs sm:text-sm text-gray-500">
-                                Queue: <span class="text-yellow-400 font-semibold">${shop.current_queue} People</span>
+                                Queue: <span class="text-yellow-400 font-semibold">${parseInt(shop.current_queue) || 0} People</span>
                             </p>
                         </div>
                         
                         <div class="flex gap-1.5 sm:gap-2 items-center">
                             <img src="./public/images/web/time.png" class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" alt="">
                             <p class="text-xs sm:text-sm text-gray-500">
-                                Est. wait: <span class="text-yellow-400 font-semibold">${shop.total_wait_time} Min</span>
+                                Est. wait: <span class="text-yellow-400 font-semibold">${waitTimeDisplay} Min</span>
                             </p>
                         </div>
                     </div>

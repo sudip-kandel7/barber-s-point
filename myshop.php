@@ -1,4 +1,8 @@
 <?php
+
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+
 include 'sessionCheck.php';
 
 if ($_SESSION['user']->type !== 'barber') {
@@ -195,7 +199,16 @@ include 'navbar.php';
                             <button onclick="toggleStatus('<?php echo $shopData['status']; ?>')" class="px-4 py-2 rounded-lg font-semibold text-sm
                                 <?php echo $shopData['status'] === 'open' ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'; ?> 
                                 text-white transition-colors">
-                                <?php echo $shopData['status'] === 'open' ? 'Close Shop' : 'Open Shop'; ?>
+                                <?php
+                                if ($shopData['status'] === 'open') {
+                                    echo 'Closing Shop';
+                                } elseif ($shopData['status'] === 'closing') {
+                                    echo 'Close Shop';
+                                } else {
+                                    echo 'Open Shop';
+                                }
+                                ?>
+
                             </button>
                         </div>
                     </div>

@@ -19,7 +19,6 @@ if (isset($_POST['create'])) {
     if ($type === "barber") {
         $sName = $_POST['sname'];
         $sAddress = $_POST['saddress'];
-        $barbers = $_POST['sbarber'];
         $selectedServices = [];
         $customServices = [];
 
@@ -75,8 +74,8 @@ VALUES ('$type', '$name', '$add', '$email', '$phone', '$secure')";
                 $uid = mysqli_insert_id($conn);
 
 
-                $stmt2 = "INSERT INTO shop (sname, saddress, photo, total_barbers, uid)
-                VALUES ('$sName', '$sAddress', '$fullPath', '$barbers', '$uid')";
+                $stmt2 = "INSERT INTO shop (sname, saddress, photo, uid)
+                VALUES ('$sName', '$sAddress', '$fullPath', '$uid')";
 
                 if (mysqli_query($conn, $stmt2)) {
                     $sid = mysqli_insert_id($conn);
@@ -303,18 +302,8 @@ include 'header.php';
                         </div>
 
                         <div>
-                            <label for="sbarber" class="font-medium">Barbers</label> <br>
-                            <input id="sbarber" type="number" inputmode="numeric" name="sbarber"
-                                class="mt-1.5 w-full rounded-md text-md pl-2 h-11"
-                                placeholder="Enter Number of barbers in shop"> <br>
-                            <p class="sbarber text-red-600 text-sm pl-2 mt-0.5"></p>
-                        </div>
-
-
-                        <div>
                             <p class="font-medium mb-2">Services Offered <span class="text-red-600">*</span></p>
-                            <p class="text-sm text-gray-600 mb-3 bg-yellow-50  p-2 rounded">
-                                ⚠️ You must select at least one default service OR add a custom service
+                            <p id="serviceErr" class="text-sm text-red-600 font-bold mb-3 pl-2 mt-0.5">
                             </p>
 
                             <p class="font-medium mb-1.5">Default Services</p>
@@ -413,7 +402,7 @@ include 'header.php';
                 </div>
 
 
-                <button type="submit" name="create"
+                <button type="submit" name="create" id="create"
                     class="flex justify-center items-center border bg-yellow-400 rounded-xl hover:bg-yellow-500 w-full gap-3 py-3 text-xl font-medium">
                     <img src="./public/images/web/create.png" alt="create icon" class="w-5 h-5">
                     <p>Create Account</p>

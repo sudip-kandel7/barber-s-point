@@ -16,7 +16,8 @@ function switchDiv(wch) {
 }
 
 function toggleStatus(status) {
-  const newStatus = status === "open" ? "closed" : "open";
+  const newStatus =
+    status === "open" ? "closing" : status === "closing" ? "closed" : "open";
 
   const xhr = new XMLHttpRequest();
   xhr.open("POST", "myshop.php", true);
