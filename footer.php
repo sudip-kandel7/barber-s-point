@@ -5,6 +5,7 @@
 <script src="./public/js/profile.js"></script>
 <script src="./public/js/myshop.js"></script>
 <script src="./public/js/dashboard.js"></script>
+<script src="./public/js/shop_info.js"></script>
 </body>
 
 </html>

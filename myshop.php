@@ -210,6 +210,9 @@ include 'navbar.php';
                                 ?>
 
                             </button>
+                            <a href="./shop_info.php"
+                                class="px-4 py-2 rounded-lg font-semibold bg-yellow-400 hover:bg-yellow-500 text-sm text-white transition-all">Update
+                                Info</a>
                         </div>
                     </div>
 
@@ -218,7 +221,7 @@ include 'navbar.php';
                             class="bg-white border-2 border-gray-200 p-4 rounded-lg shadow-sm hover:shadow-lg transition-all hover:-translate-y-1">
                             <div class="flex items-center justify-between mb-2">
                                 <p class="text-sm text-gray-600 font-medium">Current Queue</p>
-                                <div class="bg-gray-100 p-2 rounded-full">
+                                <div class="bg-gray-100 p-2 rounded-full hover:-translate-y-1.5">
                                     <img src="./public/images/web/user.png" class="w-4 h-4" alt="">
                                 </div>
                             </div>
@@ -231,7 +234,7 @@ include 'navbar.php';
                             class="bg-white border-2 border-gray-200 p-4 rounded-lg shadow-sm hover:shadow-lg transition-all hover:-translate-y-1">
                             <div class="flex items-center justify-between mb-2">
                                 <p class="text-sm text-gray-600 font-medium">Today's Earnings</p>
-                                <div class="bg-gray-100 p-2 rounded-full">
+                                <div class="bg-gray-100 p-2 rounded-full hover:-translate-y-1.5">
                                     <img src="./public/images/web/upward.png" class="w-4 h-4" alt="">
                                 </div>
                             </div>
@@ -243,7 +246,7 @@ include 'navbar.php';
                             class="bg-white border-2 border-gray-200 p-4 rounded-lg shadow-sm hover:shadow-lg transition-all hover:-translate-y-1">
                             <div class="flex items-center justify-between mb-2">
                                 <p class="text-sm text-gray-600 font-medium">Total Reviews</p>
-                                <div class="bg-gray-100 p-2 rounded-full">
+                                <div class="bg-gray-100 p-2 rounded-full hover:-translate-y-1.5">
                                     <img src="./public/images/web/review.png" class="w-4 h-4" alt="">
                                 </div>
                             </div>

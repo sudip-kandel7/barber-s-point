@@ -8,6 +8,81 @@ if ($conn->connect_error) {
 }
 
 $uid = $_SESSION['user']->uid;
+$sid = $_SESSION['user']->sid;
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
+    $bname = $_POST['bname'];
+    $bemail = $_POST['bemail'];
+    $bphone = $_POST['bphone'];
+    $baddress = $_POST['baddress'];
+
+    $qry5 = "UPDATE users SET name = '$bname', email = '$bemail', phone = '$bphone', address = '$baddress' WHERE uid = '$uid'";
+    $result5 = mysqli_query($conn, $qry5);
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_shop'])) {
+    $sname = $_POST['sname'];
+    $saddress = $_POST['saddress'];
+
+
+    if (isset($_FILES['photo']) && $_FILES['photo']['error'] === 0) {
+        $uploadDir = 'public/images/barber/';
+
+        $qryOldPhoto = "SELECT photo FROM shop WHERE uid = '$uid'";
+        $resultOldPhoto = mysqli_query($conn, $qryOldPhoto);
+        $oldPhotoData = mysqli_fetch_assoc($resultOldPhoto);
+
+        $fileExtension = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
+        $newFileName = uniqid() . '_' . time() . '.' . $fileExtension;
+        $targetFile = $uploadDir . $newFileName;
+
+        if (move_uploaded_file($_FILES['photo']['tmp_name'], $targetFile)) {
+            if (!empty($oldPhotoData['photo']) && file_exists($oldPhotoData['photo'])) {
+                unlink($oldPhotoData['photo']);
+            }
+        }
+    }
+
+    $qry6 = "UPDATE shop SET sname = '$sname', saddress = '$saddress', photo = '$targetFile' WHERE uid = '$uid'";
+    $result6 = mysqli_query($conn, $qry6);
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_service'])) {
+    $services_id = $_POST['service_select'];
+    $price = $_POST['price'];
+    $duration = $_POST['duration'];
+
+    if ($services_id === 'new') {
+        $new_service_name = mysqli_real_escape_string($conn, trim($_POST['new_service_name']));
+        $qry7 = "INSERT INTO services (services_name) VALUES ('$new_service_name')";
+        $result7 = mysqli_query($conn, $qry7);
+        if ($result7) {
+            $services_id = mysqli_insert_id($conn);
+        }
+    }
+
+    if ($services_id && $sid) {
+        $qry8 = "INSERT INTO shop_services (sid, services_id, price, duration) VALUES ('$sid', '$services_id', '$price', '$duration')";
+        $result8 = mysqli_query($conn, $qry8);
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_service'])) {
+    $services_id = $_POST['services_id'];
+    $price = $_POST['price'];
+    $duration = $_POST['duration'];
+
+    $qry9 = "UPDATE shop_services SET price = '$price', duration = '$duration' WHERE sid = '$sid' AND services_id = '$services_id'";
+    $result9 = mysqli_query($conn, $qry9);
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_service'])) {
+    $services_id = $_POST['services_id'];
+
+    $qry10 = "DELETE FROM shop_services WHERE sid = '$sid' AND services_id = '$services_id'";
+    $result10 = mysqli_query($conn, $qry10);
+}
 
 $qry1 = "SELECT name, email, phone, address FROM users WHERE uid = '$uid'";
 $result1 = mysqli_query($conn, $qry1);
@@ -17,51 +92,22 @@ $qry2 = "SELECT sname, saddress, photo FROM shop WHERE uid = '$uid'";
 $result2 = mysqli_query($conn, $qry2);
 $shopData = mysqli_fetch_assoc($result2);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
-    $bname = $_POST['bname'];
-    $bemail = $_POST['bemail'];
-    $bphone = $_POST['bphone'];
-    $baddress = $_POST['baddress'];
-
-    $qry3 = "UPDATE users SET name = '$bname', email = '$bemail', phone = '$bphone', address = '$baddress' WHERE uid = '$uid'";
-    $result3 = mysqli_query($conn, $qry3);
-
-    if ($result3) {
-        $userData['name'] = $bname;
-        $userData['email'] = $bemail;
-        $userData['phone'] = $bphone;
-        $userData['address'] = $baddress;
-    }
+$qry3 = "SELECT services_id, services_name FROM services ORDER BY services_name";
+$result3 = mysqli_query($conn, $qry3);
+$allServices = [];
+while ($row = mysqli_fetch_assoc($result3)) {
+    $allServices[] = $row;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_shop'])) {
-    $sname = mysqli_real_escape_string($conn, $_POST['sname']);
-    $saddress = mysqli_real_escape_string($conn, $_POST['saddress']);
-
-    $photoUpdate = "";
-
-    if (isset($_FILES['photo']) && $_FILES['photo']['error'] === 0) {
-        $uploadDir = 'public/images/barber/';
-
-        $fileExtension = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
-        $newFileName = uniqid() . '_' . time() . '.' . $fileExtension;
-        $targetFile = $uploadDir . $newFileName;
-
-        if (move_uploaded_file($_FILES['photo']['tmp_name'], $targetFile)) {
-            if (!empty($shopData['photo']) && file_exists($shopData['photo'])) {
-                unlink($shopData['photo']);
-            }
-            $photoUpdate = ", photo = '$targetFile'";
-        }
-    }
-
-    $qry4 = "UPDATE shop SET sname = '$sname', saddress = '$saddress' $photoUpdate WHERE uid = '$uid'";
+$shopServices = [];
+if ($sid) {
+    $qry4 = "SELECT shop_services.services_id, services.services_name, shop_services.price, shop_services.duration 
+             FROM shop_services
+             JOIN services ON shop_services.services_id = services.services_id 
+             WHERE shop_services.sid = '$sid' ORDER BY services.services_name";
     $result4 = mysqli_query($conn, $qry4);
-
-    if ($result4) {
-        $qry2 = "SELECT sname, saddress, photo FROM shop WHERE uid = '$uid'";
-        $result2 = mysqli_query($conn, $qry2);
-        $shopData = mysqli_fetch_assoc($result2);
+    while ($row = mysqli_fetch_assoc($result4)) {
+        $shopServices[] = $row;
     }
 }
 
@@ -74,6 +120,7 @@ $conn->close();
             <h1 class="text-3xl font-bold text-grey-900">Shop Info Update</h1>
             <p class="text-gray-600 mt-1">Manage your profile, shop details and services</p>
         </div>
+
 
         <div class="bg-white rounded-t-lg shadow-sm p-2 flex flex-col md:flex-row justify-center items gap-3 mb-0.5">
             <button id="personInfo" onclick="switchInfo('personInfo')"
@@ -163,10 +210,10 @@ $conn->close();
                     <div>
                         <label for="photo" class="block text-sm font-semibold text-gray-700 mb-2">Shop Photo</label>
                         <?php if (!empty($shopData['photo'])): ?>
-                            <div class="mb-3">
-                                <img src="<?php echo $shopData['photo']; ?>" alt="Current shop photo"
-                                    class="w-32 h-32 object-cover rounded-lg border-2 border-gray-200">
-                            </div>
+                        <div class="mb-3">
+                            <img src="<?php echo $shopData['photo']; ?>" alt="Current shop photo"
+                                class="w-32 h-32 object-cover rounded-lg border-2 border-gray-200">
+                        </div>
                         <?php endif; ?>
                         <input type="file" id="photo" name="photo" accept=".jpg,.jpeg,.png"
                             class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-yellow-400 focus:outline-none transition-colors">
@@ -185,228 +232,119 @@ $conn->close();
         </div>
 
         <!-- Services info showing div -->
-        <div id="servicesInfoD" class="infoD bg-white p-4 rounded-b-lg hidden">Services Info</div>
+        <div id="servicesInfoD" class="infoD bg-white p-4 rounded-b-lg hidden">
+            <h2 class="text-2xl font-bold text-gray-900 mb-3">Services & Pricing</h2>
+
+            <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">Add New Service</h3>
+                <form id="addServiceForm" method="POST" class="space-y-4">
+                    <input type="hidden" name="add_service" value="1">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="service_select" class="block text-sm font-semibold text-gray-700 mb-2">Select
+                                Service</label>
+                            <select id="service_select" name="service_select" required
+                                class="w-full px-4 py-3 border-2 border-gray-200 bg-white rounded-lg focus:border-yellow-400 focus:outline-none transition-colors">
+                                <option value="">Select Service</option>
+                                <?php foreach ($allServices as $service): ?>
+                                <option value="<?php echo $service['services_id']; ?>">
+                                    <?php echo $service['services_name']; ?>
+                                </option>
+                                <?php endforeach; ?>
+                                <option value="new">+ Add New Service</option>
+                            </select>
+                        </div>
+                        <div id="newServiceDiv" class="hidden">
+                            <label for="new_service_name" class="block text-sm font-semibold text-gray-700 mb-2">New
+                                Service Name</label>
+                            <input type="text" id="new_service_name" name="new_service_name"
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-yellow-400 focus:outline-none transition-colors">
+                            <p id="newServiceErr" class="text-red-600 text-sm pl-2 mt-0.5"></p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="price" class="block text-sm font-semibold text-gray-700 mb-2">Price
+                                (Rs.)</label>
+                            <input type="number" required id="price" name="price" min="1"
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-yellow-400 focus:outline-none transition-colors">
+                            <p id="priceErr" class="text-red-600 text-sm pl-2 mt-0.5"></p>
+                        </div>
+                        <div>
+                            <label for="duration" class="block text-sm font-semibold text-gray-700 mb-2">Duration
+                                (minutes)</label>
+                            <input type="number" required id="duration" name="duration" min="1"
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-yellow-400 focus:outline-none transition-colors">
+                            <p id="durationErr" class="text-red-600 text-sm pl-2 mt-0.5"></p>
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" id="addServiceBtn"
+                            class="flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-white px-6 py-3 rounded-lg font-semibold transition-all">
+                            <span>+ Add Service</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">Current Services</h3>
+            <?php if (empty($shopServices)): ?>
+            <p class="text-gray-500 text-center py-8">No services added yet. Add your first service above!</p>
+            <?php else: ?>
+            <div class="space-y-4">
+                <?php foreach ($shopServices as $service): ?>
+                <div class="border-2 border-gray-200 rounded-lg p-4 hover:border-yellow-400 transition-colors">
+                    <form method="POST" class="service-form">
+                        <input type="hidden" name="services_id" value="<?php echo $service['services_id']; ?>">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                            <div class="md:col-span-1">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Service Name</label>
+                                <input type="text" readonly value="<?php echo $service['services_name']; ?>"
+                                    class="w-full px-4 py-2 bg-gray-100 border-2 border-gray-200 rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Price (Rs.)</label>
+                                <input type="number" name="price" required min="1"
+                                    value="<?php echo $service['price']; ?>"
+                                    class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-yellow-400 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Duration (min)</label>
+                                <input type="number" name="duration" required min="1"
+                                    value="<?php echo $service['duration']; ?>"
+                                    class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-yellow-400 focus:outline-none">
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="submit" name="update_service" value="1"
+                                    class="flex-1 bg-yellow-400 hover:bg-yellow-500 text-white px-4 py-2 rounded-lg font-semibold transition-all">
+                                    Update
+                                </button>
+                                <button type="submit" name="delete_service" value="1"
+                                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-all">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
+        </div>
     </div>
+
+    <div class="flex justify-center mb-6">
+        <a href="/barber-s-point/myshop.php"
+            class="flex gap-2 items-center group cursor-pointer h-3 mx-auto px-4 sm:px-6 lg:px-8 py-6"">
+        <img src=" ./public/images/web/left-arrow.png" class="w-4 h-4 group-hover:hidden" alt="arrow to home">
+            <img src="./public/images/web/left-arrow-yellow.png" class="w-4 h-6 hidden group-hover:block"
+                alt="arrow to home" id="photos">
+            <p class="text-gray-500 group-hover:text-yellow-400">Back to Home</p>
+        </a>
+    </div>
+
 </section>
 
-<script>
-    checkErrors();
-    checkShopErrors();
 
-    // this is for tab or info switch div 
-    function switchInfo(wch) {
-        document.querySelectorAll(".infoD").forEach((div) => {
-            div.classList.add("hidden");
-        });
-
-        document.querySelectorAll(".info-btn").forEach((btn) => {
-            btn.classList.remove("bg-yellow-400", "text-white");
-            btn.classList.add("hover:bg-gray-100", "text-gray-700");
-
-            const img = btn.querySelector("img");
-            if (img) {
-                img.src = `./public/images/web/${btn.id}B.png`;
-            }
-        });
-
-        const activeDiv = document.getElementById(wch + "D");
-        if (activeDiv) {
-            activeDiv.classList.remove("hidden");
-        }
-
-        const activeBtn = document.getElementById(wch);
-        activeBtn.classList.remove("hover:bg-gray-100", "text-gray-700");
-        activeBtn.classList.add("bg-yellow-400", "text-white");
-
-        const activeImg = activeBtn.querySelector("img");
-        if (activeImg) {
-            activeImg.src = `./public/images/web/${wch}W.png`;
-        }
-    }
-
-    // this is for personal info 
-    const form = document.getElementById("profileForm");
-    const originalEmail = document.getElementById("bemail").dataset.original;
-
-    form.addEventListener("input", (e) => {
-        const input = e.target;
-        const name = input.name;
-        const value = input.value.trim();
-        const p = document.getElementById(name + "Err");
-
-        if (value === "") {
-            p.innerText = "";
-            checkErrors();
-            return;
-        }
-
-        if (name === "bemail") {
-            if (!/^[a-zA-Z][a-zA-Z0-9._-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
-                p.innerText = "Please enter valid email!";
-            } else {
-                p.innerText = "";
-
-                if (value !== originalEmail) {
-                    const xhr = new XMLHttpRequest();
-                    xhr.open("POST", "emailCheck.php", true);
-                    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-                    xhr.onreadystatechange = function() {
-                        if (xhr.readyState === 4 && xhr.status === 200) {
-                            if (xhr.responseText.trim() === "exists") {
-                                p.innerText = "Email already exists!";
-                            } else {
-                                p.innerText = "";
-                            }
-                            checkErrors();
-                        }
-                    };
-
-                    xhr.send("email=" + value);
-                }
-            }
-        }
-
-        if (name === "bname") {
-            if (!/^(?=.{2,20}$)[A-Za-z]+(?:\s[A-Za-z]+)*$/.test(value)) {
-                p.innerText = "Name must have only letters and (2,20) words.";
-            } else {
-                p.innerText = "";
-            }
-        }
-
-        if (name === "bphone") {
-            let e = value.slice(2);
-
-            if (/\D/.test(value)) {
-                p.innerText = "Phone number must contain only digits.";
-            } else if (!value.startsWith("98") && !value.startsWith("97")) {
-                p.innerText = "Phone number must start with 98 or 97.";
-            } else if (value.length !== 10) {
-                p.innerText = "Phone number must be exactly 10 digits.";
-            } else if (/^(\d)\1*$/.test(e)) {
-                p.innerText = "The remaining part has repeated digits.";
-            } else {
-                p.innerText = "";
-            }
-        }
-
-        if (name === "baddress") {
-            const pattern = /^[A-Za-z][A-Za-z0-9\-, ]*$/;
-            if (!pattern.test(value)) {
-                p.innerText = "Must start with letters or only - and , are allowed!";
-            } else if (value.length > 25) {
-                p.innerText = "Letters must be less than 25!";
-            } else {
-                p.innerText = "";
-            }
-        }
-
-        checkErrors();
-    });
-
-    function checkErrors() {
-        const btn = document.getElementById("shopPbtn");
-        const errorMessages = document.querySelectorAll("#profileForm p.text-red-600");
-        let hasError = false;
-
-        errorMessages.forEach((p) => {
-            if (p.innerText.trim() !== "") {
-                hasError = true;
-            }
-        });
-
-        if (btn) {
-            btn.disabled = hasError;
-
-            if (hasError) {
-                btn.className =
-                    "flex justify-center items-center gap-2 bg-gray-400 hover:bg-gray-500 p-3 text-black rounded-lg font-semibold transition-all cursor-not-allowed opacity-60";
-            } else {
-                btn.className =
-                    "flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-white p-3 rounded-lg font-semibold transition-all";
-            }
-        }
-    }
-
-    // this is for shop info
-    const shopForm = document.getElementById("shopForm");
-
-    shopForm.addEventListener("input", (e) => {
-        const input = e.target;
-        const name = input.name;
-        const value = input.value.trim();
-        const p = document.getElementById(name + "Err");
-
-        if (value === "") {
-            p.innerText = "";
-            checkShopErrors();
-            return;
-        }
-
-        if (name === "sname") {
-            const pattern = /^[A-Za-z][A-Za-z ]*$/;
-            if (!pattern.test(value)) {
-                p.innerText = "Must start with and only contain letters!";
-            } else if (value.length > 25) {
-                p.innerText = "Letters must be less than 25!";
-            } else {
-                p.innerText = "";
-            }
-        }
-
-        if (name === "saddress") {
-            const pattern = /^[A-Za-z][A-Za-z0-9\-, ]*$/;
-            if (!pattern.test(value)) {
-                p.innerText = "Must start with letters or only - and , are allowed!";
-            } else if (value.length > 25) {
-                p.innerText = "Letters must be less than 25!";
-            } else {
-                p.innerText = "";
-            }
-        }
-
-        checkShopErrors();
-    });
-
-    document.getElementById("photo").addEventListener("change", function() {
-        const file = this.files[0];
-        const maxSize = 5 * 1024 * 1024;
-        const p = document.getElementById("photoErr");
-
-        if (file && file.size > maxSize) {
-            p.innerText = "File size must be less than 5MB!";
-            this.value = "";
-            checkShopErrors();
-        } else {
-            p.innerText = "";
-            checkShopErrors();
-        }
-    });
-
-    function checkShopErrors() {
-        const btn = document.getElementById("shopUpdateBtn");
-        const errorMessages = document.querySelectorAll("#shopForm p.text-red-600");
-        let hasError = false;
-
-        errorMessages.forEach((p) => {
-            if (p.innerText.trim() !== "") {
-                hasError = true;
-            }
-        });
-
-        if (btn) {
-            btn.disabled = hasError;
-
-            if (hasError) {
-                btn.className =
-                    "flex justify-center items-center gap-2 bg-gray-400 hover:bg-gray-500 p-3 text-black rounded-lg font-semibold transition-all cursor-not-allowed opacity-60";
-            } else {
-                btn.className =
-                    "flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-white p-3 rounded-lg font-semibold transition-all";
-            }
-        }
-    }
-</script>
 
 <?php include 'footer.php' ?>
