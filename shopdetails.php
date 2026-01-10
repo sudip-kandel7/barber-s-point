@@ -166,11 +166,11 @@ mysqli_close($conn);
 
             <?php endif; ?>
 
-            <button
+            <a href="./contact.php?sid=<?php echo $sid ?>"
                 class="px-4 flex items-center gap-1 py-2 text-white bg-red-400 hover:bg-red-500 hover:-translate-y-1 font-medium rounded-lg transition-colors text-sm">
                 <img src="./public/images/web/report.png" class="w-4 h-4" alt="">
                 Report
-            </button>
+            </a>
 
             <?php endif; ?>
         </div>

@@ -1,6 +1,50 @@
-<?php include 'header.php';
+<?php
+include 'header.php';
 include 'navbar.php';
+
+$conn = new mysqli("localhost", "root", "", "barber_point");
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+$uid = $_SESSION['user']->uid;
+
+$qry1 = "SELECT name, email, phone FROM users WHERE uid = '$uid'";
+$result1 = mysqli_query($conn, $qry1);
+$userData = mysqli_fetch_assoc($result1);
+
+$sid = null;
+$shopName = null;
+
+if (isset($_GET['sid'])) {
+    $sid = intval($_GET['sid']);
+
+    $qry2 = "SELECT sname FROM shop WHERE sid = '$sid'";
+    $result2 = mysqli_query($conn, $qry2);
+    $shopData = mysqli_fetch_assoc($result2);
+    $shopName = $shopData['sname'] ?? null;
+}
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_feedback'])) {
+    $type =  $_POST['type'];
+    $msg = $_POST['message'];
+    $uid = $_SESSION['user']->uid;
+
+    $sid_value = isset($_POST['sid']) && !empty($_POST['sid']) ? intval($_POST['sid']) : 'NULL';
+
+    if ($sid_value === 'NULL') {
+        $qry = "INSERT INTO feedback (uid, sid, type, msg) VALUES ('$uid', NULL, '$type', '$msg')";
+    } else {
+        $qry = "INSERT INTO feedback (uid, sid, type, msg) VALUES ('$uid', $sid_value, '$type', '$msg')";
+    }
+
+    mysqli_query($conn, $qry);
+}
+
+$conn->close();
 ?>
+
 <section class="pt-12 pb-16 bg-[#f8f9fa] min-h-screen text-center">
     <div class="px-4 sm:px-6 lg:px-8">
         <p class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-black font-semibold leading-tight mb-5">Get In
@@ -59,42 +103,65 @@ include 'navbar.php';
             </div>
         </div>
 
-
         <div
             class="border-2 w-full p-4 sm:p-6 shadow-md rounded-2xl bg-white hover:-translate-y-1 hover:shadow-lg transition-all">
-            <p class="text-start mb-5 sm:mb-7 text-xl sm:text-2xl font-bold">Send us a Message</p>
-            <div class="h-full flex gap-4 sm:gap-6 flex-col">
+            <p class="text-start mb-5 sm:mb-7 text-xl sm:text-2xl font-bold">
+                <?php echo $shopName ? "Report Issue - " . $shopName : "Send us a Message"; ?>
+            </p>
+
+            <form method="POST" id="feedbackForm" class="h-full flex gap-4 sm:gap-6 flex-col">
+                <input type="hidden" name="submit_feedback" value="1">
+                <?php if ($sid): ?>
+                    <input type="hidden" name="sid" value="<?php echo $sid; ?>">
+                <?php endif; ?>
+
+                <div class="flex w-full items-start flex-col">
+                    <label class="text-sm mb-1 sm:mb-2 font-semibold" for="type">Type</label>
+                    <select id="type" name="type" required
+                        class="px-3 text-sm sm:text-md w-full py-2 hover:bg-[#f5f5f5] bg-[#f8f9fa] outline-none border rounded-md border-[#E4E4E7] transition-all">
+                        <option value="feedback" <?php echo !$sid ? 'selected' : ''; ?>>Feedback</option>
+                        <option value="complaint" <?php echo $sid ? 'selected' : ''; ?>>Complaint</option>
+                    </select>
+                </div>
 
                 <div class="flex w-full items-start flex-col">
                     <label class="text-sm mb-1 sm:mb-2 font-semibold" for="name">Name</label>
-                    <input
-                        class="px-3 pl-2 text-sm sm:text-md w-full py-2 hover:bg-[#f5f5f5] bg-[#f8f9fa] outline-none border rounded-md border-[#E4E4E7] focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-colors"
-                        type="text" name="name" placeholder="Your full name" id="name">
+                    <input readonly
+                        class="px-3 pl-2 text-sm sm:text-md w-full py-2 hover:bg-[#f5f5f5] bg-[#f8f9fa] outline-none border rounded-md border-[#E4E4E7] transition-all"
+                        type="text" name="name" placeholder="Your full name" id="name"
+                        value="<?php echo $userData['name']; ?>">
                 </div>
+
                 <div class="flex w-full items-start flex-col">
                     <label class="text-sm mb-1 sm:mb-2 font-semibold" for="email">Email</label>
-                    <input
-                        class="px-3 pl-2 text-sm sm:text-md py-2 w-full hover:bg-[#f5f5f5] bg-[#f8f9fa] border outline-none rounded-md border-[#E4E4E7] focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-colors"
-                        type="email" name="email" placeholder="your.email@gmail.com" id="email">
+                    <input readonly
+                        class="px-3 pl-2 text-sm sm:text-md py-2 w-full hover:bg-[#f5f5f5] bg-[#f8f9fa] border outline-none rounded-md border-[#E4E4E7] transition-all"
+                        type="email" name="email" placeholder="your.email@gmail.com" id="email"
+                        value="<?php echo $userData['email']; ?>">
                 </div>
+
                 <div class="flex w-full items-start flex-col">
                     <label class="text-sm mb-1 sm:mb-2 font-semibold" for="phone">Phone (Optional)</label>
-                    <input
-                        class="px-3 pl-2 text-sm sm:text-md w-full py-2 hover:bg-[#f5f5f5] bg-[#f8f9fa] border outline-none rounded-md border-[#E4E4E7] focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-colors"
-                        type="text" name="phone" placeholder="(977) 9800000000" id="phone">
+                    <input readonly
+                        class="px-3 pl-2 text-sm sm:text-md w-full py-2 hover:bg-[#f5f5f5] bg-[#f8f9fa] border outline-none rounded-md border-[#E4E4E7] transition-all"
+                        type="text" name="phone" placeholder="9800000000" id="phone"
+                        value="<?php echo $userData['phone'] ?? ''; ?>">
                 </div>
+
                 <div class="flex w-full items-start flex-col">
-                    <label class="text-sm mb-1 sm:mb-2 font-semibold" for="message">Message</label>
-                    <textarea rows="4" 2
-                        class="px-3 pl-2 text-sm sm:text-md w-full py-2 hover:bg-[#f5f5f5] bg-[#f8f9fa] border outline-none rounded-md border-[#E4E4E7] focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-colors resize-none"
+                    <label class="text-sm mb-1 sm:mb-2 font-semibold" for="message">Message *</label>
+                    <textarea rows="4" required
+                        class="px-3 pl-2 text-sm sm:text-md w-full py-2 hover:bg-[#f5f5f5] bg-[#f8f9fa] border outline-none rounded-md border-[#E4E4E7] transition-all resize-none"
                         name="message" placeholder="Tell us how we can help you..." id="message"></textarea>
                 </div>
-                <button
-                    class="bg-black text-white py-2.5 sm:py-3 rounded-md text-base sm:text-lg font-medium hover:bg-gray-900 hover:-translate-y-1 hover:shadow-lg transition-all active:scale-95">Send
-                    Message</button>
-            </div>
+
+                <button type="submit" id="submitBtn"
+                    class="bg-black text-white py-2.5 sm:py-3 rounded-md text-base sm:text-lg font-medium hover:bg-gray-900 hover:-translate-y-1 hover:shadow-lg transition-all active:scale-95">
+                    Send Message
+                </button>
+            </form>
         </div>
     </div>
-
 </section>
+
 <?php include 'footer.php'; ?>
