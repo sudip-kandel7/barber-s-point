@@ -2,37 +2,14 @@
 
 > A comprehensive web application connecting customers with barber shops, featuring real-time queue management, booking systems, and reviews.
 
-**Live Demo:** [https://barber-point.kesug.com](https://barber-point.kesug.com)
-
-![Barber's Point Banner](./path-to-banner-image.png)
-
----
-
-## 📋 Table of Contents
-
-- [Features](#features)
-- [Screenshots](#screenshots)
-- [Tech Stack](#tech-stack)
-- [Prerequisites](#prerequisites)
-- [Installation Guide](#installation-guide)
-  - [Windows Installation](#windows-installation)
-  - [Linux Installation](#linux-installation)
-- [Database Setup](#database-setup)
-- [Project Structure](#project-structure)
-- [Usage](#usage)
-- [Default Admin Credentials](#default-admin-credentials)
-- [Contributing](#contributing)
-- [Team](#team)
-- [License](#license)
-
----
+**Live Demo:** [https://barber-point.kesug.com](https://barber-point.kesug.com
 
 ## ✨ Features
 
 ### For Customers
 
 - 🔍 Search and browse barber shops by location
-- 📊 View real-time queue status and wait times
+- 📊 View queue status and wait times
 - 📅 Book appointments with multiple services
 - ⭐ Read and write shop reviews
 - ❤️ Save favorite shops
@@ -42,10 +19,10 @@
 
 - 🏪 Create and manage shop profile
 - 💇 Manage services and pricing
-- 👥 Real-time queue management
+- 👥 Queue management
 - ✅ Start and complete customer services
 - 📊 Track daily earnings
-- 🕐 Set shop hours (open/close)
+- 🕐 Set shop status (open/close)
 
 ### For Admins
 
@@ -55,12 +32,13 @@
 - 📊 View platform statistics
 - 🔍 Monitor reviews
 
+---
 
 ## 🛠️ Tech Stack
 
 - **Frontend:** HTML5, Tailwind CSS, JavaScript (Vanilla)
-- **Backend:** PHP 
-- **Database:** MySQL 
+- **Backend:** PHP
+- **Database:** MySQL
 - **Server:** Apache (via XAMPP)
 - **Version Control:** Git & GitHub
 
@@ -79,9 +57,9 @@ Before you begin, ensure you have the following installed:
 
 ## 🚀 Installation Guide
 
-### Windows Installation
-
 #### 1. Install XAMPP
+
+### Windows Installation
 
 1. Download XAMPP from [apachefriends.org](https://www.apachefriends.org/download.html)
 2. Run the installer (`.exe` file)
@@ -93,6 +71,23 @@ Before you begin, ensure you have the following installed:
    - ✅ phpMyAdmin
 5. Complete the installation
 6. Open **XAMPP Control Panel**
+
+### Linux Installation
+
+```bash
+# Download XAMPP
+cd ~/Downloads
+wget https://sourceforge.net/projects/xampp/files/XAMPP%20Linux/8.2.12/xampp-linux-x64-8.2.12-0-installer.run
+
+# Make installer executable
+chmod +x xampp-linux-x64-8.2.12-0-installer.run
+
+# Run installer
+sudo ./xampp-linux-x64-8.2.12-0-installer.run
+
+# Start XAMPP
+sudo /opt/lampp/lampp start
+```
 
 #### 2. Clone the Repository
 
@@ -141,172 +136,118 @@ Open browser and visit:
 
 ---
 
-### Linux Installation
-
-#### 1. Install XAMPP
-
-```bash
-# Download XAMPP
-cd ~/Downloads
-wget https://sourceforge.net/projects/xampp/files/XAMPP%20Linux/8.2.12/xampp-linux-x64-8.2.12-0-installer.run
-
-# Make installer executable
-chmod +x xampp-linux-x64-8.2.12-0-installer.run
-
-# Run installer
-sudo ./xampp-linux-x64-8.2.12-0-installer.run
-
-# Start XAMPP
-sudo /opt/lampp/lampp start
-```
-
-#### 2. Clone the Repository
-
-```bash
-# Navigate to htdocs
-cd /opt/lampp/htdocs
-
-# Clone repository
-sudo git clone https://github.com/sudip-kandel7/barber-s-point.git
-
-# Set permissions
-sudo chmod -R 755 barber-s-point
-sudo chown -R daemon:daemon barber-s-point
-```
-
-#### 3. Create Database
-
-```bash
-# Access MySQL
-sudo /opt/lampp/bin/mysql -u root
-
-# Create database
-CREATE DATABASE barber_point;
-exit;
-
-# Import SQL file
-sudo /opt/lampp/bin/mysql -u root barber_point < /opt/lampp/htdocs/barber-s-point/barberpoint.sql
-```
-
-#### 4. Access the Application
-
-- **Homepage:** `http://localhost/barber-s-point`
-- **Admin:** `http://localhost/barber-s-point/admin.php`
-
----
-
 ## 🗄️ Database Setup
 
 ### Database Schema
 
 The `barberpoint.sql` file creates the following tables:
 
-```sql
 -- Users Table
 CREATE TABLE users (
-    uid INT PRIMARY KEY AUTO_INCREMENT,
-    type ENUM('customer', 'barber', 'admin') NOT NULL DEFAULT 'customer',
-    status ENUM('active', 'suspended') DEFAULT 'active',
-    name VARCHAR(50) NOT NULL,
-    address VARCHAR(255),
-    email VARCHAR(255) NOT NULL UNIQUE,
-    phone VARCHAR(15),
-    passwrd VARCHAR(255) NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+uid INT PRIMARY KEY AUTO_INCREMENT,
+type ENUM('customer', 'barber', 'admin') NOT NULL DEFAULT 'customer',
+status ENUM('active', 'suspended') DEFAULT 'active',
+name VARCHAR(50) NOT NULL,
+address VARCHAR(255),
+email VARCHAR(255) NOT NULL UNIQUE,
+phone VARCHAR(15),
+passwrd VARCHAR(255) NOT NULL,
+created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Shops Table
 CREATE TABLE shop (
-    sid INT PRIMARY KEY AUTO_INCREMENT,
-    sname VARCHAR(100) NOT NULL,
-    saddress VARCHAR(50) NOT NULL,
-    photo TEXT NOT NULL,
-    uid INT NOT NULL,
-    status ENUM('pending', 'open', 'closing', 'closed', 'suspended') DEFAULT 'pending',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    approved_at DATETIME NULL,
-    approved_by INT NULL,
-    FOREIGN KEY(uid) REFERENCES users(uid) ON DELETE CASCADE
+sid INT PRIMARY KEY AUTO_INCREMENT,
+sname VARCHAR(100) NOT NULL,
+saddress VARCHAR(50) NOT NULL,
+photo TEXT NOT NULL,
+uid INT NOT NULL,
+status ENUM('pending', 'open', 'closing', 'closed', 'suspended') DEFAULT 'pending',
+created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+approved_at DATETIME NULL,
+approved_by INT NULL,
+FOREIGN KEY(uid) REFERENCES users(uid) ON DELETE CASCADE
 );
 
 -- Queue Table
 CREATE TABLE queue (
-    sid INT PRIMARY KEY,
-    current_queue INT NOT NULL DEFAULT 0,
-    total_wait_time TIME NOT NULL DEFAULT '00:00:00',
-    FOREIGN KEY(sid) REFERENCES shop(sid) ON DELETE CASCADE
+sid INT PRIMARY KEY,
+current_queue INT NOT NULL DEFAULT 0,
+total_wait_time TIME NOT NULL DEFAULT '00:00:00',
+FOREIGN KEY(sid) REFERENCES shop(sid) ON DELETE CASCADE
 );
 
 -- Bookings Table
 CREATE TABLE booking (
-    bid INT PRIMARY KEY AUTO_INCREMENT,
-    uid INT NOT NULL,
-    sid INT NOT NULL,
-    booking_number INT NOT NULL,
-    status ENUM('waiting', 'in_service', 'completed', 'cancelled') DEFAULT 'waiting',
-    total_duration INT NOT NULL,
-    total_price DECIMAL(10, 2) NOT NULL,
-    joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    service_started_at DATETIME NULL,
-    completed_at DATETIME NULL,
-    FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE,
-    FOREIGN KEY (sid) REFERENCES shop(sid) ON DELETE CASCADE
+bid INT PRIMARY KEY AUTO_INCREMENT,
+uid INT NOT NULL,
+sid INT NOT NULL,
+booking_number INT NOT NULL,
+status ENUM('waiting', 'in_service', 'completed', 'cancelled') DEFAULT 'waiting',
+total_duration INT NOT NULL,
+total_price DECIMAL(10, 2) NOT NULL,
+joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+service_started_at DATETIME NULL,
+completed_at DATETIME NULL,
+FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE,
+FOREIGN KEY (sid) REFERENCES shop(sid) ON DELETE CASCADE
 );
 
 -- Reviews Table
 CREATE TABLE review (
-    rid INT PRIMARY KEY AUTO_INCREMENT,
-    uid INT NOT NULL,
-    sid INT NOT NULL,
-    review TEXT NOT NULL,
-    date_added DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(uid) REFERENCES users(uid) ON DELETE CASCADE,
-    FOREIGN KEY(sid) REFERENCES shop(sid) ON DELETE CASCADE,
-    UNIQUE (uid, sid)
+rid INT PRIMARY KEY AUTO_INCREMENT,
+uid INT NOT NULL,
+sid INT NOT NULL,
+review TEXT NOT NULL,
+date_added DATETIME DEFAULT CURRENT_TIMESTAMP,
+FOREIGN KEY(uid) REFERENCES users(uid) ON DELETE CASCADE,
+FOREIGN KEY(sid) REFERENCES shop(sid) ON DELETE CASCADE,
+UNIQUE (uid, sid)
 );
 
 -- Feedback/Complaints Table
 CREATE TABLE feedback (
-    fid INT PRIMARY KEY AUTO_INCREMENT,
-    uid INT NOT NULL,
-    sid INT NULL,
-    type ENUM('feedback', 'complaint') NOT NULL,
-    msg TEXT NOT NULL,
-    status ENUM('pending', 'resolved') DEFAULT 'pending',
-    responded_by INT NULL,
-    date_added DATETIME DEFAULT CURRENT_TIMESTAMP,
-    date_resolved DATETIME NULL,
-    FOREIGN KEY(uid) REFERENCES users(uid) ON DELETE CASCADE,
-    FOREIGN KEY(sid) REFERENCES shop(sid) ON DELETE CASCADE,
-    FOREIGN KEY(responded_by) REFERENCES users(uid) ON DELETE SET NULL
+fid INT PRIMARY KEY AUTO_INCREMENT,
+uid INT NOT NULL,
+sid INT NULL,
+type ENUM('feedback', 'complaint') NOT NULL,
+msg TEXT NOT NULL,
+status ENUM('pending', 'resolved') DEFAULT 'pending',
+responded_by INT NULL,
+date_added DATETIME DEFAULT CURRENT_TIMESTAMP,
+date_resolved DATETIME NULL,
+FOREIGN KEY(uid) REFERENCES users(uid) ON DELETE CASCADE,
+FOREIGN KEY(sid) REFERENCES shop(sid) ON DELETE CASCADE,
+FOREIGN KEY(responded_by) REFERENCES users(uid) ON DELETE SET NULL
 );
 
 -- Services Table
 CREATE TABLE services (
-    services_id INT PRIMARY KEY AUTO_INCREMENT,
-    services_name VARCHAR(100) NOT NULL UNIQUE
+services_id INT PRIMARY KEY AUTO_INCREMENT,
+services_name VARCHAR(100) NOT NULL UNIQUE
 );
 
 -- Shop Services (Junction Table)
 CREATE TABLE shop_services (
-    sid INT NOT NULL,
-    services_id INT NOT NULL,
-    price INT NOT NULL,
-    duration INT NOT NULL,
-    PRIMARY KEY (sid, services_id),
-    FOREIGN KEY (sid) REFERENCES shop(sid) ON DELETE CASCADE,
-    FOREIGN KEY (services_id) REFERENCES services(services_id) ON DELETE CASCADE
+sid INT NOT NULL,
+services_id INT NOT NULL,
+price INT NOT NULL,
+duration INT NOT NULL,
+PRIMARY KEY (sid, services_id),
+FOREIGN KEY (sid) REFERENCES shop(sid) ON DELETE CASCADE,
+FOREIGN KEY (services_id) REFERENCES services(services_id) ON DELETE CASCADE
 );
 
 -- Favorites Table
 CREATE TABLE favorites (
-    uid INT NOT NULL,
-    sid INT NOT NULL,
-    PRIMARY KEY(uid, sid),
-    FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE,
-    FOREIGN KEY (sid) REFERENCES shop(sid) ON DELETE CASCADE
+uid INT NOT NULL,
+sid INT NOT NULL,
+PRIMARY KEY(uid, sid),
+FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE,
+FOREIGN KEY (sid) REFERENCES shop(sid) ON DELETE CASCADE
 );
-```
+
+````
 
 ### Insert Default Admin (Optional)
 
@@ -317,7 +258,7 @@ CREATE TABLE favorites (
 
 INSERT INTO users (type, name, email, passwrd)
 VALUES ('admin', 'System Admin', 'admin@barberpoint.com', '0192023a7bbd73250516f069df18b500');
-```
+````
 
 ---
 
@@ -511,19 +452,19 @@ git push origin feature/your-feature-name
 
 - GitHub: [@sudip-kandel7](https://github.com/sudip-kandel7)
 - Role: Full-stack Developer
-- Email: sudip@example.com
+- Email: sudipkandel27@gmail.com
 
 **Kushal Pandit**
 
 - GitHub: [@kushal-pandit](https://github.com/kushal-pandit)
-- Role: Full-stack Developer
+- Role: Front-end Developer
 - Email: kushal@example.com
 
 ### Academic Details
 
 - **Course:** BCA 4th Semester Project
 - **Institution:** Birendra Multiple Campus, Bharatpur
-- **Academic Year:** 2024-2025
+- **Academic Year:** 2025-2026
 
 ---
 
@@ -588,15 +529,6 @@ Future enhancements planned:
 - [ ] Barber availability calendar
 - [ ] Multi-language support
 - [ ] Dark mode theme
-
----
-
-## 🙏 Acknowledgments
-
-- Birendra Multiple Campus for project guidance
-- [Tailwind CSS](https://tailwindcss.com/) for UI framework
-- [Font Awesome](https://fontawesome.com/) for icons
-- Open source community
 
 ---
 
