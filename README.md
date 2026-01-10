@@ -2,7 +2,7 @@
 
 > A comprehensive web application connecting customers with barber shops, featuring real-time queue management, booking systems, and reviews.
 
-**Live Demo:** [https://barber-point.kesug.com](https://barber-point.kesug.com
+**Live Demo:**  [https://barber-point.kesug.com](https://barber-point.kesug.com)
 
 ## ✨ Features
 
@@ -140,6 +140,11 @@ Open browser and visit:
 
 The `barberpoint.sql` file creates the following tables:
 
+
+```bash
+-- Databse
+CREATE DATABASE barber_point;
+
 -- Users Table
 CREATE TABLE users (
 uid INT PRIMARY KEY AUTO_INCREMENT,
@@ -244,6 +249,7 @@ PRIMARY KEY(uid, sid),
 FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE,
 FOREIGN KEY (sid) REFERENCES shop(sid) ON DELETE CASCADE
 );
+```
 
 ---
 
