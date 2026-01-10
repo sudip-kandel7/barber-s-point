@@ -245,19 +245,6 @@ FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE,
 FOREIGN KEY (sid) REFERENCES shop(sid) ON DELETE CASCADE
 );
 
-````
-
-### Insert Default Admin (Optional)
-
-```sql
--- Create default admin account
--- Email: admin@barberpoint.com
--- Password: admin123
-
-INSERT INTO users (type, name, email, passwrd)
-VALUES ('admin', 'System Admin', 'admin@barberpoint.com', '0192023a7bbd73250516f069df18b500');
-````
-
 ---
 
 ## 📁 Project Structure
@@ -388,26 +375,6 @@ barber-s-point/
    - Mark as Resolved
    - Or Delete if spam
 
----
-
-## 🔐 Default Admin Credentials
-
-After database setup, create admin manually or use:
-
-**Email:** `admin@barberpoint.com`  
-**Password:** `admin123`
-
-**⚠️ Change these credentials immediately after first login!**
-
-To create admin account:
-
-```sql
-INSERT INTO users (type, name, email, passwrd)
-VALUES ('admin', 'Your Name', 'your-email@domain.com', MD5('your-password'));
-```
-
----
-
 ## 🤝 Contributing
 
 We welcome contributions! Here's how:
@@ -456,7 +423,7 @@ git push origin feature/your-feature-name
 
 - GitHub: [@kushal-pandit](https://github.com/kushal-pandit)
 - Role: Front-end Developer
-- Email: kushal@example.com
+- Email: kushal@gmail.com
 
 ### Academic Details
 
@@ -478,28 +445,21 @@ This project is created for educational purposes as part of BCA curriculum.
 
 ### Common Issues
 
-**1. Cannot access localhost**
-
-```bash
-# Check if Apache is running
-# In XAMPP Control Panel, Apache should be green
-```
-
-**2. Database connection error**
+**1. Database connection error**
 
 ```php
 // Check database credentials in PHP files
 $conn = new mysqli("localhost", "root", "", "barber_point");
 ```
 
-**3. Permission denied (Linux)**
+**2. Permission denied (Linux)**
 
 ```bash
 sudo chmod -R 755 /opt/lampp/htdocs/barber-s-point
 sudo chown -R daemon:daemon /opt/lampp/htdocs/barber-s-point
 ```
 
-**4. Port 80 already in use**
+**3. Port 80 already in use**
 
 ```bash
 # Stop conflicting service
@@ -513,7 +473,6 @@ sudo service apache2 stop  # If Apache2 is running
 For issues and questions:
 
 - **GitHub Issues:** [Create an issue](https://github.com/sudip-kandel7/barber-s-point/issues)
-- **Email:** support@barberpoint.com
 
 ---
 
