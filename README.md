@@ -55,33 +55,12 @@
 - 📊 View platform statistics
 - 🔍 Monitor reviews
 
----
-
-## 📸 Screenshots
-
-### Homepage
-
-![Homepage Screenshot](./screenshots/homepage.png)
-
-### Shop Details & Booking
-
-![Shop Details](./screenshots/shop-details.png)
-
-### Admin Dashboard
-
-![Admin Dashboard](./screenshots/admin-dashboard.png)
-
-### Queue Management
-
-![Queue Management](./screenshots/queue.png)
-
----
 
 ## 🛠️ Tech Stack
 
 - **Frontend:** HTML5, Tailwind CSS, JavaScript (Vanilla)
-- **Backend:** PHP 7.4+
-- **Database:** MySQL 5.7+
+- **Backend:** PHP 
+- **Database:** MySQL 
 - **Server:** Apache (via XAMPP)
 - **Version Control:** Git & GitHub
 
