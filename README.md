@@ -136,8 +136,6 @@ Open browser and visit:
 
 ---
 
-## 🗄️ Database Setup
-
 ### Database Schema
 
 The `barberpoint.sql` file creates the following tables:
