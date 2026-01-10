@@ -9,6 +9,8 @@ if ($_SESSION['user']->type !== 'admin') {
     exit;
 }
 
+$uid = $_SESSION['user']->uid;
+
 $conn = new mysqli("localhost", "root", "", "barber_point");
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -139,6 +141,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         exit;
     }
+    if (isset($_POST['action']) && $_POST['action'] === 'update_complaint') {
+        $fid = (int)$_POST['fid'];
+        $new_status = $_POST['new_status'];
+
+        $qry = "UPDATE feedback 
+                SET status = '$new_status', 
+                    responded_by = '$uid', 
+                    date_resolved = NOW() 
+                WHERE fid = $fid";
+
+        if (mysqli_query($conn, $qry)) {
+            echo json_encode(['status' => 'success', 'msg' => 'Complaint status updated']);
+        } else {
+            echo json_encode(['status' => 'error', 'msg' => mysqli_error($conn)]);
+        }
+        exit;
+    }
+
+    if (isset($_POST['action']) && $_POST['action'] === 'delete_complaint') {
+        $fid = (int)$_POST['fid'];
+
+        $qry = "DELETE FROM feedback WHERE fid = $fid";
+        if (mysqli_query($conn, $qry)) {
+            echo json_encode(['status' => 'success', 'msg' => 'Complaint deleted']);
+        } else {
+            echo json_encode(['status' => 'error', 'msg' => mysqli_error($conn)]);
+        }
+        exit;
+    }
 }
 
 $qry1 = "SELECT 
@@ -194,6 +225,25 @@ ORDER BY review.date_added DESC
 LIMIT 20";
 
 $result5 = mysqli_query($conn, $qry5);
+
+$qryAdmin = "SELECT name from users WHERE uid = '$uid' AND type = 'admin'";
+$resultAdmin = mysqli_query($conn, $qryAdmin);
+
+$adminData = mysqli_fetch_assoc($resultAdmin);
+$admin_name = $adminData['name'];
+
+$qry6 = "SELECT 
+    feedback.*,
+    users.name,
+    users.email,
+    shop.sname
+FROM feedback
+JOIN users ON feedback.uid = users.uid
+LEFT JOIN shop ON feedback.sid = shop.sid
+ORDER BY FIELD(feedback.status, 'pending', 'resolved'),
+    feedback.date_added DESC";
+
+$result6 = mysqli_query($conn, $qry6);
 
 include 'header.php';
 include 'navbar.php';
@@ -263,6 +313,10 @@ include 'navbar.php';
                 <button onclick="switchTab('reviews')" id="Areviews"
                     class="Abtn px-6 py-3 font-semibold text-gray-600 hover:text-gray-900 whitespace-nowrap">
                     Reviews
+                </button>
+                <button onclick="switchTab('complaints')" id="Acomplaints"
+                    class="Abtn px-6 py-3 font-semibold text-gray-600 hover:text-gray-900 whitespace-nowrap">
+                    Complaints
                 </button>
             </div>
         </div>
@@ -490,7 +544,7 @@ include 'navbar.php';
             <?php endif; ?>
         </div>
 
-        <!-- Reviews Tab -->
+        <!-- Reviews tab -->
         <div id="abreviews" class="Acontent bg-white rounded-b-lg shadow-md p-6 hidden">
             <h2 class="text-2xl font-bold mb-6">Recent Reviews</h2>
 
@@ -526,8 +580,153 @@ include 'navbar.php';
                 <p class="text-center text-gray-500">No reviews found</p>
             <?php endif; ?>
         </div>
+
+        <!-- compains  tab  -->
+        <div id="abcomplaints" class="Acontent bg-white rounded-b-lg shadow-md p-6 hidden">
+            <h2 class="text-2xl font-bold mb-6">Complaints & Feedback</h2>
+
+            <?php if (mysqli_num_rows($result6) > 0): ?>
+                <div class="space-y-4" id="complaints-list">
+                    <?php while ($complaint = mysqli_fetch_assoc($result6)): ?>
+                        <div id="complaint-<?php echo $complaint['fid']; ?>"
+                            class="border-2 <?php echo $complaint['status'] === 'pending' ? 'border-red-200 bg-red-50' : 'border-green-200 bg-green-50'; ?> rounded-lg p-6 hover:shadow-md transition-shadow">
+
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <span
+                                            class="px-3 py-1 rounded-full text-xs font-semibold <?php echo $complaint['type'] === 'complaint' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'; ?>">
+                                            <?php echo ucfirst($complaint['type']); ?>
+                                        </span>
+                                        <span
+                                            class="px-3 py-1 rounded-full text-xs font-semibold <?php echo $complaint['status'] === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'; ?>">
+                                            <?php echo ucfirst($complaint['status']); ?>
+                                        </span>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                                        <div>
+                                            <p class="text-xs text-gray-600">Submitted By</p>
+                                            <p class="font-semibold"><?php echo $complaint['name']; ?></p>
+                                            <p class="text-sm text-gray-500"><?php echo $complaint['email']; ?></p>
+                                        </div>
+
+                                        <?php if ($complaint['sname']): ?>
+                                            <div>
+                                                <p class="text-xs text-gray-600">Related Shop</p>
+                                                <p class="font-semibold"><?php echo $complaint['sname']; ?></p>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <div>
+                                            <p class="text-xs text-gray-600">Date Submitted</p>
+                                            <p class="text-sm">
+                                                <?php echo date("M d, Y | g:i A", strtotime($complaint['date_added'])); ?></p>
+                                        </div>
+
+                                        <?php if ($complaint['status'] === 'resolved'): ?>
+                                            <div>
+                                                <p class="text-xs text-gray-600">Resolved By</p>
+                                                <p class="text-sm"><?php echo $admin_name ?? 'Admin'; ?></p>
+                                                <p class="text-xs text-gray-500">
+                                                    <?php echo date("M d, Y", strtotime($complaint['date_resolved'])); ?></p>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <div class="bg-white rounded-md p-3 mb-3">
+                                        <p class="text-xs text-gray-600 mb-1">Message:</p>
+                                        <p class="text-gray-700"><?php echo $complaint['msg']; ?></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-2 flex-wrap">
+                                <?php if ($complaint['status'] === 'pending'): ?>
+                                    <button onclick="updateCS(<?php echo $complaint['fid']; ?>, 'resolved')"
+                                        class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md font-medium transition-colors">
+                                        Mark as Resolved
+                                    </button>
+                                <?php else: ?>
+                                    <button onclick="updateCS(<?php echo $complaint['fid']; ?>, 'pending')"
+                                        class="px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-black rounded-md font-medium transition-colors">
+                                        Mark as Pending
+                                    </button>
+                                <?php endif; ?>
+
+                                <button onclick="dComplaint(<?php echo $complaint['fid']; ?>)"
+                                    class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md font-medium transition-colors">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    <?php endwhile; ?>
+                </div>
+            <?php else: ?>
+                <div class="text-center py-16">
+                    <img src="./public/images/web/empty.png" class="w-24 h-24 mx-auto mb-4 opacity-50" alt="">
+                    <p class="text-gray-500 text-lg">No complaints or feedback yet</p>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+
     </div>
 </section>
+
+<script>
+    function updateCS(fid, newStatus) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "dashboard.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                if (response.status === "success") {
+                    setTimeout(() => location.reload(), 100);
+                } else {
+                    alert("Error: " + response.msg);
+                }
+            }
+        };
+
+        xhr.send("action=update_complaint&fid=" + fid + "&new_status=" + newStatus);
+    }
+
+    function dComplaint(fid) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "dashboard.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                if (response.status === "success") {
+                    const complaintDiv = document.getElementById("complaint-" + fid);
+                    if (complaintDiv) {
+                        setTimeout(() => {
+                            complaintDiv.remove();
+                            const list = document.getElementById("complaints-list");
+                            if (list && list.children.length === 0) {
+                                document.getElementById("abcomplaints").innerHTML = `
+                <h2 class="text-2xl font-bold mb-6">Complaints & Feedback</h2>
+                <div class="text-center py-16">
+                  <img src="./public/images/web/empty.png" class="w-24 h-24 mx-auto mb-4 opacity-50" alt="">
+                  <p class="text-gray-500 text-lg">No complaints or feedback yet</p>
+                </div>`;
+                            }
+                        }, 300);
+                    }
+                } else {
+                    alert("Error: " + response.msg);
+                }
+            }
+        };
+
+        xhr.send("action=delete_complaint&fid=" + fid);
+    }
+</script>
 
 
 <?php
