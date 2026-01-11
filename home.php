@@ -10,7 +10,7 @@
             <p class="text-base sm:text-lg md:text-xl text-gray-500 font-light mt-3 max-w-2xl mx-auto">Discover
                 professional barber shops near you.</p>
             <p class="text-base sm:text-lg md:text-xl  text-gray-500 font-light max-w-2xl mx-auto">Check wait times, &
-                read reviews from real customers.</p>
+                read reviews from real customers (Reload frequently for real data).</p>
         </div>
 
 
