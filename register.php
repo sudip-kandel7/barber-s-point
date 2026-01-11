@@ -228,14 +228,14 @@ include 'header.php';
                 <div class="flex flex-col min-[701px]:flex-row gap-5 md:gap-9 lg:gap-24 px-3">
                     <div class="w-full min-[701px]:w-80">
                         <label for="firstN" class="font-medium">Full Name</label> <br>
-                        <input name="firstN" type="text" inputmode="text"
+                        <input name="firstN" autocomplete="off" type="text" inputmode="text"
                             class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-full" required
                             placeholder="Enter your first name">
                         <p class="firstN text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
                     <div class="w-full min-[701px]:w-80">
                         <label for="add" class="font-medium">Address</label> <br>
-                        <input name="add" type="text" required
+                        <input name="add" autocomplete="off" type="text" required
                             class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-full"
                             placeholder="Enter your address">
                         <p class="add text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
@@ -246,14 +246,14 @@ include 'header.php';
                 <div class="flex flex-col min-[701px]:flex-row gap-5 md:gap-9 lg:gap-24 px-3">
                     <div class="w-full min-[701px]:w-80">
                         <label for="email" class="font-medium">Email Address</label> <br>
-                        <input name="email" type="text" inputmode="text" inputmode="email"
+                        <input name="email" autocomplete="off" type="text" inputmode="text" inputmode="email"
                             class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-full" required
                             placeholder="Enter your email">
                         <p class="email text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
                     </div>
                     <div class="w-full min-[701px]:w-80">
                         <label for="number" class="font-medium">Phone Number</label> <br>
-                        <input name="number" type="number" inputmode="numeric"
+                        <input name="number" autocomplete="off" type="number" inputmode="numeric"
                             class="mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white w-full"
                             placeholder="Enter your phone number">
                         <p class="number text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
@@ -289,13 +289,13 @@ include 'header.php';
                     <div class="flex flex-col gap-2">
                         <div>
                             <label for="sname" class="font-medium">Shop Name</label> <br>
-                            <input type="text" inputmode="text" name="sname"
+                            <input type="text" autocomplete="off" inputmode="text" name="sname"
                                 class="mt-1.5 w-full rounded-md text-md pl-2 h-11" placeholder="Enter your shop name">
                             <p class="sname text-red-600 text-sm pl-2 mt-0.5"></p>
                         </div>
                         <div>
                             <label for="address" class="font-medium">Shop Address</label> <br>
-                            <input type="text" inputmode="text" name="saddress"
+                            <input type="text" autocomplete="off" inputmode="text" name="saddress"
                                 class="mt-1.5 w-full rounded-md text-md pl-2 h-11"
                                 placeholder="Enter your complete shop address"> <br>
                             <p class="saddress text-red-600 text-sm pl-2 mt-0.5"></p>

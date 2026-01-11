@@ -69,17 +69,17 @@ if (isset($_POST['login'])) {
 
 
 <style>
-    body {
-        margin: 0;
-        padding: 0;
-    }
+body {
+    margin: 0;
+    padding: 0;
+}
 
-    section {
-        background: linear-gradient(to right, rgba(255, 255, 255, 0.77), rgba(255, 255, 255, 0.77)),
-            url('./public/images/web/loginbg.jpg') center/cover no-repeat;
-        min-height: 100vh;
-        width: 100%;
-    }
+section {
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.77), rgba(255, 255, 255, 0.77)),
+        url('./public/images/web/loginbg.jpg') center/cover no-repeat;
+    min-height: 100vh;
+    width: 100%;
+}
 </style>
 
 <section class="flex flex-col justify-center items-center py-6 px-2">
@@ -105,8 +105,8 @@ if (isset($_POST['login'])) {
             </select>
 
             <label for="lemail" class="font-medium mt-5">Email Address</label>
-            <input name="lemail" type="text" class="w-full mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white" required
-                placeholder="Enter your email">
+            <input name="lemail" autocomplete="off" type="text"
+                class="w-full mt-1.5 pl-2 text-md h-11 rounded-[9px] bg-white" required placeholder="Enter your email">
             <p class="lemail text-red-600 text-sm -mb-2 pl-2 mt-0.5"></p>
 
             <div class="relative mt-5">
