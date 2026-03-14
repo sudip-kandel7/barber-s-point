@@ -1,0 +1,24 @@
+{
+  "name": "barber-s-point",
+  "version": "1.0.0",
+  "description": "> A comprehensive web application connecting customers with barber shops, featuring real-time queue management, booking systems, and reviews.",
+  "main": "tailwind.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sudip-kandel7/barber-s-point.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sudip-kandel7/barber-s-point/issues"
+  },
+  "homepage": "https://github.com/sudip-kandel7/barber-s-point#readme",
+  "devDependencies": {
+    "tailwindcss": "^4.1.18"
+  }
+}

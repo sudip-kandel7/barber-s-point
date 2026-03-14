@@ -7,7 +7,7 @@ ini_set('display_errors', 1);
 session_start();
 
 if (isset($_POST['create'])) {
-    $conn = new mysqli("localhost", "root", "", "barber_point");
+    $conn = mysqli_connect("localhost", "root", "", "barber_point");
     $type = $_POST['pType'];
     $name = $_POST['firstN'];
     $add = $_POST['add'];
@@ -389,18 +389,6 @@ include 'header.php';
                         <p class="photoErr -mt-2 text-red-600 text-sm pl-2"></p>
                     </div>
                 </div>
-
-                <div class="flex items-start gap-2 px-3">
-                    <input type="checkbox" name="terms" class="accent-yellow-300 w-5 h-5 mt-0.5 flex-shrink-0">
-                    <label for="terms">
-                        I agree to the <span
-                            class="text-yellow-500 hover:underline hover:cursor-pointer hover:text-yellow-600">Terms
-                            and Conditions</span> and
-                        <span class="text-yellow-500 hover:underline hover:cursor-pointer hover:text-yellow-600">Privacy
-                            Policy</span>
-                    </label>
-                </div>
-
 
                 <button type="submit" name="create" id="create"
                     class="flex justify-center items-center border bg-yellow-400 rounded-xl hover:bg-yellow-500 w-full gap-3 py-3 text-xl font-medium">
