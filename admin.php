@@ -13,6 +13,7 @@ if (isset($_POST['login'])) {
 
     $email = $_POST['email'];
     $password = $_POST['password'];
+    $secure = md5($password);
 
     $stmt1 = "SELECT uid, passwrd FROM users WHERE email = '$email'";
     $result = mysqli_query($conn, $stmt1);
@@ -22,7 +23,7 @@ if (isset($_POST['login'])) {
         $uid = $row['uid'];
         $type = "admin";
 
-        if ($password === $row['passwrd']) {
+        if ($secure === $row['passwrd']) {
             $user = new User($email, $type, $uid);
             $_SESSION['user'] = $user;
 

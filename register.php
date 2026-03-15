@@ -108,8 +108,13 @@ VALUES ('$type', '$name', '$add', '$email', '$phone', '$secure')";
                     foreach ($customServices as $value) {
 
                         $serviceName = $value['name'];
-                        $price       = $value['price'];
-                        $duration    = $value['duration'];
+                        $price = isset($_POST['price'][$serviceN]) && $_POST['price'][$serviceN] !== ''
+                            ? intval($_POST['price'][$serviceN])
+                            : 0;
+
+                        $duration = isset($_POST['duration'][$serviceN]) && $_POST['duration'][$serviceN] !== ''
+                            ? intval($_POST['duration'][$serviceN])
+                            : 0;
 
                         $q1 = "SELECT services_id FROM services WHERE services_name = '$serviceName'";
                         $r1 = mysqli_query($conn, $q1);
